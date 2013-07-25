@@ -1,0 +1,20 @@
+---
+language: java
+jdk:
+  - openjdk7
+after_success:
+  - "bundle install --binstubs"
+  - "bin/cf target $TARGET"
+  - "bin/cf login --username $USERNAME --password $PASSWORD --organization $ORGANIZATION --space $SPACE"
+  - "bin/cf push"
+env:
+  global:
+    - "TARGET=https://api.run.pivotal.io"
+    -
+      secure: dANRJpQd732qufZCwD4wPHeK7BbT5YtmWGh/wl0VWt7Y63TnZT3C595g2IfIXv+ZgznQJh4MMWk3UZ/rY8i9Yp7dNxn9+BjlubhzeFWTvuhGZB8RtHrmQQGBuKQZOjE9PH4Dr52IPMnCyNqEek8nE1Z4rKLABdR+uex24Zgn8rY= # $USERNAME
+    -
+      secure: IarDqPszjUyjx6XdjDk36dVk5nRgPXqEPoKNzer0YmFNy5T/bRZxLn5jqyT7FJKeuDeoNb7UgwazuAARzjbT8YhLRvOmn4BLEY8DFGIZrC5t3hXC+4aJ/yMYu39bcSDICUTBs1gIUrRU7dPsW9NV1YyrAr2a+SIq9DoTcNYp7rw= # $PASSWORD
+    -
+      secure: LQVV+/QIOgwaFnDZJ5S3jgMz5OtVgid/7XkTN3H7K3S8c2Z65JUT3wwDJ/r2emQ/eeQmGEOl4qJo5zuAguDswZ8FbVUJhFiUeUSfgD8fobal/C8zyhRJEnrJ3WYDCcxbFXL8QfKbVly2NIckP6AO4w8MlnJJnPZ1kj7mCVSiFlU= # $ORGANIZATION
+    -
+      secure: RoS/2hXSU0lkgNSnSXzMhGx2t4qJA9SCOe0JAXJjveloRU/Xx7WGXYSwTglrIqCgi3wwMMbCYO9fTu0zeJx7yse/LO2s1ltOhsW1pZgSPpeIhgVL7Q6cDiwMYrm++a/pLI+0c+3RtJz1kbG2yvO4NyY0t/nO6BEtD04i4Y8fYZg= # $SPACE
