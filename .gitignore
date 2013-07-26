@@ -1,7 +1,5 @@
-build
-bin
+target
 .classpath
 .project
 .settings
 .springBeans
-.gradle
