@@ -5,7 +5,7 @@ applications:
   instances: 1
   host: gopivotal-cla
   domain: cfapps.io
-  path: build/libs/github-cla-integration-1.0-SNAPSHOT.war
+  path: target/github-cla-integration-1-SNAPSHOT.war
   services:
     gopivotal-cla:
       label: elephantsql
