@@ -32,6 +32,6 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/*").addResourceLocations("/");
+        registry.addResourceHandler("/resources/**").addResourceLocations("classpath:/META-INF/public-web-resources/");
     }
 }

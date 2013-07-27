@@ -29,7 +29,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.util.Assert;
 
 import com.googlecode.flyway.core.Flyway;
 import com.jolbox.bonecp.BoneCPDataSource;
@@ -42,14 +41,9 @@ import com.jolbox.bonecp.BoneCPDataSource;
 @EnableTransactionManagement(mode = AdviceMode.ASPECTJ)
 public class RepositoryConfiguration {
 
-    private static final String DB_URL_PROPERTY_NAME = "DATABASE_URL";
-
     @Bean
-    DataSource dataSource() throws URISyntaxException {
-        String dbUrlProperty = System.getenv(DB_URL_PROPERTY_NAME);
-        Assert.hasText(dbUrlProperty, String.format("The enviroment variable '%s' must be specified", DB_URL_PROPERTY_NAME));
-
-        URI dbUri = new URI(dbUrlProperty);
+    DataSource dataSource(String databaseUrl) throws URISyntaxException {
+        URI dbUri = new URI(databaseUrl);
 
         String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
 
@@ -61,6 +55,9 @@ public class RepositoryConfiguration {
         dataSource.setUsername(userInfoTokens.length > 0 ? userInfoTokens[0] : "");
         dataSource.setPassword(userInfoTokens.length > 1 ? userInfoTokens[1] : "");
 
+        dataSource.setPartitionCount(1);
+        dataSource.setMaxConnectionsPerPartition(20);
+
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
         flyway.migrate();
@@ -69,8 +66,8 @@ public class RepositoryConfiguration {
     }
 
     @Bean
-    PlatformTransactionManager transactionManager() throws URISyntaxException {
-        return new DataSourceTransactionManager(dataSource());
+    PlatformTransactionManager transactionManager(String databaseUrl) throws URISyntaxException {
+        return new DataSourceTransactionManager(dataSource(databaseUrl));
     }
 
 }
