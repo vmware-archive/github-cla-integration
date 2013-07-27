@@ -21,3 +21,6 @@ env:
       secure: LQVV+/QIOgwaFnDZJ5S3jgMz5OtVgid/7XkTN3H7K3S8c2Z65JUT3wwDJ/r2emQ/eeQmGEOl4qJo5zuAguDswZ8FbVUJhFiUeUSfgD8fobal/C8zyhRJEnrJ3WYDCcxbFXL8QfKbVly2NIckP6AO4w8MlnJJnPZ1kj7mCVSiFlU= # $ORGANIZATION
     -
       secure: RoS/2hXSU0lkgNSnSXzMhGx2t4qJA9SCOe0JAXJjveloRU/Xx7WGXYSwTglrIqCgi3wwMMbCYO9fTu0zeJx7yse/LO2s1ltOhsW1pZgSPpeIhgVL7Q6cDiwMYrm++a/pLI+0c+3RtJz1kbG2yvO4NyY0t/nO6BEtD04i4Y8fYZg= # $SPACE
+branches:
+  only:
+    - master

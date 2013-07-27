@@ -42,7 +42,7 @@ limitations under the License.
 		<mockito.version>1.9.5</mockito.version>
 		<persistence.version>1.0.2</persistence.version>
 		<postgresql.version>9.2-1003-jdbc4</postgresql.version>
-		<servlet.version>3.1.0</servlet.version>
+		<servlet.version>3.0.1</servlet.version>
 		<slf4j.version>1.7.2</slf4j.version>
 		<spring.version>3.2.3.RELEASE</spring.version>
 

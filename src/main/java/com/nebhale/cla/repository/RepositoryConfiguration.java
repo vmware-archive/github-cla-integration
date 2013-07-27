@@ -58,12 +58,8 @@ public class RepositoryConfiguration {
         dataSource.setJdbcUrl(dbUrl);
 
         String[] userInfoTokens = dbUri.getUserInfo().split(":");
-        if (userInfoTokens.length > 0) {
-            dataSource.setUsername(userInfoTokens[0]);
-        }
-        if (userInfoTokens.length > 1) {
-            dataSource.setPassword(userInfoTokens[1]);
-        }
+        dataSource.setUsername(userInfoTokens.length > 0 ? userInfoTokens[0] : "");
+        dataSource.setPassword(userInfoTokens.length > 1 ? userInfoTokens[1] : "");
 
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
@@ -76,4 +72,5 @@ public class RepositoryConfiguration {
     PlatformTransactionManager transactionManager() throws URISyntaxException {
         return new DataSourceTransactionManager(dataSource());
     }
+
 }
