@@ -31,14 +31,14 @@ import com.nebhale.cla.repository.AgreementRepository;
 @RequestMapping("/admin")
 final class AdminController {
 
-    private final RestOperations restOperations;
-
     private final AgreementRepository agreementRepository;
 
+    private final RestOperations restOperations;
+
     @Autowired
-    AdminController(AgreementRepository agreementRepository, RestOperations restTemplate) {
+    AdminController(AgreementRepository agreementRepository, RestOperations restOperations) {
         this.agreementRepository = agreementRepository;
-        this.restOperations = restTemplate;
+        this.restOperations = restOperations;
     }
 
     @SuppressWarnings("unchecked")
