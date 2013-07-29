@@ -19,7 +19,7 @@ package com.nebhale.cla.repository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-@ContextConfiguration(classes = RepositoryConfiguration.class)
+@ContextConfiguration(classes = { TestConfiguration.class, RepositoryConfiguration.class })
 public abstract class AbstractJdbcRepositoryTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 }

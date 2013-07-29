@@ -51,6 +51,5 @@ public class EnvironmentVariableConfiguration {
         String property = System.getenv(key);
         Assert.hasText(property, String.format("The enviroment variable '%s' must be specified", key));
         return property;
-
     }
 }
