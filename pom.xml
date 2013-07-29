@@ -34,6 +34,7 @@ limitations under the License.
 		<aspectj.version>1.7.3</aspectj.version>
 		<bonecp.version>0.7.1.RELEASE</bonecp.version>
 		<flyway.version>2.2</flyway.version>
+		<freemarker.version>2.3.20</freemarker.version>
 		<jackson.version>2.1.2</jackson.version>
 		<jsonpath.version>0.8.1</jsonpath.version>
 		<junit.version>4.11</junit.version>
@@ -105,6 +106,12 @@ limitations under the License.
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
 			<version>${aspectj.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>${freemarker.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>

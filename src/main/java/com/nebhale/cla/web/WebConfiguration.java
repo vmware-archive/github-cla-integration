@@ -16,11 +16,15 @@
 
 package com.nebhale.cla.web;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 /**
  * Configuration of web components
@@ -34,4 +38,21 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**").addResourceLocations("classpath:/META-INF/public-web-resources/");
     }
+
+    @Bean
+    FreeMarkerConfigurer freeMarkerConfigurer() {
+        FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
+        configurer.setTemplateLoaderPath("classpath:META-INF/freemarker");
+
+        return configurer;
+    }
+
+    @Bean
+    ViewResolver freeMarkerViewResolver() {
+        FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
+        resolver.setSuffix(".ftl");
+
+        return resolver;
+    }
+
 }
