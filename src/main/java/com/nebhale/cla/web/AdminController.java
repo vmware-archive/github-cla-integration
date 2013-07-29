@@ -25,14 +25,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestOperations;
 
+import com.nebhale.cla.repository.AgreementRepository;
+
 @Controller
 @RequestMapping("/admin")
 final class AdminController {
 
     private final RestOperations restOperations;
 
+    private final AgreementRepository agreementRepository;
+
     @Autowired
-    AdminController(RestOperations restTemplate) {
+    AdminController(AgreementRepository agreementRepository, RestOperations restTemplate) {
+        this.agreementRepository = agreementRepository;
         this.restOperations = restTemplate;
     }
 
@@ -40,6 +45,7 @@ final class AdminController {
     @RequestMapping(method = RequestMethod.GET, value = "")
     String index(ModelMap model) {
         model.putAll(this.restOperations.getForObject("https://api.github.com/user", Map.class));
+        model.put("agreements", this.agreementRepository.find());
         return "admin";
     }
 
