@@ -55,7 +55,7 @@ final class JdbcAgreementRepository implements AgreementRepository {
 
         @Override
         public Agreement mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Agreement(rs.getLong(1), rs.getString(2), Type.valueOf(rs.getString(2)));
+            return new Agreement(rs.getLong(1), rs.getString(2), Type.valueOf(rs.getString(3)));
         }
 
     }

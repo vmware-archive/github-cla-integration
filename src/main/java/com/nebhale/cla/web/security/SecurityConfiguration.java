@@ -17,6 +17,7 @@
 package com.nebhale.cla.web.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -77,8 +78,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    OAuth2SsoFilter ssoFilter(RestOperations restOperations) throws Exception {
-        OAuth2SsoFilter filter = new OAuth2SsoFilter(LOGIN_URL, restOperations);
+    OAuth2SsoFilter ssoFilter(@Value("#{@adminEmailDomains}") String[] adminEmailDomains, RestOperations restOperations) throws Exception {
+        OAuth2SsoFilter filter = new OAuth2SsoFilter(adminEmailDomains, LOGIN_URL, restOperations);
         filter.setAuthenticationManager(authenticationManager());
         return filter;
     }

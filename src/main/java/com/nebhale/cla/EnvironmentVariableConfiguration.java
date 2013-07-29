@@ -19,12 +19,18 @@ package com.nebhale.cla;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration of beans representing environment variable based configuration
  */
 @Configuration
 public class EnvironmentVariableConfiguration {
+
+    @Bean
+    String[] adminEmailDomains() {
+        return StringUtils.commaDelimitedListToStringArray(getRequiredProperty("ADMIN_EMAIL_DOMAINS"));
+    }
 
     @Bean
     String databaseUrl() {

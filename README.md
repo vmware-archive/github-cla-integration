@@ -21,6 +21,7 @@ Since the application is designed to work in a PaaS environment, all configurati
 
 | Key | Description
 | --- | -----------
+| `ADMIN_EMAIL_DOMAINS` | A comma delimited list of domains.  These domains are compared against the list of email addresses that a potential administrator has in their profile and if there is no match, the user is not allowed to administer the instance.  The domains should not have an `@` symbol before them (e.g `gopivotal.com,pivotallabs.com`).
 | `DATABASE_URL` | The URL used to connect to a PostgreSQL database.  This URL should include the username and password used as credentials for the database connection and be in the form of `postgresql://<username>[:<password>]@<host>[:<port>]/<database>`.
 | `GITHUB_CLIENT_ID` | The Client ID assigned to your registered application.
 | `GITHUB_CLIENT_SECRET` | The Client Secret assigned to your registered application.
@@ -36,6 +37,7 @@ In order to automate the deployment process as much as possible, the project con
 ```bash
 mvn -Dmaven.test.skip=true package
 cf push --no-start
+cf set-env gopivotal-cla ADMIN_EMAIL_DOMAINS <value>
 cf set-env gopivotal-cla DATABASE_URL <value>
 cf set-env gopivotal-cla GITHUB_CLIENT_ID <value>
 cf set-env gopivotal-cla GITHUB_CLIENT_SECRET <value>

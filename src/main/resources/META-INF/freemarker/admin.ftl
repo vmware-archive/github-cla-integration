@@ -9,7 +9,7 @@
 
 	<h2>Agreements</h2>
 	<#list agreements as agreement>
-		<a href="/admin/agreement/${agreement.id}">${agreement.name} (${agreement.type.cap_first})</a>
+		<a href="/admin/agreement/${agreement.id}">${agreement.name} (${agreement.type?cap_first})</a>
 	</#list>
 
 </body>
