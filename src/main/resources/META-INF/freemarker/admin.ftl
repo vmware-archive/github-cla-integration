@@ -3,6 +3,6 @@
 	<title>Go Pivotal, Inc. Contributor License Agreement Administration</title>
 </head>
 <body>
-${name}
+<img src="${avatar_url}&s=200" /> ${name}
 </body>
 </html>
