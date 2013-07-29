@@ -16,20 +16,24 @@
 
 package com.nebhale.cla.web.security;
 
-import java.util.Arrays;
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
+import java.util.Collection;
+
+import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 
-final class AdminUser extends User {
+public final class AdminUserTest {
 
-    private static final long serialVersionUID = -5949420142556127344L;
+    @Test
+    public void test() {
+        AdminUser user = new AdminUser("test-login");
+        assertEquals("test-login", user.getUsername());
+        assertEquals("unused", user.getPassword());
 
-    private static final List<? extends GrantedAuthority> ADMIN_AUTHORIES = Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
-
-    AdminUser(String login) {
-        super(login, "unused", ADMIN_AUTHORIES);
+        Collection<GrantedAuthority> authorities = user.getAuthorities();
+        assertEquals(1, authorities.size());
+        assertEquals("ROLE_ADMIN", authorities.iterator().next().getAuthority());
     }
+
 }

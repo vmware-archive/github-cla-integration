@@ -16,32 +16,16 @@
 
 package com.nebhale.cla.web;
 
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.client.RestOperations;
 
 @Controller
-@RequestMapping("/admin")
-final class AdminController {
+@RequestMapping("")
+final class RootController {
 
-    private final RestOperations restOperations;
-
-    @Autowired
-    AdminController(RestOperations restTemplate) {
-        this.restOperations = restTemplate;
-    }
-
-    @SuppressWarnings("unchecked")
     @RequestMapping(method = RequestMethod.GET, value = "")
-    String index(ModelMap model) {
-        model.putAll(this.restOperations.getForObject("https://api.github.com/user", Map.class));
-        System.out.println(model);
-        return "admin";
+    String index() {
+        return "index";
     }
-
 }
