@@ -18,13 +18,19 @@ package com.nebhale.cla.repository;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 
 @Configuration
 public class TestConfiguration {
 
     @Bean
     String databaseUrl() {
-        return "postgres://bhale@127.0.0.1:5432/cla";
+        return getRequiredProperty("DATABASE_URL");
     }
 
+    private String getRequiredProperty(String key) {
+        String property = System.getenv(key);
+        Assert.hasText(property, String.format("The enviroment variable '%s' must be specified", key));
+        return property;
+    }
 }
