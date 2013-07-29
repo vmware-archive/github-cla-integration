@@ -40,7 +40,6 @@ final class AdminController {
     @RequestMapping(method = RequestMethod.GET, value = "")
     String index(ModelMap model) {
         model.putAll(this.restOperations.getForObject("https://api.github.com/user", Map.class));
-        System.out.println(model);
         return "admin";
     }
 
