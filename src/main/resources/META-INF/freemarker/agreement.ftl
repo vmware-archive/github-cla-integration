@@ -7,7 +7,14 @@
 
 	<h1>${agreement.name} (${agreement.type.displayString}) Contributor License Agreement</h1>
 
-<hr />
+	<h2>Versions</h2>
+	<ul>
+	<#list versions as version>
+		<li><a href="/admin/agreements/${version.agreementId}/versions/${version.id}">${version.version}</a></li>
+	</#list>
+	</ul>
+
+	<hr />
 
 	<form method="POST" action="/admin/agreements/${agreement.id}/versions">
 		<h3>Create a new Version</h3>

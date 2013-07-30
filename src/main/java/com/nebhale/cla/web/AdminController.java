@@ -61,6 +61,7 @@ final class AdminController extends AbstractController {
     @RequestMapping(method = RequestMethod.GET, value = "/agreements/{agreementId}")
     String readAgreement(@PathVariable Long agreementId, ModelMap model) {
         model.put("agreement", this.agreementRepository.read(agreementId));
+        model.put("versions", this.versionRepository.find(agreementId));
         return "agreement";
     }
 

@@ -5,7 +5,7 @@
 <body>
 	<#include "header.ftl">
 
-	<h2>Agreements</h2>
+	<h2>Contributor License Agreements</h2>
 	<ul>
 	<#list agreements as agreement>
 		<li><a href="/admin/agreements/${agreement.id}">${agreement.name} (${agreement.type.displayString})</a></li>
