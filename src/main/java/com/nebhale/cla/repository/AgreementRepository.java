@@ -19,6 +19,7 @@ package com.nebhale.cla.repository;
 import java.util.SortedSet;
 
 import com.nebhale.cla.Agreement;
+import com.nebhale.cla.Type;
 
 /**
  * Data access method for {@link Agreement}s
@@ -28,7 +29,25 @@ public interface AgreementRepository {
     /**
      * Returns all of the {@link Agreement}s in the repository
      * 
-     * @return all of the {@link Agreement}s in the repository
+     * @return all of the agreements in the repository
      */
     SortedSet<Agreement> find();
+
+    /**
+     * Create a new {@link Agreement}
+     * 
+     * @param type The type of agreement
+     * @param name The name of the agreement
+     * @return The newly created agreement
+     */
+    Agreement create(Type type, String name);
+
+    /**
+     * Read an {@link Agreement} identified by its {@code id}
+     * 
+     * @param id The id of the agreement
+     * @return The agreement
+     * @throws EmptyResultDataAccessException if no agreement with {@code id} exists
+     */
+    Agreement read(Long id);
 }

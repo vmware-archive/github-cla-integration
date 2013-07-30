@@ -18,6 +18,8 @@ package com.nebhale.cla.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -26,6 +28,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,20 +38,40 @@ import com.nebhale.cla.Type;
 @Repository
 final class JdbcAgreementRepository implements AgreementRepository {
 
+    private static final RowMapper<Agreement> ROW_MAPPER = new AgreementRowMapper();
+
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<Agreement> rowMapper;
+    private final SimpleJdbcInsert createStatement;
 
     @Autowired
     JdbcAgreementRepository(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.rowMapper = new AgreementRowMapper();
+        this.createStatement = new SimpleJdbcInsert(dataSource).withTableName("agreements").usingGeneratedKeyColumns("id");
     }
 
     @Override
     @Transactional(readOnly = true)
     public SortedSet<Agreement> find() {
-        return new TreeSet<>(this.jdbcTemplate.query("SELECT id, name, agreementType FROM agreements", this.rowMapper));
+        return new TreeSet<>(this.jdbcTemplate.query("SELECT id, name, agreementType FROM agreements", ROW_MAPPER));
+    }
+
+    @Override
+    @Transactional
+    public Agreement create(Type type, String name) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", name);
+        parameters.put("agreementType", type);
+
+        long id = this.createStatement.executeAndReturnKey(parameters).longValue();
+
+        return read(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Agreement read(Long id) {
+        return this.jdbcTemplate.queryForObject("SELECT id,  name,  agreementType FROM agreements WHERE id = ?", ROW_MAPPER, id);
     }
 
     private static final class AgreementRowMapper implements RowMapper<Agreement> {

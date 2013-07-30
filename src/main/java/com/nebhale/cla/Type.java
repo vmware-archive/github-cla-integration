@@ -16,6 +16,8 @@
 
 package com.nebhale.cla;
 
+import org.springframework.util.StringUtils;
+
 /**
  * An enumeration of the types of CLA that a user might sign
  */
@@ -23,5 +25,9 @@ public enum Type {
 
     CORPORATE, //
     INDIVIDUAL;
+
+    public String getDisplayString() {
+        return StringUtils.capitalize(toString().toLowerCase());
+    }
 
 }

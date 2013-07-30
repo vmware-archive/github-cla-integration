@@ -23,8 +23,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestOperations;
 
+import com.nebhale.cla.Agreement;
+import com.nebhale.cla.Type;
 import com.nebhale.cla.repository.AgreementRepository;
 
 @Controller
@@ -47,6 +50,12 @@ final class AdminController {
         model.putAll(this.restOperations.getForObject("https://api.github.com/user", Map.class));
         model.put("agreements", this.agreementRepository.find());
         return "admin";
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/agreements")
+    String createAgreement(@RequestParam Type type, @RequestParam String name) {
+        Agreement agreement = this.agreementRepository.create(type, name);
+        return "redirect:/admin/agreement/" + agreement.getId();
     }
 
 }
