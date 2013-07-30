@@ -37,12 +37,15 @@ final class AdminController extends AbstractController {
 
     private final AgreementRepository agreementRepository;
 
+    private final RestOperations restOperations;
+
     private final VersionRepository versionRepository;
 
     @Autowired
     AdminController(RestOperations restOperations, AgreementRepository agreementRepository, VersionRepository versionRepository) {
         super(restOperations);
         this.agreementRepository = agreementRepository;
+        this.restOperations = restOperations;
         this.versionRepository = versionRepository;
     }
 
@@ -77,6 +80,7 @@ final class AdminController extends AbstractController {
 
         model.put("version", version);
         model.put("agreement", this.agreementRepository.read(version.getAgreementId()));
+        model.put("content", this.restOperations.postForObject("https://api.github.com/markdown/raw", version.getContent(), String.class));
 
         return "version";
     }
