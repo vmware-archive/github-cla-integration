@@ -72,13 +72,18 @@ public final class AdminControllerTest {
 
     @Test
     public void readAgreement() {
+        SortedSet<Version> versions = new TreeSet<>();
+        versions.add(VERSION);
+
         when(this.agreementRepository.read(Long.MIN_VALUE)).thenReturn(AGREEMENT);
+        when(this.versionRepository.find(Long.MIN_VALUE)).thenReturn(versions);
 
         ModelMap model = new ModelMap();
         String result = this.controller.readAgreement(Long.MIN_VALUE, model);
 
         assertEquals("agreement", result);
         assertEquals(AGREEMENT, model.get("agreement"));
+        assertEquals(versions, model.get("versions"));
     }
 
     @Test
