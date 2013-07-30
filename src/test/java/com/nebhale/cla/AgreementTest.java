@@ -24,7 +24,7 @@ public final class AgreementTest {
 
     @Test
     public void test() {
-        Agreement agreement = new Agreement(Long.MIN_VALUE, "bravo", Type.INDIVIDUAL);
+        Agreement agreement = new Agreement(Long.MIN_VALUE, Type.INDIVIDUAL, "bravo");
 
         assertEquals((Long) Long.MIN_VALUE, agreement.getId());
         assertEquals("bravo", agreement.getName());
