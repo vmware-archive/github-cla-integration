@@ -33,21 +33,21 @@ CREATE TABLE versions(
 	
 	FOREIGN KEY(agreementId) REFERENCES agreements(id) ON DELETE CASCADE
 );
-
-CREATE TABLE repositories(
-	id SERIAL PRIMARY KEY,
-	versionId INTEGER NOT NULL,
-	organization VARCHAR(64) NOT NULL,
-	repository VARCHAR(64) NOT NULL,
-	token VARCHAR(64) NOT NULL,
-	
-	FOREIGN KEY(versionId) REFERENCES versions(id) ON DELETE CASCADE
-);
-
-CREATE TABLE email_addresses(
-	id SERIAL PRIMARY KEY,
-	repositoryId INTEGER NOT NULL,
-	address VARCHAR(128) NOT NULL,
-	
-	FOREIGN KEY(repositoryId) REFERENCES repositories(id) ON DELETE CASCADE
-);
+--
+--CREATE TABLE repositories(
+--	id SERIAL PRIMARY KEY,
+--	versionId INTEGER NOT NULL,
+--	organization VARCHAR(64) NOT NULL,
+--	repository VARCHAR(64) NOT NULL,
+--	token VARCHAR(64) NOT NULL,
+--	
+--	FOREIGN KEY(versionId) REFERENCES versions(id) ON DELETE CASCADE
+--);
+--
+--CREATE TABLE email_addresses(
+--	id SERIAL PRIMARY KEY,
+--	repositoryId INTEGER NOT NULL,
+--	address VARCHAR(128) NOT NULL,
+--	
+--	FOREIGN KEY(repositoryId) REFERENCES repositories(id) ON DELETE CASCADE
+--);
