@@ -17,27 +17,40 @@
 package com.nebhale.cla;
 
 /**
- * A class representing a specific Contributor License Agreement
+ * A class representing the version of a Contributor License Agreement
  */
-public final class Agreement implements Comparable<Agreement> {
+public final class Version implements Comparable<Version> {
 
     private final Long id;
 
-    private final String name;
+    private final Long agreementId;
 
-    private final Type type;
+    private final String version;
+
+    private final String content;
 
     /**
      * Create a new instance
      * 
-     * @param id The synthetic id of the agreement
-     * @param type The type of the agreement
-     * @param name The name of the agreement
+     * @param id The synthetic id of the version
+     * @param agreementId The synthetic id of the agreement
+     * @param version The version of the agreement
+     * @param content The content of the version
      */
-    public Agreement(Long id, Type type, String name) {
+    public Version(Long id, Long agreementId, String version, String content) {
         this.id = id;
-        this.name = name;
-        this.type = type;
+        this.agreementId = agreementId;
+        this.version = version;
+        this.content = content;
+    }
+
+    /**
+     * Returns the synthetic id of the version
+     * 
+     * @return the synthetic id of the version
+     */
+    public Long getId() {
+        return this.id;
     }
 
     /**
@@ -45,36 +58,31 @@ public final class Agreement implements Comparable<Agreement> {
      * 
      * @return the synthetic id of the agreement
      */
-    public Long getId() {
-        return this.id;
+    public Long getAgreementId() {
+        return this.agreementId;
     }
 
     /**
-     * Returns the name of the agreement
+     * Returns the version of the agreement
      * 
-     * @return the name of the agreement
+     * @return the version of the agreement
      */
-    public String getName() {
-        return this.name;
+    public String getVersion() {
+        return this.version;
     }
 
     /**
-     * Returns the type of the agreement
+     * Returns the content of the version
      * 
-     * @return the type of the agreement
+     * @return the content of the version
      */
-    public Type getType() {
-        return this.type;
+    public String getContent() {
+        return this.content;
     }
 
     @Override
-    public int compareTo(Agreement o) {
-        int compare = this.name.compareTo(o.name);
-        if (compare == 0) {
-            compare = this.type.compareTo(o.type);
-        }
-
-        return compare;
+    public int compareTo(Version o) {
+        return this.version.compareTo(o.version);
     }
 
     @Override
@@ -96,7 +104,7 @@ public final class Agreement implements Comparable<Agreement> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        Agreement other = (Agreement) obj;
+        Version other = (Version) obj;
         if (!this.id.equals(other.id)) {
             return false;
         }

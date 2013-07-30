@@ -20,14 +20,16 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public final class AgreementTest {
+public final class VersionTest {
 
     @Test
     public void test() {
-        Agreement agreement = new Agreement(Long.MIN_VALUE, Type.INDIVIDUAL, "test-name");
+        Version version = new Version(Long.MIN_VALUE, Long.MAX_VALUE, "test-version", "test-content");
 
-        assertEquals((Long) Long.MIN_VALUE, agreement.getId());
-        assertEquals("test-name", agreement.getName());
-        assertEquals(Type.INDIVIDUAL, agreement.getType());
+        assertEquals((Long) Long.MIN_VALUE, version.getId());
+        assertEquals((Long) Long.MAX_VALUE, version.getAgreementId());
+        assertEquals("test-version", version.getVersion());
+        assertEquals("test-content", version.getContent());
     }
+
 }
