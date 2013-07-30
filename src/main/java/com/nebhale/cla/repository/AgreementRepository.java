@@ -22,7 +22,7 @@ import com.nebhale.cla.Agreement;
 import com.nebhale.cla.Type;
 
 /**
- * Data access method for {@link Agreement}s
+ * Data access methods for {@link Agreement}s
  */
 public interface AgreementRepository {
 

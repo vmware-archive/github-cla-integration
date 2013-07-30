@@ -20,8 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -31,45 +29,64 @@ import org.springframework.web.client.RestOperations;
 
 import com.nebhale.cla.Agreement;
 import com.nebhale.cla.Type;
+import com.nebhale.cla.Version;
 import com.nebhale.cla.repository.AgreementRepository;
+import com.nebhale.cla.repository.VersionRepository;
 
 public final class AdminControllerTest {
+
+    private static final Agreement AGREEMENT = new Agreement(Long.MIN_VALUE, Type.INDIVIDUAL, "test-name");
+
+    private static final Version VERSION = new Version(Long.MIN_VALUE + 1, Long.MIN_VALUE, "test-version", "test-content");
 
     private final RestOperations restOperations = mock(RestOperations.class);
 
     private final AgreementRepository agreementRepository = mock(AgreementRepository.class);
 
-    private final AdminController controller = new AdminController(this.agreementRepository, this.restOperations);
+    private final VersionRepository versionRepository = mock(VersionRepository.class);
+
+    private final AdminController controller = new AdminController(this.restOperations, this.agreementRepository, this.versionRepository);
 
     @Test
     public void index() {
-        Map<String, Object> userInfo = new HashMap<>();
-        userInfo.put("login", "test-login");
-
         SortedSet<Agreement> agreements = new TreeSet<>();
-        agreements.add(new Agreement(Long.MIN_VALUE, Type.INDIVIDUAL, "test-name"));
+        agreements.add(AGREEMENT);
 
-        ModelMap expected = new ModelMap();
-        expected.putAll(userInfo);
-        expected.put("agreements", agreements);
-
-        when(this.restOperations.getForObject("https://api.github.com/user", Map.class)).thenReturn(userInfo);
         when(this.agreementRepository.find()).thenReturn(agreements);
 
         ModelMap model = new ModelMap();
         String result = this.controller.index(model);
 
         assertEquals("admin", result);
-        assertEquals(expected, model);
+        assertEquals(new ModelMap("agreements", agreements), model);
     }
 
     @Test
-    public void create() {
-        when(this.agreementRepository.create(Type.INDIVIDUAL, "test-name")).thenReturn(new Agreement(Long.MIN_VALUE, Type.INDIVIDUAL, "test-name"));
+    public void createAgreement() {
+        when(this.agreementRepository.create(Type.INDIVIDUAL, "test-name")).thenReturn(AGREEMENT);
 
         String result = this.controller.createAgreement(Type.INDIVIDUAL, "test-name");
 
-        assertEquals("redirect:/admin/agreement/" + Long.MIN_VALUE, result);
+        assertEquals("redirect:/admin/agreements/" + Long.MIN_VALUE, result);
     }
 
+    @Test
+    public void readAgreement() {
+        when(this.agreementRepository.read(Long.MIN_VALUE)).thenReturn(AGREEMENT);
+
+        ModelMap model = new ModelMap();
+        String result = this.controller.readAgreement(Long.MIN_VALUE, model);
+
+        assertEquals("agreement", result);
+        assertEquals(AGREEMENT, model.get("agreement"));
+    }
+
+    @Test
+    public void createVersion() {
+        when(this.versionRepository.create(Long.MIN_VALUE, "test-version", "test-content")).thenReturn(VERSION);
+
+        String result = this.controller.createVersion(Long.MIN_VALUE, "test-version", "test-content");
+
+        assertEquals("redirect:/admin/agreements/" + Long.MIN_VALUE + "/versions/" + (Long.MIN_VALUE + 1), result);
+    }
 }

@@ -32,36 +32,36 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.nebhale.cla.Agreement;
-import com.nebhale.cla.Type;
+import com.nebhale.cla.Version;
 
 @Repository
-final class JdbcAgreementRepository implements AgreementRepository {
+final class JdbcVersionRepository implements VersionRepository {
 
-    private static final RowMapper<Agreement> ROW_MAPPER = new AgreementRowMapper();
+    private static final RowMapper<Version> ROW_MAPPER = new VersionRowMapper();
 
     private final JdbcTemplate jdbcTemplate;
 
     private final SimpleJdbcInsert createStatement;
 
     @Autowired
-    JdbcAgreementRepository(DataSource dataSource) {
+    JdbcVersionRepository(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.createStatement = new SimpleJdbcInsert(dataSource).withTableName("agreements").usingGeneratedKeyColumns("id");
+        this.createStatement = new SimpleJdbcInsert(dataSource).withTableName("versions").usingGeneratedKeyColumns("id");
     }
 
     @Override
     @Transactional(readOnly = true)
-    public SortedSet<Agreement> find() {
-        return new TreeSet<>(this.jdbcTemplate.query("SELECT * FROM agreements", ROW_MAPPER));
+    public SortedSet<Version> find(Long agreementId) {
+        return new TreeSet<>(this.jdbcTemplate.query("SELECT * FROM versions WHERE agreementId = ?", ROW_MAPPER, agreementId));
     }
 
     @Override
     @Transactional
-    public Agreement create(Type type, String name) {
+    public Version create(Long agreementId, String version, String content) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", name);
-        parameters.put("agreementType", type);
+        parameters.put("agreementId", agreementId);
+        parameters.put("version", version);
+        parameters.put("content", content);
 
         long id = this.createStatement.executeAndReturnKey(parameters).longValue();
 
@@ -70,15 +70,15 @@ final class JdbcAgreementRepository implements AgreementRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Agreement read(Long id) {
-        return this.jdbcTemplate.queryForObject("SELECT * FROM agreements WHERE id = ?", ROW_MAPPER, id);
+    public Version read(Long id) {
+        return this.jdbcTemplate.queryForObject("SELECT * FROM versions WHERE id = ?", ROW_MAPPER, id);
     }
 
-    private static final class AgreementRowMapper implements RowMapper<Agreement> {
+    private static final class VersionRowMapper implements RowMapper<Version> {
 
         @Override
-        public Agreement mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Agreement(rs.getLong(1), Type.valueOf(rs.getString(3)), rs.getString(2));
+        public Version mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new Version(rs.getLong(1), rs.getLong(2), rs.getString(3), rs.getString(4));
         }
 
     }

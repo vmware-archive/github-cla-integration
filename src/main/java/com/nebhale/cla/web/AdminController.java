@@ -27,7 +27,9 @@ import org.springframework.web.client.RestOperations;
 
 import com.nebhale.cla.Agreement;
 import com.nebhale.cla.Type;
+import com.nebhale.cla.Version;
 import com.nebhale.cla.repository.AgreementRepository;
+import com.nebhale.cla.repository.VersionRepository;
 
 @Controller
 @RequestMapping("/admin")
@@ -35,10 +37,13 @@ final class AdminController extends AbstractController {
 
     private final AgreementRepository agreementRepository;
 
+    private final VersionRepository versionRepository;
+
     @Autowired
-    AdminController(AgreementRepository agreementRepository, RestOperations restOperations) {
+    AdminController(RestOperations restOperations, AgreementRepository agreementRepository, VersionRepository versionRepository) {
         super(restOperations);
         this.agreementRepository = agreementRepository;
+        this.versionRepository = versionRepository;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "")
@@ -50,13 +55,19 @@ final class AdminController extends AbstractController {
     @RequestMapping(method = RequestMethod.POST, value = "/agreements")
     String createAgreement(@RequestParam Type type, @RequestParam String name) {
         Agreement agreement = this.agreementRepository.create(type, name);
-        return "redirect:/admin/agreements/" + agreement.getId();
+        return String.format("redirect:/admin/agreements/%d", agreement.getId());
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/agreements/{agreementId}")
     String readAgreement(@PathVariable Long agreementId, ModelMap model) {
         model.put("agreement", this.agreementRepository.read(agreementId));
         return "agreement";
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/agreements/{agreementId}/versions")
+    String createVersion(@PathVariable Long agreementId, @RequestParam String version, @RequestParam String content) {
+        Version richVersion = this.versionRepository.create(agreementId, version, content);
+        return String.format("redirect:/admin/agreements/%d/versions/%d", agreementId, richVersion.getId());
     }
 
 }
