@@ -69,7 +69,12 @@ public final class Agreement implements Comparable<Agreement> {
 
     @Override
     public int compareTo(Agreement o) {
-        return this.name.compareTo(o.name);
+        int compare = this.name.compareTo(o.name);
+        if (compare == 0) {
+            compare = this.type.compareTo(o.type);
+        }
+
+        return compare;
     }
 
     @Override
