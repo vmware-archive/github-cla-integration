@@ -99,6 +99,7 @@ public final class AdminControllerTest {
     public void readVersion() {
         when(this.versionRepository.read(Long.MIN_VALUE + 1)).thenReturn(VERSION);
         when(this.agreementRepository.read(Long.MIN_VALUE)).thenReturn(AGREEMENT);
+        when(this.restOperations.postForObject("https://api.github.com/markdown/raw", VERSION.getContent(), String.class)).thenReturn("test-html");
 
         ModelMap model = new ModelMap();
         String result = this.controller.readVersion(Long.MIN_VALUE + 1, model);
@@ -106,5 +107,6 @@ public final class AdminControllerTest {
         assertEquals("version", result);
         assertEquals(VERSION, model.get("version"));
         assertEquals(AGREEMENT, model.get("agreement"));
+        assertEquals("test-html", model.get("content"));
     }
 }
