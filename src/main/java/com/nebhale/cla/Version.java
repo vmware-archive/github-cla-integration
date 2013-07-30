@@ -111,4 +111,9 @@ public final class Version implements Comparable<Version> {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "Version [id=" + this.id + ", agreementId=" + this.agreementId + ", version=" + this.version + ", content=" + this.content + "]";
+    }
+
 }

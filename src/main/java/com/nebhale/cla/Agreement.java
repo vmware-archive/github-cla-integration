@@ -103,4 +103,9 @@ public final class Agreement implements Comparable<Agreement> {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "Agreement [id=" + this.id + ", type=" + this.type + ", name=" + this.name + "]";
+    }
+
 }
