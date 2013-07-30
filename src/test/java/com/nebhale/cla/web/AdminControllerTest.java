@@ -94,4 +94,17 @@ public final class AdminControllerTest {
 
         assertEquals("redirect:/admin/agreements/" + Long.MIN_VALUE + "/versions/" + (Long.MIN_VALUE + 1), result);
     }
+
+    @Test
+    public void readVersion() {
+        when(this.versionRepository.read(Long.MIN_VALUE + 1)).thenReturn(VERSION);
+        when(this.agreementRepository.read(Long.MIN_VALUE)).thenReturn(AGREEMENT);
+
+        ModelMap model = new ModelMap();
+        String result = this.controller.readVersion(Long.MIN_VALUE + 1, model);
+
+        assertEquals("version", result);
+        assertEquals(VERSION, model.get("version"));
+        assertEquals(AGREEMENT, model.get("agreement"));
+    }
 }

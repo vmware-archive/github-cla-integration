@@ -71,4 +71,14 @@ final class AdminController extends AbstractController {
         return String.format("redirect:/admin/agreements/%d/versions/%d", agreementId, richVersion.getId());
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/agreements/{agreementId}/versions/{versionId}")
+    String readVersion(@PathVariable Long versionId, ModelMap model) {
+        Version version = this.versionRepository.read(versionId);
+
+        model.put("version", version);
+        model.put("agreement", this.agreementRepository.read(version.getAgreementId()));
+
+        return "version";
+    }
+
 }
