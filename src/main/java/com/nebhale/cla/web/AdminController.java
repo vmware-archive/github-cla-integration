@@ -16,11 +16,10 @@
 
 package com.nebhale.cla.web;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,22 +31,18 @@ import com.nebhale.cla.repository.AgreementRepository;
 
 @Controller
 @RequestMapping("/admin")
-final class AdminController {
+final class AdminController extends AbstractController {
 
     private final AgreementRepository agreementRepository;
 
-    private final RestOperations restOperations;
-
     @Autowired
     AdminController(AgreementRepository agreementRepository, RestOperations restOperations) {
+        super(restOperations);
         this.agreementRepository = agreementRepository;
-        this.restOperations = restOperations;
     }
 
-    @SuppressWarnings("unchecked")
     @RequestMapping(method = RequestMethod.GET, value = "")
     String index(ModelMap model) {
-        model.putAll(this.restOperations.getForObject("https://api.github.com/user", Map.class));
         model.put("agreements", this.agreementRepository.find());
         return "admin";
     }
@@ -55,7 +50,13 @@ final class AdminController {
     @RequestMapping(method = RequestMethod.POST, value = "/agreements")
     String createAgreement(@RequestParam Type type, @RequestParam String name) {
         Agreement agreement = this.agreementRepository.create(type, name);
-        return "redirect:/admin/agreement/" + agreement.getId();
+        return "redirect:/admin/agreements/" + agreement.getId();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/agreements/{agreementId}")
+    String readAgreement(@PathVariable Long agreementId, ModelMap model) {
+        model.put("agreement", this.agreementRepository.read(agreementId));
+        return "agreement";
     }
 
 }

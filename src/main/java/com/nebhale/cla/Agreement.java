@@ -31,10 +31,10 @@ public final class Agreement implements Comparable<Agreement> {
      * Create a new instance
      * 
      * @param id The synthetic id of the agreement
-     * @param name The name of the agreement
      * @param type The type of the agreement
+     * @param name The name of the agreement
      */
-    public Agreement(Long id, String name, Type type) {
+    public Agreement(Long id, Type type, String name) {
         this.id = id;
         this.name = name;
         this.type = type;

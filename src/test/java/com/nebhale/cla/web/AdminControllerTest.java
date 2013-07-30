@@ -47,7 +47,7 @@ public final class AdminControllerTest {
         userInfo.put("login", "test-login");
 
         SortedSet<Agreement> agreements = new TreeSet<>();
-        agreements.add(new Agreement(Long.MIN_VALUE, "test-name", Type.INDIVIDUAL));
+        agreements.add(new Agreement(Long.MIN_VALUE, Type.INDIVIDUAL, "test-name"));
 
         ModelMap expected = new ModelMap();
         expected.putAll(userInfo);
@@ -61,6 +61,15 @@ public final class AdminControllerTest {
 
         assertEquals("admin", result);
         assertEquals(expected, model);
+    }
+
+    @Test
+    public void create() {
+        when(this.agreementRepository.create(Type.INDIVIDUAL, "test-name")).thenReturn(new Agreement(Long.MIN_VALUE, Type.INDIVIDUAL, "test-name"));
+
+        String result = this.controller.createAgreement(Type.INDIVIDUAL, "test-name");
+
+        assertEquals("redirect:/admin/agreement/" + Long.MIN_VALUE, result);
     }
 
 }
