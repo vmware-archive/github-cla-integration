@@ -14,19 +14,7 @@
  * limitations under the License.
  */
 
-package com.nebhale.cla;
-
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
-public final class AgreementTest {
-
-    @Test
-    public void test() {
-        Agreement agreement = new Agreement(Long.MIN_VALUE, "test-name");
-
-        assertEquals((Long) Long.MIN_VALUE, agreement.getId());
-        assertEquals("test-name", agreement.getName());
-    }
-}
+CREATE TABLE agreements(
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(128) NOT NULL
+);

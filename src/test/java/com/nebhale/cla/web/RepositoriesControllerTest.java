@@ -20,37 +20,33 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.SortedSet;
 
 import org.junit.Test;
+import org.springframework.ui.ModelMap;
 
+import com.nebhale.cla.github.GitHubRepositories;
 import com.nebhale.cla.github.GitHubRestOperations;
+import com.nebhale.cla.util.Sets;
 
-public final class AbstractControllerTest {
+public final class RepositoriesControllerTest {
 
     private final GitHubRestOperations gitHubRestOperations = mock(GitHubRestOperations.class);
 
-    private final StubController controller = new StubController(this.gitHubRestOperations);
+    private final GitHubRepositories gitHubRepositories = mock(GitHubRepositories.class);
+
+    private final RepositoriesController controller = new RepositoriesController(this.gitHubRestOperations, this.gitHubRepositories);
 
     @Test
-    public void userInfo() {
-        Map<String, Object> userInfo = new HashMap<>();
-        userInfo.put("login", "test-login");
+    public void listRepositories() {
+        SortedSet<String> adminRepositories = Sets.asSortedSet("test-repo1", "test-repo2");
+        when(this.gitHubRepositories.getAdminRepositories()).thenReturn(adminRepositories);
 
-        when(this.gitHubRestOperations.getForObject("/user", Map.class)).thenReturn(userInfo);
+        ModelMap model = new ModelMap();
+        String result = this.controller.listRepositories(model);
 
-        Map<String, Object> result = this.controller.userInfo();
-
-        assertEquals(userInfo, result);
-    }
-
-    private static final class StubController extends AbstractController {
-
-        private StubController(GitHubRestOperations gitHubRestOperations) {
-            super(gitHubRestOperations);
-        }
-
+        assertEquals("repositories", result);
+        assertEquals(adminRepositories, model.get("candidateRepositories"));
     }
 
 }

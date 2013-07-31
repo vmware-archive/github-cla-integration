@@ -10,8 +10,8 @@ In order to facilitate self-hosting, the application is designed to work in a Pa
 ### GitHub Application Registration
 Since this application is self-hosted, each deployment must have it's own GitHub application credentials.  To register a new application go to <https://github.com/settings/applications/new> and fill in the required information.  You should use the same URL for both the 'Homepage URL' and 'Authorization Callback URL'.  Be sure to note the values for **Client ID** and **Client Secret** as they will be used later.
 
-### MySQL Database
-The application stores its internal data model in a [MySQL][] database.  This database needs to be provisioned before the application is started, but the application manages the creation and modification of the schemas itself so no other setup is needed.  Since the application is designed to work in a PaaS environment, it is highly recommended that you use a database-as-a-service available from your PaaS provider.
+### PostgreSQL Database
+The application stores its internal data model in a [PostgreSQL][] database.  This database needs to be provisioned before the application is started, but the application manages the creation and modification of the schemas itself so no other setup is needed.  Since the application is designed to work in a PaaS environment, it is highly recommended that you use a database-as-a-service available from your PaaS provider.
 
 ### Java, Maven, Servlet Container
 The application is written and Java and packaged as a simple WAR file.  This enables it to run in any standard Java Servlet container with both Cloud Foundry and Heroku support.  Building the application (required for deployment) requires [Maven][].
@@ -22,7 +22,7 @@ Since the application is designed to work in a PaaS environment, all configurati
 | Key | Description
 | --- | -----------
 | `ADMIN_EMAIL_DOMAINS` | A comma delimited list of domains.  These domains are compared against the list of email addresses that a potential administrator has in their profile and if there is no match, the user is not allowed to administer the instance.  The domains should not have an `@` symbol before them (e.g `gopivotal.com,pivotallabs.com`).
-| `DATABASE_URL` | The URL used to connect to a MySQL database.  This URL should include the username and password used as credentials for the database connection and be in the form of `mysql://<username>[:<password>]@<host>[:<port>]/<database>[?<options>]`.
+| `DATABASE_URL` | The URL used to connect to a PostgreSQL database.  This URL should include the username and password used as credentials for the database connection and be in the form of `postgres://<username>[:<password>]@<host>[:<port>]/<database>[?<options>]`.
 | `GITHUB_CLIENT_ID` | The Client ID assigned to your registered application.
 | `GITHUB_CLIENT_SECRET` | The Client Secret assigned to your registered application.
 
@@ -41,7 +41,7 @@ cf set-env gopivotal-cla ADMIN_EMAIL_DOMAINS <value>
 cf set-env gopivotal-cla DATABASE_URL <value>
 cf set-env gopivotal-cla GITHUB_CLIENT_ID <value>
 cf set-env gopivotal-cla GITHUB_CLIENT_SECRET <value>
-cf push
+cf start
 ```
 
 ### Heroku
@@ -51,9 +51,9 @@ To deploy run the following commands:
 
 ```bash
 heroku create gopivotal-cla
-heroku addons:add cleardb:ignite
-heroku config:set DATABASE_URL=$(heroku config:get CLEARDB_DATABASE_URL)
+heroku addons:add heroku-postgresql:dev
 heroku config:set ADMIN_EMAIL_DOMAINS=<value>
+heroku config:set DATABASE_URL=$(heroku config:get HEROKU_POSTGRESQL_GOLD_URL)
 heroku config:set GITHUB_CLIENT_ID=<value>
 heroku config:set GITHUB_CLIENT_SECRET=<value>
 git push heroku master
@@ -73,5 +73,5 @@ The project is released under version 2.0 of the [Apache License][].
 [heroku-account]: https://id.heroku.com/signup
 [manifest]: manifest.yml
 [Maven]: http://maven.apache.org
-[MySQL]: http://www.mysql.org
 [new-application]: https://github.com/settings/applications/new
+[PostgreSQL]: http://www.postgresql.org

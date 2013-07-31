@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.nebhale.cla;
+package com.nebhale.cla.github;
 
-import static org.junit.Assert.assertEquals;
+import java.util.SortedSet;
 
-import org.junit.Test;
+/**
+ * Methods for interacting with the collection of GitHub repositories visible to a user
+ */
+public interface GitHubRepositories {
 
-public final class AgreementTest {
-
-    @Test
-    public void test() {
-        Agreement agreement = new Agreement(Long.MIN_VALUE, "test-name");
-
-        assertEquals((Long) Long.MIN_VALUE, agreement.getId());
-        assertEquals("test-name", agreement.getName());
-    }
+    /**
+     * Returns the collection of {@code full_name}s for all repositories that this user can administer
+     * 
+     * @return the collection of {@code full_name}s for all repositories that this user can administer
+     */
+    SortedSet<String> getAdminRepositories();
 }

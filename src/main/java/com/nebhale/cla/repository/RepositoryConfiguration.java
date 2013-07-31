@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 
 import javax.sql.DataSource;
 
+import org.postgresql.Driver;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,7 +32,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.googlecode.flyway.core.Flyway;
 import com.jolbox.bonecp.BoneCPDataSource;
-import com.mysql.jdbc.Driver;
 
 /**
  * Configuration of repository components
@@ -55,8 +55,7 @@ public class RepositoryConfiguration {
         dataSource.setUsername(userInfoTokens.length > 0 ? userInfoTokens[0] : "");
         dataSource.setPassword(userInfoTokens.length > 1 ? userInfoTokens[1] : "");
 
-        dataSource.setPartitionCount(1);
-        dataSource.setMaxConnectionsPerPartition(20);
+        dataSource.setMaxConnectionsPerPartition(2);
 
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);

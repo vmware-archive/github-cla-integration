@@ -17,7 +17,7 @@
 package com.nebhale.cla;
 
 /**
- * A class representing the version of a Contributor License Agreement
+ * A class representing a specific version of a Contributor License Agreement
  */
 public final class Version implements Comparable<Version> {
 
@@ -25,23 +25,27 @@ public final class Version implements Comparable<Version> {
 
     private final Long agreementId;
 
-    private final String version;
+    private final String name;
 
-    private final String content;
+    private final String individualAgreementContent;
+
+    private final String corporateAgreementContent;
 
     /**
      * Create a new instance
      * 
      * @param id The synthetic id of the version
      * @param agreementId The synthetic id of the agreement
-     * @param version The version of the agreement
-     * @param content The content of the version
+     * @param name The name of the version
+     * @param individualAgreementContent The content of the individual agreement
+     * @param corporateAgreementContent The content of the corporate agreement
      */
-    public Version(Long id, Long agreementId, String version, String content) {
+    public Version(Long id, Long agreementId, String name, String individualAgreementContent, String corporateAgreementContent) {
         this.id = id;
         this.agreementId = agreementId;
-        this.version = version;
-        this.content = content;
+        this.name = name;
+        this.individualAgreementContent = individualAgreementContent;
+        this.corporateAgreementContent = corporateAgreementContent;
     }
 
     /**
@@ -63,26 +67,35 @@ public final class Version implements Comparable<Version> {
     }
 
     /**
-     * Returns the version of the agreement
+     * Returns the name of the version
      * 
-     * @return the version of the agreement
+     * @return the name of the version
      */
-    public String getVersion() {
-        return this.version;
+    public String getName() {
+        return this.name;
     }
 
     /**
-     * Returns the content of the version
+     * Returns the content of the individual agreement
      * 
-     * @return the content of the version
+     * @return the content of the individual agreement
      */
-    public String getContent() {
-        return this.content;
+    public String getIndividualAgreementContent() {
+        return this.individualAgreementContent;
+    }
+
+    /**
+     * Returns the content of the corporate agreement
+     * 
+     * @return the content of the corporate agreement
+     */
+    public String getCorporateAgreementContent() {
+        return this.corporateAgreementContent;
     }
 
     @Override
     public int compareTo(Version o) {
-        return this.version.compareTo(o.version);
+        return this.name.compareTo(o.name);
     }
 
     @Override
@@ -113,7 +126,7 @@ public final class Version implements Comparable<Version> {
 
     @Override
     public String toString() {
-        return "Version [id=" + this.id + ", agreementId=" + this.agreementId + ", version=" + this.version + ", content=" + this.content + "]";
+        return "Version [id=" + this.id + ", agreementId=" + this.agreementId + ", name=" + this.name + "]";
     }
 
 }

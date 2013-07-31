@@ -22,6 +22,8 @@ limitations under the License.
 	</appender>
 	
 	<logger name="com.nebhale.cla.web.security.RateLimitingClientHttpRequestInterceptor" level="DEBUG"/>  <!-- TODO: Remove this logging level -->
+	
+	<logger name="com.googlecode.flyway" level="INFO" />
 
 	<root level="${LOGGING_LEVEL:-WARN}">
 		<appender-ref ref="STDOUT" />

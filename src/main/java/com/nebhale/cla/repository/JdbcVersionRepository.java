@@ -30,7 +30,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.nebhale.cla.Version;
 
@@ -50,18 +49,17 @@ final class JdbcVersionRepository implements VersionRepository {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public SortedSet<Version> find(Long agreementId) {
-        return new TreeSet<>(this.jdbcTemplate.query("SELECT * FROM versions WHERE agreementId = ?", ROW_MAPPER, agreementId));
+        return new TreeSet<>(this.jdbcTemplate.query("SELECT * FROM versions where agreementId = ?", ROW_MAPPER, agreementId));
     }
 
     @Override
-    @Transactional
-    public Version create(Long agreementId, String version, String content) {
+    public Version create(Long agreementId, String name, String individualAgreementContent, String corporateAgreementContent) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("agreementId", agreementId);
-        parameters.put("version", version);
-        parameters.put("content", content);
+        parameters.put("name", name);
+        parameters.put("individualContent", individualAgreementContent);
+        parameters.put("corporateContent", corporateAgreementContent);
 
         long id = this.createStatement.executeAndReturnKey(parameters).longValue();
 
@@ -69,7 +67,6 @@ final class JdbcVersionRepository implements VersionRepository {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Version read(Long id) {
         return this.jdbcTemplate.queryForObject("SELECT * FROM versions WHERE id = ?", ROW_MAPPER, id);
     }
@@ -78,7 +75,7 @@ final class JdbcVersionRepository implements VersionRepository {
 
         @Override
         public Version mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Version(rs.getLong(1), rs.getLong(2), rs.getString(3), rs.getString(4));
+            return new Version(rs.getLong(1), rs.getLong(2), rs.getString(3), rs.getString(4), rs.getString(5));
         }
 
     }

@@ -25,19 +25,15 @@ public final class Agreement implements Comparable<Agreement> {
 
     private final String name;
 
-    private final Type type;
-
     /**
      * Create a new instance
      * 
      * @param id The synthetic id of the agreement
      * @param type The type of the agreement
-     * @param name The name of the agreement
      */
-    public Agreement(Long id, Type type, String name) {
+    public Agreement(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.type = type;
     }
 
     /**
@@ -58,23 +54,9 @@ public final class Agreement implements Comparable<Agreement> {
         return this.name;
     }
 
-    /**
-     * Returns the type of the agreement
-     * 
-     * @return the type of the agreement
-     */
-    public Type getType() {
-        return this.type;
-    }
-
     @Override
     public int compareTo(Agreement o) {
-        int compare = this.name.compareTo(o.name);
-        if (compare == 0) {
-            compare = this.type.compareTo(o.type);
-        }
-
-        return compare;
+        return this.name.compareTo(o.name);
     }
 
     @Override
@@ -105,7 +87,7 @@ public final class Agreement implements Comparable<Agreement> {
 
     @Override
     public String toString() {
-        return "Agreement [id=" + this.id + ", type=" + this.type + ", name=" + this.name + "]";
+        return "Agreement [id=" + this.id + ", name=" + this.name + "]";
     }
 
 }

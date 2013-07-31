@@ -40,8 +40,8 @@ limitations under the License.
 		<junit.version>4.11</junit.version>
 		<logback.version>1.0.13</logback.version>
 		<mockito.version>1.9.5</mockito.version>
-		<mysql.version>5.1.25</mysql.version>
 		<persistence.version>1.0.2</persistence.version>
+		<postgresql.version>9.2-1003-jdbc4</postgresql.version>
 		<servlet.version>3.0.1</servlet.version>
 		<slf4j.version>1.7.2</slf4j.version>
 		<spring.version>3.2.3.RELEASE</spring.version>
@@ -103,11 +103,6 @@ limitations under the License.
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>${mysql.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
 			<version>${aspectj.version}</version>
@@ -124,6 +119,11 @@ limitations under the License.
 			<artifactId>mockito-core</artifactId>
 			<version>${mockito.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${postgresql.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

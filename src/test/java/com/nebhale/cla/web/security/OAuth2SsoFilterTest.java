@@ -23,47 +23,41 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
 
 import org.junit.Test;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.http.AccessTokenRequiredException;
-import org.springframework.web.client.RestOperations;
 
-import com.nebhale.cla.GitHubUtils;
+import com.nebhale.cla.github.GitHubRestOperations;
+import com.nebhale.cla.util.Sets;
 
 public final class OAuth2SsoFilterTest {
 
-    private final RestOperations restOperations = mock(RestOperations.class);
+    private final GitHubRestOperations gitHubRestOperations = mock(GitHubRestOperations.class);
 
-    private final OAuth2SsoFilter oAuth2SsoFilter = new OAuth2SsoFilter(new String[] { "test.domain" }, "test-url", this.restOperations);
+    private final OAuth2SsoFilter oAuth2SsoFilter = new OAuth2SsoFilter(new String[] { "test.domain" }, "test-url", this.gitHubRestOperations);
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void attemptAuthentication() throws IOException, ServletException {
         Map<String, Object> email = new HashMap<>();
         email.put("email", "email@test.domain");
         email.put("verified", true);
 
-        Set<Map<String, Object>> emailInfo = new HashSet<>();
+        Set<Map<String, Object>> emailInfo = Sets.asSet();
         emailInfo.add(email);
 
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("login", "test-login");
 
-        when(this.restOperations.exchange("https://api.github.com/user/emails", HttpMethod.GET, GitHubUtils.v3HttpEntity(), Set.class)).thenReturn(
-            new ResponseEntity<Set>(emailInfo, HttpStatus.OK));
-        when(this.restOperations.getForObject("https://api.github.com/user", Map.class)).thenReturn(userInfo);
+        when(this.gitHubRestOperations.getForObjectV3("/user/emails", Set.class)).thenReturn(emailInfo);
+        when(this.gitHubRestOperations.getForObject("/user", Map.class)).thenReturn(userInfo);
 
         Authentication authentication = this.oAuth2SsoFilter.attemptAuthentication(new MockHttpServletRequest(), new MockHttpServletResponse());
 
@@ -73,34 +67,30 @@ public final class OAuth2SsoFilterTest {
         assertEquals(expectedAdminUser.getAuthorities().iterator().next(), authentication.getAuthorities().iterator().next());
     }
 
-    @SuppressWarnings("rawtypes")
     @Test(expected = BadCredentialsException.class)
     public void attemptAuthenticationNonVerifiedEmail() throws IOException, ServletException {
         Map<String, Object> email = new HashMap<>();
         email.put("email", "email@test.domain");
         email.put("verified", false);
 
-        Set<Map<String, Object>> emailInfo = new HashSet<>();
+        Set<Map<String, Object>> emailInfo = Sets.asSet();
         emailInfo.add(email);
 
-        when(this.restOperations.exchange("https://api.github.com/user/emails", HttpMethod.GET, GitHubUtils.v3HttpEntity(), Set.class)).thenReturn(
-            new ResponseEntity<Set>(emailInfo, HttpStatus.OK));
+        when(this.gitHubRestOperations.getForObjectV3("/user/emails", Set.class)).thenReturn(emailInfo);
 
         this.oAuth2SsoFilter.attemptAuthentication(new MockHttpServletRequest(), new MockHttpServletResponse());
     }
 
-    @SuppressWarnings("rawtypes")
     @Test(expected = BadCredentialsException.class)
     public void attemptAuthenticationNonValidAdminDomain() throws IOException, ServletException {
         Map<String, Object> email = new HashMap<>();
         email.put("email", "email@other.domain");
         email.put("verified", true);
 
-        Set<Map<String, Object>> emailInfo = new HashSet<>();
+        Set<Map<String, Object>> emailInfo = Sets.asSet();
         emailInfo.add(email);
 
-        when(this.restOperations.exchange("https://api.github.com/user/emails", HttpMethod.GET, GitHubUtils.v3HttpEntity(), Set.class)).thenReturn(
-            new ResponseEntity<Set>(emailInfo, HttpStatus.OK));
+        when(this.gitHubRestOperations.getForObjectV3("/user/emails", Set.class)).thenReturn(emailInfo);
 
         this.oAuth2SsoFilter.attemptAuthentication(new MockHttpServletRequest(), new MockHttpServletResponse());
     }
