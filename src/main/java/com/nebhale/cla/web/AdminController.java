@@ -16,6 +16,11 @@
 
 package com.nebhale.cla.web;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -52,6 +57,9 @@ final class AdminController extends AbstractController {
     @RequestMapping(method = RequestMethod.GET, value = "")
     String index(ModelMap model) {
         model.put("agreements", this.agreementRepository.find());
+
+        System.out.println(candidateRepositories());
+
         return "admin";
     }
 
@@ -84,5 +92,38 @@ final class AdminController extends AbstractController {
 
         return "version";
     }
+
+    private SortedSet<String> candidateRepositories() {
+        Set<String> organizations = getOrganizations();
+        Set<String> repositories = getRepositories(organizations);
+
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Set<String> getOrganizations() {
+        Set<Map<String, Object>> entries = this.restOperations.getForObject("https://api.github.com/user/orgs", Set.class);
+
+        Set<String> organizations = new HashSet<>();
+        for (Map<String, Object> entry : entries) {
+            organizations.add((String) entry.get("login"));
+        }
+
+        return organizations;
+    }
+
+    private Set<String> getRepositories(Set<String> organizations) {
+        Set<String> repositories = new HashSet<>();
+
+        for (String organization : organizations) {
+            Set<Map<String, Object>> entries = this.restOperations.getForObject(String.format("https://api.github.com/orgs/%s/repos", organization),
+                Set.class);
+        }
+
+        System.out.println(repositories);
+        return repositories;
+    }
+
+    // private <T> List<T> paginatedGetForObject(String url, )
 
 }

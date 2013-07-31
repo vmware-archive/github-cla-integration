@@ -21,7 +21,6 @@ import java.net.URISyntaxException;
 
 import javax.sql.DataSource;
 
-import org.postgresql.Driver;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -32,6 +31,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.googlecode.flyway.core.Flyway;
 import com.jolbox.bonecp.BoneCPDataSource;
+import com.mysql.jdbc.Driver;
 
 /**
  * Configuration of repository components
