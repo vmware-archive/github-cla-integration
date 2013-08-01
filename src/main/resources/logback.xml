@@ -21,7 +21,7 @@ limitations under the License.
 		</encoder>
 	</appender>
 	
-	<logger name="com.nebhale.cla.web.security.RateLimitingClientHttpRequestInterceptor" level="DEBUG"/>  <!-- TODO: Remove this logging level -->
+	<logger name="com.gopivotal.cla.web.security.RateLimitingClientHttpRequestInterceptor" level="DEBUG"/>  <!-- TODO: Remove this logging level -->
 	
 	<logger name="com.googlecode.flyway" level="INFO" />
 
