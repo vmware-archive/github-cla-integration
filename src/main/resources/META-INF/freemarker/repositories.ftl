@@ -18,6 +18,12 @@
 			<option value="${candidateRepository}">${candidateRepository}</option>
 		</#list>
 		</select>
+		<label for="candidateAgreement">Agreement:</label>
+		<select name="candidateAgreement" required="true">
+		<#list candidateAgreements as candidateAgreement>
+			<option value="${candidateAgreement.id}">${candidateAgreement.name}</option>
+		</#list>
+		</select>
 
 		<button type="submit">Link</button>
 	</fieldset>

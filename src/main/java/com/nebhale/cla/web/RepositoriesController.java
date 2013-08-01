@@ -24,21 +24,26 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.nebhale.cla.github.GitHubRepositories;
 import com.nebhale.cla.github.GitHubRestOperations;
+import com.nebhale.cla.repository.AgreementRepository;
 
 @Controller
 @RequestMapping("/repositories")
 final class RepositoriesController extends AbstractController {
 
+    private final AgreementRepository agreementRepository;
+
     private final GitHubRepositories gitHubRepositories;
 
     @Autowired
-    RepositoriesController(GitHubRestOperations gitHubRestOperations, GitHubRepositories gitHubRepositories) {
+    RepositoriesController(GitHubRestOperations gitHubRestOperations, AgreementRepository agreementRepository, GitHubRepositories gitHubRepositories) {
         super(gitHubRestOperations);
+        this.agreementRepository = agreementRepository;
         this.gitHubRepositories = gitHubRepositories;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     String listRepositories(ModelMap model) {
+        model.put("candidateAgreements", this.agreementRepository.find());
         model.put("candidateRepositories", this.gitHubRepositories.getAdminRepositories());
 
         return "repositories";
