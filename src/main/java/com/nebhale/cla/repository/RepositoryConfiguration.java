@@ -21,6 +21,8 @@ import java.net.URISyntaxException;
 
 import javax.sql.DataSource;
 
+import org.jasypt.util.text.BasicTextEncryptor;
+import org.jasypt.util.text.TextEncryptor;
 import org.postgresql.Driver;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
@@ -70,4 +72,11 @@ public class RepositoryConfiguration {
         return new DataSourceTransactionManager(dataSource(databaseUrl));
     }
 
+    @Bean
+    TextEncryptor textEncryptor(String encryptionKey) {
+        BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+        textEncryptor.setPassword(encryptionKey);
+
+        return textEncryptor;
+    }
 }

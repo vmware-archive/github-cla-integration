@@ -23,15 +23,26 @@ import static org.mockito.Mockito.when;
 import java.util.SortedSet;
 
 import org.junit.Test;
+import org.springframework.security.oauth2.client.OAuth2RestOperations;
+import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.ui.ModelMap;
 
 import com.nebhale.cla.Agreement;
+import com.nebhale.cla.Repository;
 import com.nebhale.cla.github.GitHubRepositories;
 import com.nebhale.cla.github.GitHubRestOperations;
 import com.nebhale.cla.repository.AgreementRepository;
+import com.nebhale.cla.repository.RepositoryRepository;
 import com.nebhale.cla.util.Sets;
 
 public final class RepositoriesControllerTest {
+
+    private static final OAuth2AccessToken ACCESS_TOKEN = new DefaultOAuth2AccessToken("access_token");
+
+    private static final Agreement AGREEMENT = new Agreement(Long.MIN_VALUE, "test-name");
+
+    private static final Repository REPOSITORY = new Repository(Long.MIN_VALUE + 1, "test-name", AGREEMENT.getId(), ACCESS_TOKEN.getValue());
 
     private final GitHubRestOperations gitHubRestOperations = mock(GitHubRestOperations.class);
 
@@ -39,8 +50,12 @@ public final class RepositoriesControllerTest {
 
     private final GitHubRepositories gitHubRepositories = mock(GitHubRepositories.class);
 
+    private final RepositoryRepository repositoryRepository = mock(RepositoryRepository.class);
+
+    private final OAuth2RestOperations oAuth2RestOperations = mock(OAuth2RestOperations.class);
+
     private final RepositoriesController controller = new RepositoriesController(this.gitHubRestOperations, this.agreementRepository,
-        this.gitHubRepositories);
+        this.gitHubRepositories, this.repositoryRepository, this.oAuth2RestOperations);
 
     @Test
     public void listRepositories() {
@@ -57,4 +72,13 @@ public final class RepositoriesControllerTest {
         assertEquals(agreements, model.get("candidateAgreements"));
     }
 
+    @Test
+    public void createRepository() {
+        when(this.oAuth2RestOperations.getAccessToken()).thenReturn(ACCESS_TOKEN);
+        when(this.repositoryRepository.create("test-name", Long.MIN_VALUE, ACCESS_TOKEN.getValue())).thenReturn(REPOSITORY);
+
+        String result = this.controller.createRepository("test-name", AGREEMENT.getId());
+
+        assertEquals("redirect:/repositories", result);
+    }
 }
