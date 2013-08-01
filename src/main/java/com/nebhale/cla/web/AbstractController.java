@@ -18,13 +18,21 @@ package com.nebhale.cla.web;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.nebhale.cla.github.GitHubRestOperations;
 
-@SessionAttributes("userInfo")
+@SessionAttributes({ "userInfo", "hrefPrefix" })
 abstract class AbstractController {
+
+    private static final String DEFAULT_SCHEME = "http";
+
+    private static final String SECURE_SCHEME = "https";
+
+    private static final String HEADER_HOST = "host";
 
     private final GitHubRestOperations gitHubRestOperations;
 
@@ -36,5 +44,20 @@ abstract class AbstractController {
     @ModelAttribute("userInfo")
     final Map<String, Object> userInfo() {
         return this.gitHubRestOperations.getForObject("/user", Map.class);
+    }
+
+    @ModelAttribute("hrefPrefix")
+    final String getHrefPrefix(HttpServletRequest httpServletRequest) {
+        if (httpServletRequest != null) {
+            String scheme = getScheme(httpServletRequest);
+            String host = httpServletRequest.getHeader(HEADER_HOST);
+
+            return String.format("%s://%s", scheme, host);
+        }
+        return "";
+    }
+
+    private static String getScheme(HttpServletRequest httpServletRequest) {
+        return httpServletRequest.isSecure() ? SECURE_SCHEME : DEFAULT_SCHEME;
     }
 }

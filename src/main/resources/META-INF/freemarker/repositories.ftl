@@ -15,7 +15,9 @@
 	<tbody>
 	<#list repositoryMapping?keys?sort as repository>
 		<tr>
-			<td>${repository}</td><td>${repositoryMapping[repository]}</td>
+			<td>${repository}</td>
+			<td>${repositoryMapping[repository]}</td>
+			<td>${hrefPrefix}/${repository}</td>
 		</tr>
 	</#list>
 	</tbody>
