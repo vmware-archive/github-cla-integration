@@ -9,6 +9,18 @@
 
 <#include "header.ftl">
 
+<h1>Linked Repositories</h1>
+
+<table>
+	<tbody>
+	<#list repositoryMapping?keys as repository>
+		<tr>
+			<td>${repository}</td><td>${repositoryMapping[repository]}</td>
+		</tr>
+	</#list>
+	</tbody>
+</table>
+
 <form method="POST" action="/repositories">
 	<fieldset>
 		<legend>Link a repository to an agreement</legend>
