@@ -62,6 +62,13 @@ heroku config:set GITHUB_CLIENT_SECRET=<value>
 git push heroku master
 ```
 
+## Developing
+The project is set up as a Maven WAR project and doesn't have any special requirements beyond that.  An IDE such as the [SpringSource Tool Suite][] and a servlet container such as [Apache Tomcat][] are the recommended development environments.
+
+### Localtunnel
+The one gotcha for running the application locally (i.e. while developing) is that the interesting bits of the application all require the OAuth dance.  To complete this dance, the GitHub infrastructure must be able to make a `POST` request to the originating server.  Generally when developing locally, your servlet container is not exposed to the internet so this dance will fail.  To expose your server to the internet (and enable the OAuth dance to complete), you should use <http://www.localtunnel.me>.  Remember to update your [application's configuration](#github-application-registration) to point at exposed `localtunnel` URL.
+
+
 ## License
 The project is released under version 2.0 of the [Apache License][].
 
@@ -79,3 +86,5 @@ The project is released under version 2.0 of the [Apache License][].
 [Maven]: http://maven.apache.org
 [new-application]: https://github.com/settings/applications/new
 [PostgreSQL]: http://www.postgresql.org
+[SpringSource Tool Suite]: http://www.springsource.org/sts
+[Apache Tomcat]: http://tomcat.apache.org
