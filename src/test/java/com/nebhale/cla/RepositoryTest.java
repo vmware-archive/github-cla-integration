@@ -20,17 +20,16 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public final class VersionTest {
+public final class RepositoryTest {
 
     @Test
     public void test() {
-        Version version = new Version(Long.MIN_VALUE + 1, Long.MIN_VALUE, "test-name", "test-individual-content", "test-corporate-content");
+        Repository repository = new Repository(Long.MIN_VALUE + 2, "test-name", Long.MIN_VALUE, "test-access-token");
 
-        assertEquals((Long) (Long.MIN_VALUE + 1), version.getId());
-        assertEquals((Long) Long.MIN_VALUE, version.getAgreementId());
-        assertEquals("test-name", version.getName());
-        assertEquals("test-individual-content", version.getIndividualAgreementContent());
-        assertEquals("test-corporate-content", version.getCorporateAgreementContent());
+        assertEquals((Long) (Long.MIN_VALUE + 2), repository.getId());
+        assertEquals("test-name", repository.getName());
+        assertEquals((Long) Long.MIN_VALUE, repository.getAgreementId());
+        assertEquals("test-access-token", repository.getAccessToken());
     }
 
 }

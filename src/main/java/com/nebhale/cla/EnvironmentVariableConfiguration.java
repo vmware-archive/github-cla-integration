@@ -27,6 +27,8 @@ import org.springframework.util.StringUtils;
 @Configuration
 public class EnvironmentVariableConfiguration {
 
+    private static final int MINIMUM_ENCRYPTION_KEY_LENGTH = 50;
+
     @Bean
     String[] adminEmailDomains() {
         return StringUtils.commaDelimitedListToStringArray(getRequiredProperty("ADMIN_EMAIL_DOMAINS"));
@@ -35,6 +37,15 @@ public class EnvironmentVariableConfiguration {
     @Bean
     String databaseUrl() {
         return getRequiredProperty("DATABASE_URL");
+    }
+
+    @Bean
+    String encryptionKey() {
+        String encryptionKey = getRequiredProperty("ENCRYPTION_KEY");
+        Assert.isTrue(encryptionKey.length() >= MINIMUM_ENCRYPTION_KEY_LENGTH,
+            String.format("The minimum length for the ENCRYPTION_KEY is %d characters", MINIMUM_ENCRYPTION_KEY_LENGTH));
+
+        return encryptionKey;
     }
 
     @Bean

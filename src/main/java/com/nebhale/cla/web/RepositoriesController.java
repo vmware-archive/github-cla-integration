@@ -17,14 +17,17 @@
 package com.nebhale.cla.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.nebhale.cla.github.GitHubRepositories;
 import com.nebhale.cla.github.GitHubRestOperations;
 import com.nebhale.cla.repository.AgreementRepository;
+import com.nebhale.cla.repository.RepositoryRepository;
 
 @Controller
 @RequestMapping("/repositories")
@@ -34,11 +37,18 @@ final class RepositoriesController extends AbstractController {
 
     private final GitHubRepositories gitHubRepositories;
 
+    private final RepositoryRepository repositoryRepository;
+
+    private final OAuth2RestOperations oAuth2RestOperations;
+
     @Autowired
-    RepositoriesController(GitHubRestOperations gitHubRestOperations, AgreementRepository agreementRepository, GitHubRepositories gitHubRepositories) {
+    RepositoriesController(GitHubRestOperations gitHubRestOperations, AgreementRepository agreementRepository, GitHubRepositories gitHubRepositories,
+        RepositoryRepository repositoryRepository, OAuth2RestOperations oAuth2RestOperations) {
         super(gitHubRestOperations);
         this.agreementRepository = agreementRepository;
         this.gitHubRepositories = gitHubRepositories;
+        this.repositoryRepository = repositoryRepository;
+        this.oAuth2RestOperations = oAuth2RestOperations;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "")
@@ -47,5 +57,12 @@ final class RepositoriesController extends AbstractController {
         model.put("candidateRepositories", this.gitHubRepositories.getAdminRepositories());
 
         return "repositories";
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "")
+    String createRepository(@RequestParam("repository") String name, @RequestParam("agreement") Long agreementId) {
+        this.repositoryRepository.create(name, agreementId, this.oAuth2RestOperations.getAccessToken().getValue());
+
+        return "redirect:/repositories";
     }
 }

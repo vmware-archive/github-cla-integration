@@ -23,6 +23,7 @@ Since the application is designed to work in a PaaS environment, all configurati
 | --- | -----------
 | `ADMIN_EMAIL_DOMAINS` | A comma delimited list of domains.  These domains are compared against the list of email addresses that a potential administrator has in their profile and if there is no match, the user is not allowed to administer the instance.  The domains should not have an `@` symbol before them (e.g `gopivotal.com,pivotallabs.com`).
 | `DATABASE_URL` | The URL used to connect to a PostgreSQL database.  This URL should include the username and password used as credentials for the database connection and be in the form of `postgres://<username>[:<password>]@<host>[:<port>]/<database>[?<options>]`.
+| `ENCRYPTION_KEY` | The key used to encrypt data in the database.  The key must be at least 50 characters long to deter brute-force attacks.  It is recommend that you use a tool such as [1Password][] to generate this key.
 | `GITHUB_CLIENT_ID` | The Client ID assigned to your registered application.
 | `GITHUB_CLIENT_SECRET` | The Client Secret assigned to your registered application.
 
@@ -39,6 +40,7 @@ mvn -Dmaven.test.skip=true package
 cf push --no-start
 cf set-env gopivotal-cla ADMIN_EMAIL_DOMAINS <value>
 cf set-env gopivotal-cla DATABASE_URL <value>
+cf set-env gopivotal-cla ENCRYPTION_KEY <value>
 cf set-env gopivotal-cla GITHUB_CLIENT_ID <value>
 cf set-env gopivotal-cla GITHUB_CLIENT_SECRET <value>
 cf start
@@ -54,6 +56,7 @@ heroku create gopivotal-cla
 heroku addons:add heroku-postgresql:dev
 heroku config:set ADMIN_EMAIL_DOMAINS=<value>
 heroku config:set DATABASE_URL=$(heroku config:get HEROKU_POSTGRESQL_GOLD_URL)
+heroku config:set ENCRYPTION_KEY=<value>
 heroku config:set GITHUB_CLIENT_ID=<value>
 heroku config:set GITHUB_CLIENT_SECRET=<value>
 git push heroku master
@@ -63,6 +66,7 @@ git push heroku master
 The project is released under version 2.0 of the [Apache License][].
 
 
+[1Password]: https://agilebits.com/onepassword
 [Apache License]: http://www.apache.org/licenses/LICENSE-2.0
 [applications]: https://github.com/settings/applications
 [Cloud Foundry]: http://run.pivotal.io

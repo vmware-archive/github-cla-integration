@@ -12,14 +12,14 @@
 	<fieldset>
 		<legend>Link a repository to an agreement</legend>
 
-		<label for="candidateRepository">Repository:</label>
-		<select name="candidateRepository" required="true">
+		<label for="repository">Repository:</label>
+		<select name="repository" required="true">
 		<#list candidateRepositories as candidateRepository>
 			<option value="${candidateRepository}">${candidateRepository}</option>
 		</#list>
 		</select>
-		<label for="candidateAgreement">Agreement:</label>
-		<select name="candidateAgreement" required="true">
+		<label for="agreement">Agreement:</label>
+		<select name="agreement" required="true">
 		<#list candidateAgreements as candidateAgreement>
 			<option value="${candidateAgreement.id}">${candidateAgreement.name}</option>
 		</#list>

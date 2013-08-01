@@ -36,7 +36,7 @@ public final class AgreementsControllerTest {
 
     private static final Agreement AGREEMENT = new Agreement(Long.MIN_VALUE, "test-name");
 
-    private static final Version VERSION = new Version(Long.MIN_VALUE - 1, AGREEMENT.getId(), "test-name", "test-individual-content",
+    private static final Version VERSION = new Version(Long.MIN_VALUE + 1, AGREEMENT.getId(), "test-name", "test-individual-content",
         "test-corporate-content");
 
     private final GitHubRestOperations gitHubRestOperations = mock(GitHubRestOperations.class);

@@ -28,6 +28,11 @@ public class TestConfiguration {
         return getRequiredProperty("DATABASE_URL");
     }
 
+    @Bean
+    String encryptionKey() {
+        return getRequiredProperty("ENCRYPTION_KEY");
+    }
+
     private String getRequiredProperty(String key) {
         String property = System.getenv(key);
         Assert.hasText(property, String.format("The enviroment variable '%s' must be specified", key));
