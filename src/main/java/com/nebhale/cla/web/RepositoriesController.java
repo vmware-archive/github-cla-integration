@@ -16,6 +16,9 @@
 
 package com.nebhale.cla.web;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.stereotype.Controller;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.nebhale.cla.Repository;
 import com.nebhale.cla.github.GitHubRepositories;
 import com.nebhale.cla.github.GitHubRestOperations;
 import com.nebhale.cla.repository.AgreementRepository;
@@ -53,6 +57,7 @@ final class RepositoriesController extends AbstractController {
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     String listRepositories(ModelMap model) {
+        model.put("repositoryMapping", getRepositoryMapping());
         model.put("candidateAgreements", this.agreementRepository.find());
         model.put("candidateRepositories", this.gitHubRepositories.getAdminRepositories());
 
@@ -64,5 +69,15 @@ final class RepositoriesController extends AbstractController {
         this.repositoryRepository.create(name, agreementId, this.oAuth2RestOperations.getAccessToken().getValue());
 
         return "redirect:/repositories";
+    }
+
+    private Map<String, String> getRepositoryMapping() {
+        Map<String, String> repositoryMapping = new HashMap<>();
+
+        for (Repository repository : this.repositoryRepository.find()) {
+            repositoryMapping.put(repository.getName(), this.agreementRepository.read(repository.getAgreementId()).getName());
+        }
+
+        return repositoryMapping;
     }
 }

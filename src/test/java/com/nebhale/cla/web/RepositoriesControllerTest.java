@@ -20,6 +20,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedSet;
 
 import org.junit.Test;
@@ -63,11 +65,16 @@ public final class RepositoriesControllerTest {
         when(this.gitHubRepositories.getAdminRepositories()).thenReturn(adminRepositories);
         SortedSet<Agreement> agreements = Sets.asSortedSet(new Agreement(Long.MIN_VALUE, "test-name"));
         when(this.agreementRepository.find()).thenReturn(agreements);
+        when(this.repositoryRepository.find()).thenReturn(Sets.asSortedSet(REPOSITORY));
+        when(this.agreementRepository.read(REPOSITORY.getAgreementId())).thenReturn(AGREEMENT);
+        Map<String, String> repositoryMapping = new HashMap<>();
+        repositoryMapping.put("test-name", "test-name");
 
         ModelMap model = new ModelMap();
         String result = this.controller.listRepositories(model);
 
         assertEquals("repositories", result);
+        assertEquals(repositoryMapping, model.get("repositoryMapping"));
         assertEquals(adminRepositories, model.get("candidateRepositories"));
         assertEquals(agreements, model.get("candidateAgreements"));
     }
