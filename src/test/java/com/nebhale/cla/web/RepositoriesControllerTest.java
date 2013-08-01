@@ -61,7 +61,7 @@ public final class RepositoriesControllerTest {
 
     @Test
     public void listRepositories() {
-        SortedSet<String> adminRepositories = Sets.asSortedSet("test-repo1", "test-repo2");
+        SortedSet<String> adminRepositories = Sets.asSortedSet("test-name", "test-repo2");
         when(this.gitHubRepositories.getAdminRepositories()).thenReturn(adminRepositories);
         SortedSet<Agreement> agreements = Sets.asSortedSet(new Agreement(Long.MIN_VALUE, "test-name"));
         when(this.agreementRepository.find()).thenReturn(agreements);
@@ -75,7 +75,7 @@ public final class RepositoriesControllerTest {
 
         assertEquals("repositories", result);
         assertEquals(repositoryMapping, model.get("repositoryMapping"));
-        assertEquals(adminRepositories, model.get("candidateRepositories"));
+        assertEquals(Sets.asSortedSet("test-repo2"), model.get("candidateRepositories"));
         assertEquals(agreements, model.get("candidateAgreements"));
     }
 

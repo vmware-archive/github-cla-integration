@@ -13,7 +13,7 @@
 
 <table>
 	<tbody>
-	<#list repositoryMapping?keys as repository>
+	<#list repositoryMapping?keys?sort as repository>
 		<tr>
 			<td>${repository}</td><td>${repositoryMapping[repository]}</td>
 		</tr>
