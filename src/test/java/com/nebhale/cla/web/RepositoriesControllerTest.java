@@ -25,28 +25,36 @@ import java.util.SortedSet;
 import org.junit.Test;
 import org.springframework.ui.ModelMap;
 
+import com.nebhale.cla.Agreement;
 import com.nebhale.cla.github.GitHubRepositories;
 import com.nebhale.cla.github.GitHubRestOperations;
+import com.nebhale.cla.repository.AgreementRepository;
 import com.nebhale.cla.util.Sets;
 
 public final class RepositoriesControllerTest {
 
     private final GitHubRestOperations gitHubRestOperations = mock(GitHubRestOperations.class);
 
+    private final AgreementRepository agreementRepository = mock(AgreementRepository.class);
+
     private final GitHubRepositories gitHubRepositories = mock(GitHubRepositories.class);
 
-    private final RepositoriesController controller = new RepositoriesController(this.gitHubRestOperations, this.gitHubRepositories);
+    private final RepositoriesController controller = new RepositoriesController(this.gitHubRestOperations, this.agreementRepository,
+        this.gitHubRepositories);
 
     @Test
     public void listRepositories() {
         SortedSet<String> adminRepositories = Sets.asSortedSet("test-repo1", "test-repo2");
         when(this.gitHubRepositories.getAdminRepositories()).thenReturn(adminRepositories);
+        SortedSet<Agreement> agreements = Sets.asSortedSet(new Agreement(Long.MIN_VALUE, "test-name"));
+        when(this.agreementRepository.find()).thenReturn(agreements);
 
         ModelMap model = new ModelMap();
         String result = this.controller.listRepositories(model);
 
         assertEquals("repositories", result);
         assertEquals(adminRepositories, model.get("candidateRepositories"));
+        assertEquals(agreements, model.get("candidateAgreements"));
     }
 
 }
