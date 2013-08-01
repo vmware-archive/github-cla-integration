@@ -24,12 +24,13 @@ public final class VersionTest {
 
     @Test
     public void test() {
-        Version version = new Version(Long.MIN_VALUE, Long.MAX_VALUE, "test-version", "test-content");
+        Version version = new Version(Long.MIN_VALUE - 1, Long.MIN_VALUE, "test-name", "test-individual-content", "test-corporate-content");
 
-        assertEquals((Long) Long.MIN_VALUE, version.getId());
-        assertEquals((Long) Long.MAX_VALUE, version.getAgreementId());
-        assertEquals("test-version", version.getVersion());
-        assertEquals("test-content", version.getContent());
+        assertEquals((Long) (Long.MIN_VALUE - 1), version.getId());
+        assertEquals((Long) Long.MIN_VALUE, version.getAgreementId());
+        assertEquals("test-name", version.getName());
+        assertEquals("test-individual-content", version.getIndividualAgreementContent());
+        assertEquals("test-corporate-content", version.getCorporateAgreementContent());
     }
 
 }

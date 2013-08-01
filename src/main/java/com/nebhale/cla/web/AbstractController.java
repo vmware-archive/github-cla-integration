@@ -20,20 +20,21 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.client.RestOperations;
+
+import com.nebhale.cla.github.GitHubRestOperations;
 
 @SessionAttributes("userInfo")
 abstract class AbstractController {
 
-    private final RestOperations restOperations;
+    private final GitHubRestOperations gitHubRestOperations;
 
-    protected AbstractController(RestOperations restOperations) {
-        this.restOperations = restOperations;
+    protected AbstractController(GitHubRestOperations gitHubRestOperations) {
+        this.gitHubRestOperations = gitHubRestOperations;
     }
 
     @SuppressWarnings("unchecked")
     @ModelAttribute("userInfo")
     final Map<String, Object> userInfo() {
-        return this.restOperations.getForObject("https://api.github.com/user", Map.class);
+        return this.gitHubRestOperations.getForObject("/user", Map.class);
     }
 }

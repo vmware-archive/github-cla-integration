@@ -25,6 +25,7 @@ import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import com.nebhale.cla.EnvironmentVariableConfiguration;
+import com.nebhale.cla.github.GitHubConfiguration;
 import com.nebhale.cla.repository.RepositoryConfiguration;
 import com.nebhale.cla.web.security.SecurityConfiguration;
 
@@ -32,7 +33,7 @@ import com.nebhale.cla.web.security.SecurityConfiguration;
  * Initialization of web configuration
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public final class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+public final class ApplicationInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
@@ -41,7 +42,7 @@ public final class WebInitializer extends AbstractAnnotationConfigDispatcherServ
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[] { WebConfiguration.class, SecurityConfiguration.class };
+        return new Class[] { WebConfiguration.class, SecurityConfiguration.class, GitHubConfiguration.class };
     }
 
     @Override

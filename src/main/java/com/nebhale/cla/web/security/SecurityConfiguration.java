@@ -31,7 +31,8 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilt
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.web.client.RestOperations;
+
+import com.nebhale.cla.github.GitHubRestOperations;
 
 /**
  * Configuration of security components
@@ -78,8 +79,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    OAuth2SsoFilter ssoFilter(@Value("#{@adminEmailDomains}") String[] adminEmailDomains, RestOperations restOperations) throws Exception {
-        OAuth2SsoFilter filter = new OAuth2SsoFilter(adminEmailDomains, LOGIN_URL, restOperations);
+    OAuth2SsoFilter ssoFilter(@Value("#{@adminEmailDomains}") String[] adminEmailDomains, GitHubRestOperations gitHubRestOperations) throws Exception {
+        OAuth2SsoFilter filter = new OAuth2SsoFilter(adminEmailDomains, LOGIN_URL, gitHubRestOperations);
         filter.setAuthenticationManager(authenticationManager());
         return filter;
     }

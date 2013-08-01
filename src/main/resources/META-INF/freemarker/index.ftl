@@ -1,8 +1,13 @@
 <html>
 <head>
-	<title>Go Pivotal, Inc. Contributor License Agreement Administration</title>
+
+<title>Contributor License Agreements</title>
+
 </head>
 <body>
-<a href="/admin">Administer</a>
+
+<a href="/agreements">Administer Agreements</a>
+<a href="/repositories">Administer Repositories</a>
+
 </body>
 </html>

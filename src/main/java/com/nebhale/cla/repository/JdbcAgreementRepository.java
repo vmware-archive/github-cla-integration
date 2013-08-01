@@ -33,7 +33,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nebhale.cla.Agreement;
-import com.nebhale.cla.Type;
 
 @Repository
 final class JdbcAgreementRepository implements AgreementRepository {
@@ -58,10 +57,9 @@ final class JdbcAgreementRepository implements AgreementRepository {
 
     @Override
     @Transactional
-    public Agreement create(Type type, String name) {
+    public Agreement create(String name) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", name);
-        parameters.put("agreementType", type);
 
         long id = this.createStatement.executeAndReturnKey(parameters).longValue();
 
@@ -78,7 +76,7 @@ final class JdbcAgreementRepository implements AgreementRepository {
 
         @Override
         public Agreement mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Agreement(rs.getLong(1), Type.valueOf(rs.getString(3)), rs.getString(2));
+            return new Agreement(rs.getLong(1), rs.getString(2));
         }
 
     }

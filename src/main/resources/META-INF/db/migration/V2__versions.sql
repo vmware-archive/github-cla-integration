@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package com.nebhale.cla;
-
-import org.springframework.util.StringUtils;
-
-/**
- * An enumeration of the types of CLA that a user might sign
- */
-public enum Type {
-
-    CORPORATE, //
-    INDIVIDUAL;
-
-    public String getDisplayString() {
-        return StringUtils.capitalize(toString().toLowerCase());
-    }
-
-}
+CREATE TABLE versions(
+	id SERIAL PRIMARY KEY,
+	agreementId SERIAL NOT NULL,
+	name VARCHAR(128) NOT NULL,
+	individualContent TEXT NOT NULL,
+	corporateContent TEXT NOT NULL,
+	
+	FOREIGN KEY(agreementId) REFERENCES agreements(id) ON DELETE CASCADE
+);

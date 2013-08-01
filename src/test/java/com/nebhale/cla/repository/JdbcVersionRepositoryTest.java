@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.nebhale.cla.Agreement;
-import com.nebhale.cla.Type;
 import com.nebhale.cla.Version;
 
 public final class JdbcVersionRepositoryTest extends AbstractJdbcRepositoryTest {
@@ -42,17 +41,17 @@ public final class JdbcVersionRepositoryTest extends AbstractJdbcRepositoryTest 
 
     @Before
     public void createAgreement() {
-        this.agreement = this.agreementRepository.create(Type.INDIVIDUAL, "test-name");
+        this.agreement = this.agreementRepository.create("test-name");
     }
 
     @Test
     public void find() {
         int initialSize = this.versionRepository.find(this.agreement.getId()).size();
 
-        this.jdbcTemplate.update("INSERT INTO versions(id, agreementId, version, content) VALUES(?, ?, ?, ?)", Integer.MAX_VALUE,
-            this.agreement.getId(), "test-version-1", "test-content-1");
-        this.jdbcTemplate.update("INSERT INTO versions(id, agreementId, version, content) VALUES(?, ?, ?, ?)", Integer.MAX_VALUE - 1,
-            this.agreement.getId(), "test-version-2", "test-content-2");
+        this.jdbcTemplate.update("INSERT INTO versions(id, agreementId, name, individualContent, corporateContent) VALUES(?, ?, ?, ?, ?)",
+            Integer.MAX_VALUE - 1, this.agreement.getId(), "test-name-1", "test-individual-content-1", "test-corporate-content-1");
+        this.jdbcTemplate.update("INSERT INTO versions(id, agreementId, name, individualContent, corporateContent) VALUES(?, ?, ?, ?, ?)",
+            Integer.MAX_VALUE - 2, this.agreement.getId(), "test-name-2", "test-individual-content-2", "test-corporate-content-2");
 
         Set<Version> versions = this.versionRepository.find(this.agreement.getId());
         assertEquals(initialSize + 2, versions.size());
@@ -62,30 +61,33 @@ public final class JdbcVersionRepositoryTest extends AbstractJdbcRepositoryTest 
     public void create() {
         int initialSize = this.versionRepository.find(this.agreement.getId()).size();
 
-        Version version = this.versionRepository.create(this.agreement.getId(), "test-version", "test-content");
+        Version version = this.versionRepository.create(this.agreement.getId(), "test-name", "test-individual-content", "test-corporate-content");
 
         assertEquals(initialSize + 1, this.versionRepository.find(this.agreement.getId()).size());
 
-        Map<String, Object> row = this.jdbcTemplate.queryForMap("SELECT agreementId, version, content FROM versions WHERE id = ?", version.getId());
-        assertEquals(this.agreement.getId().intValue(), row.get("agreementId"));
-        assertEquals("test-version", row.get("version"));
-        assertEquals("test-content", row.get("content"));
+        Map<String, Object> row = this.jdbcTemplate.queryForMap("SELECT * FROM versions WHERE id = ?", version.getId());
+        assertEquals(this.agreement.getId(), new Long((int) row.get("agreementId")));
+        assertEquals("test-name", row.get("name"));
+        assertEquals("test-individual-content", row.get("individualContent"));
+        assertEquals("test-corporate-content", row.get("corporateContent"));
 
         assertEquals(this.agreement.getId(), version.getAgreementId());
-        assertEquals("test-version", version.getVersion());
-        assertEquals("test-content", version.getContent());
+        assertEquals("test-name", version.getName());
+        assertEquals("test-individual-content", version.getIndividualAgreementContent());
+        assertEquals("test-corporate-content", version.getCorporateAgreementContent());
     }
 
     @Test
     public void read() {
-        this.jdbcTemplate.update("INSERT INTO versions(id, agreementId, version, content) VALUES(?, ?, ?, ?)", Integer.MAX_VALUE,
-            this.agreement.getId(), "test-version", "test-content");
+        this.jdbcTemplate.update("INSERT INTO versions(id, agreementId, name, individualContent, corporateContent) VALUES(?, ?, ?, ?, ?)",
+            Integer.MAX_VALUE - 1, this.agreement.getId(), "test-name", "test-individual-content", "test-corporate-content");
 
-        Version version = this.versionRepository.read((long) Integer.MAX_VALUE);
+        Version version = this.versionRepository.read((long) Integer.MAX_VALUE - 1);
 
         assertEquals(this.agreement.getId(), version.getAgreementId());
-        assertEquals("test-version", version.getVersion());
-        assertEquals("test-content", version.getContent());
+        assertEquals("test-name", version.getName());
+        assertEquals("test-individual-content", version.getIndividualAgreementContent());
+        assertEquals("test-corporate-content", version.getCorporateAgreementContent());
     }
 
     @Test(expected = EmptyResultDataAccessException.class)

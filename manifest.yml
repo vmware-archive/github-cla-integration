@@ -8,8 +8,8 @@ applications:
   path: target/github-cla-integration-1-SNAPSHOT.war
   services:
     gopivotal-cla:
-      label: cleardb
-      provider: cleardb
+      label: elephantsql
+      provider: elephantsql
       version: n/a
-      plan: spark
+      plan: turtle
   buildpack: https://github.com/cloudfoundry/java-buildpack

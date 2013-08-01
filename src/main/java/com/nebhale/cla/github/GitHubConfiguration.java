@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package com.nebhale.cla;
+package com.nebhale.cla.github;
 
-import static org.junit.Assert.assertEquals;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
-import org.junit.Test;
+/**
+ * Configuration of utility components
+ */
+@Configuration
+@ComponentScan
+public class GitHubConfiguration {
 
-public final class AgreementTest {
-
-    @Test
-    public void test() {
-        Agreement agreement = new Agreement(Long.MIN_VALUE, "test-name");
-
-        assertEquals((Long) Long.MIN_VALUE, agreement.getId());
-        assertEquals("test-name", agreement.getName());
-    }
 }

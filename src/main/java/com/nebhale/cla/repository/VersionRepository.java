@@ -26,22 +26,22 @@ import com.nebhale.cla.Version;
 public interface VersionRepository {
 
     /**
-     * Returns all of the {@link Version}s in the repository that are related to an {@link Agreement}
+     * Returns all of the {@link Version}s in the repository related to a specific {Agreement}
      * 
-     * @param agreementId The id of the agreement
-     * @return all of versions in the repository that are related to an agreement
+     * @return all of the versions in the repository related to a specific agreement
      */
     SortedSet<Version> find(Long agreementId);
 
     /**
      * Create a new {@link Version}
      * 
-     * @param agreementId The id of the agreement
-     * @param version The version of the agreement
-     * @param content The content of the version
+     * @param agreementId The id of the related agreement
+     * @param name The name of the version
+     * @param individualAgreementContent The content of the individual agreement
+     * @param corporateAgreementContent The content of the corporate agreement
      * @return The newly created version
      */
-    Version create(Long agreementId, String version, String content);
+    Version create(Long agreementId, String name, String individualAgreementContent, String corporateAgreementContent);
 
     /**
      * Read a {@link Version} identified by its {@code id}

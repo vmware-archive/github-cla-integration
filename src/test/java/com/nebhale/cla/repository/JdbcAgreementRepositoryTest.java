@@ -22,12 +22,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-//import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.nebhale.cla.Agreement;
-import com.nebhale.cla.Type;
 
 public final class JdbcAgreementRepositoryTest extends AbstractJdbcRepositoryTest {
 
@@ -38,10 +36,8 @@ public final class JdbcAgreementRepositoryTest extends AbstractJdbcRepositoryTes
     public void find() {
         int initialSize = this.agreementRepository.find().size();
 
-        this.jdbcTemplate.update("INSERT INTO agreements(id, name, agreementType) VALUES(?, ?, ?::cla_type)", Integer.MAX_VALUE, "test-name-1",
-            Type.INDIVIDUAL.toString());
-        this.jdbcTemplate.update("INSERT INTO agreements(id, name, agreementType) VALUES(?, ?, ?::cla_type)", Integer.MAX_VALUE - 1, "test-name-2",
-            Type.CORPORATE.toString());
+        this.jdbcTemplate.update("INSERT INTO agreements(id, name) VALUES(?, ?)", Integer.MAX_VALUE, "test-name-1");
+        this.jdbcTemplate.update("INSERT INTO agreements(id, name) VALUES(?, ?)", Integer.MAX_VALUE - 1, "test-name-2");
 
         Set<Agreement> agreements = this.agreementRepository.find();
         assertEquals(initialSize + 2, agreements.size());
@@ -51,27 +47,23 @@ public final class JdbcAgreementRepositoryTest extends AbstractJdbcRepositoryTes
     public void create() {
         int initialSize = this.agreementRepository.find().size();
 
-        Agreement agreement = this.agreementRepository.create(Type.CORPORATE, "test-name");
+        Agreement agreement = this.agreementRepository.create("test-name");
 
         assertEquals(initialSize + 1, this.agreementRepository.find().size());
 
-        Map<String, Object> row = this.jdbcTemplate.queryForMap("SELECT name, agreementType FROM agreements WHERE id = ?", agreement.getId());
+        Map<String, Object> row = this.jdbcTemplate.queryForMap("SELECT * FROM agreements WHERE id = ?", agreement.getId());
         assertEquals("test-name", row.get("name"));
-        // assertEquals(Type.CORPORATE.toString(), ((PGobject) row.get("agreementType")).toString());
 
-        assertEquals(Type.CORPORATE, agreement.getType());
         assertEquals("test-name", agreement.getName());
     }
 
     @Test
     public void read() {
-        this.jdbcTemplate.update("INSERT INTO agreements(id, name, agreementType) VALUES(?, ?, ?::cla_type)", Integer.MAX_VALUE, "test-name",
-            Type.INDIVIDUAL.toString());
+        this.jdbcTemplate.update("INSERT INTO agreements(id, name) VALUES(?, ?)", Integer.MAX_VALUE, "test-name");
 
         Agreement agreement = this.agreementRepository.read((long) Integer.MAX_VALUE);
 
         assertEquals("test-name", agreement.getName());
-        assertEquals(Type.INDIVIDUAL, agreement.getType());
     }
 
     @Test(expected = EmptyResultDataAccessException.class)

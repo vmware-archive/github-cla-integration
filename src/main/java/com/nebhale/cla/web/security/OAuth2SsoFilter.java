@@ -24,28 +24,25 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.http.AccessTokenRequiredException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.web.client.RestOperations;
 
-import com.nebhale.cla.GitHubUtils;
+import com.nebhale.cla.github.GitHubRestOperations;
 
 final class OAuth2SsoFilter extends AbstractAuthenticationProcessingFilter {
 
     private final String[] adminEmailDomains;
 
-    private final RestOperations restOperations;
+    private final GitHubRestOperations gitHubRestOperations;
 
-    OAuth2SsoFilter(String[] adminEmailDomains, String defaultFilterProcessesUrl, RestOperations restOperations) {
+    OAuth2SsoFilter(String[] adminEmailDomains, String defaultFilterProcessesUrl, GitHubRestOperations gitHubRestOperations) {
         super(defaultFilterProcessesUrl);
         this.adminEmailDomains = adminEmailDomains;
-        this.restOperations = restOperations;
+        this.gitHubRestOperations = gitHubRestOperations;
     }
 
     @SuppressWarnings("unchecked")
@@ -57,7 +54,7 @@ final class OAuth2SsoFilter extends AbstractAuthenticationProcessingFilter {
             throw new BadCredentialsException("Not a valid administrative user");
         }
 
-        Map<String, Object> userInfo = this.restOperations.getForObject("https://api.github.com/user", Map.class);
+        Map<String, Object> userInfo = this.gitHubRestOperations.getForObject("/user", Map.class);
         AdminUser adminUser = new AdminUser((String) userInfo.get("login"));
 
         return new UsernamePasswordAuthenticationToken(adminUser, null, adminUser.getAuthorities());
@@ -73,12 +70,11 @@ final class OAuth2SsoFilter extends AbstractAuthenticationProcessingFilter {
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings("unchecked")
     private boolean isValidAdminUser() {
-        ResponseEntity<Set> emails = this.restOperations.exchange("https://api.github.com/user/emails", HttpMethod.GET, GitHubUtils.v3HttpEntity(),
-            Set.class);
+        Set<Map<String, Object>> emails = this.gitHubRestOperations.getForObjectV3("/user/emails", Set.class);
 
-        for (Map<String, Object> email : (Set<Map<String, Object>>) emails.getBody()) {
+        for (Map<String, Object> email : emails) {
             if (isVerified(email) && isValidAdminEmailDomain(email)) {
                 return true;
             }
