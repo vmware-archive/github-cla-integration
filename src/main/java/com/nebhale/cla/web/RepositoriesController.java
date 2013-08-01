@@ -18,6 +18,7 @@ package com.nebhale.cla.web;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
@@ -57,9 +58,13 @@ final class RepositoriesController extends AbstractController {
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     String listRepositories(ModelMap model) {
-        model.put("repositoryMapping", getRepositoryMapping());
+        Map<String, String> repositoryMapping = getRepositoryMapping();
+        SortedSet<String> adminRepositories = this.gitHubRepositories.getAdminRepositories();
+        adminRepositories.removeAll(repositoryMapping.keySet());
+
+        model.put("repositoryMapping", repositoryMapping);
         model.put("candidateAgreements", this.agreementRepository.find());
-        model.put("candidateRepositories", this.gitHubRepositories.getAdminRepositories());
+        model.put("candidateRepositories", adminRepositories);
 
         return "repositories";
     }
