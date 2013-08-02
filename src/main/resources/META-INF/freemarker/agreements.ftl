@@ -9,7 +9,7 @@
 
 <#include "header.ftl">
 <div class="container">
-<#include "sidebar.ftl">
+	<#include "sidebar.ftl">
 <div class = "content">
 <div class ="box">
 <h1>Contributor License Agreements</h1>

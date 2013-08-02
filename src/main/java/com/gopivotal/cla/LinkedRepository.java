@@ -19,13 +19,13 @@ package com.gopivotal.cla;
 /**
  * A class representing a repository that has been linked to an agreement
  */
-public final class Repository implements Comparable<Repository> {
+public final class LinkedRepository implements Comparable<LinkedRepository> {
 
     private final Long id;
 
-    private final String name;
+    private final Agreement agreement;
 
-    private final Long agreementId;
+    private final String name;
 
     private final String accessToken;
 
@@ -33,14 +33,14 @@ public final class Repository implements Comparable<Repository> {
      * Create a new instance
      * 
      * @param id The synthetic id of the repository
+     * @param agreement The agreement the repository is linked to
      * @param name The name of the repository
-     * @param agreementId The synthetic id of the agreement
      * @param accessToken The access token to use to update the repository
      */
-    public Repository(Long id, String name, Long agreeementId, String accessToken) {
+    public LinkedRepository(Long id, Agreement agreement, String name, String accessToken) {
         this.id = id;
+        this.agreement = agreement;
         this.name = name;
-        this.agreementId = agreeementId;
         this.accessToken = accessToken;
     }
 
@@ -54,21 +54,21 @@ public final class Repository implements Comparable<Repository> {
     }
 
     /**
+     * Returns the agreement the repository is linked to
+     * 
+     * @return the agreement the repository is linked to
+     */
+    public Agreement getAgreement() {
+        return this.agreement;
+    }
+
+    /**
      * Returns the name of the repository
      * 
      * @return the name of the repository
      */
     public String getName() {
         return this.name;
-    }
-
-    /**
-     * Returns the synthetic id of the agreement
-     * 
-     * @return the synthetic id of the agreement
-     */
-    public Long getAgreementId() {
-        return this.agreementId;
     }
 
     /**
@@ -81,15 +81,15 @@ public final class Repository implements Comparable<Repository> {
     }
 
     @Override
-    public int compareTo(Repository o) {
-        return this.name.compareTo(o.name);
+    public int compareTo(LinkedRepository o) {
+        return this.name.compareToIgnoreCase(o.name);
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = (prime * result) + this.id.hashCode();
+        result = (prime * result) + ((this.id == null) ? 0 : this.id.hashCode());
         return result;
     }
 
@@ -104,8 +104,12 @@ public final class Repository implements Comparable<Repository> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        Repository other = (Repository) obj;
-        if (!this.id.equals(other.id)) {
+        LinkedRepository other = (LinkedRepository) obj;
+        if (this.id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!this.id.equals(other.id)) {
             return false;
         }
         return true;
@@ -113,7 +117,8 @@ public final class Repository implements Comparable<Repository> {
 
     @Override
     public String toString() {
-        return "Repository [id=" + this.id + ", name=" + this.name + ", agreementId=" + this.agreementId + ", accessToken=" + this.accessToken + "]";
+        return "LinkedRepository [id=" + this.id + ", agreement=" + this.agreement + ", name=" + this.name + ", accessToken=" + this.accessToken
+            + "]";
     }
 
 }

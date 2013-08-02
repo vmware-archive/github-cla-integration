@@ -1,7 +1,7 @@
 <html>
 <head>
 
-<title>${agreement.name} ${version.name} -  Version Administration</title>
+<title>${version.agreement.name} ${version.name} -  Version Administration</title>
 <link rel="stylesheet" type="text/css" href="/resources/styles/style.css">
 
 </head>
@@ -12,7 +12,7 @@
 <#include "sidebar.ftl">
 <div class = "content">
 
-<h2>${agreement.name} ${version.name} Version</h2>
+<h2>${version.agreement.name} ${version.name} Version</h2>
 <div class="box fixed-box">
 <h1>Individual Agreement Content</h1>
 ${individualContent}

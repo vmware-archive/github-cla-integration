@@ -4,7 +4,7 @@
 <img src="/resources/images/logo_pivotal.png" />
 </div>
 <div id="header-right">
-<img id="photo" src="${userInfo.avatar_url}&amp;s=200" /> ${userInfo.name}
+<img id="photo" src="${user.avatarUrl}&amp;s=200" /> ${user.name}
 <a href="/logout">Logout</a>
 </div>
 <div class="top-nav">

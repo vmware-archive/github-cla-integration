@@ -16,22 +16,33 @@
 
 package com.gopivotal.cla.github;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestOperations;
+import static org.junit.Assert.assertFalse;
 
-/**
- * Configuration of utility components
- */
-@Configuration
-@ComponentScan
-public class GitHubConfiguration {
+import java.util.HashMap;
+import java.util.Map;
 
-    @Bean
-    public GitHubConditional wireGitHubConditional(RestOperations restOperations) {
-        GitHubConditional gitHubConditional = GitHubConditional.aspectOf();
-        gitHubConditional.setRestOperations(restOperations);
-        return gitHubConditional;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.gopivotal.cla.util.Sets;
+
+public final class StandardEmailsTest {
+
+    private final StandardEmails emails = new StandardEmails("test-emails-url");
+
+    @Before
+    public void initialize() {
+        Map<String, Object> raw = new HashMap<>();
+        raw.put("email", "test-email");
+        raw.put("primary", true);
+        raw.put("verified", true);
+
+        this.emails.initialize(Sets.asSet(raw));
     }
+
+    @Test
+    public void test() {
+        assertFalse(this.emails.isEmpty());
+    }
+
 }

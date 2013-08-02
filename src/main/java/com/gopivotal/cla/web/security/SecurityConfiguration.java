@@ -32,7 +32,7 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
-import com.gopivotal.cla.github.GitHubRestOperations;
+import com.gopivotal.cla.github.GitHubClient;
 
 /**
  * Configuration of security components
@@ -79,8 +79,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    OAuth2SsoFilter ssoFilter(@Value("#{@adminEmailDomains}") String[] adminEmailDomains, GitHubRestOperations gitHubRestOperations) throws Exception {
-        OAuth2SsoFilter filter = new OAuth2SsoFilter(adminEmailDomains, LOGIN_URL, gitHubRestOperations);
+    OAuth2SsoFilter ssoFilter(@Value("#{@adminEmailDomains}") String[] adminEmailDomains, GitHubClient gitHubClient) throws Exception {
+        OAuth2SsoFilter filter = new OAuth2SsoFilter(adminEmailDomains, LOGIN_URL, gitHubClient);
         filter.setAuthenticationManager(authenticationManager());
         return filter;
     }

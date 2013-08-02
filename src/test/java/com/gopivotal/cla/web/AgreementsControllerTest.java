@@ -27,27 +27,29 @@ import org.springframework.ui.ModelMap;
 
 import com.gopivotal.cla.Agreement;
 import com.gopivotal.cla.Version;
-import com.gopivotal.cla.github.GitHubRestOperations;
+import com.gopivotal.cla.github.GitHubClient;
+import com.gopivotal.cla.github.MarkdownService;
 import com.gopivotal.cla.repository.AgreementRepository;
 import com.gopivotal.cla.repository.VersionRepository;
 import com.gopivotal.cla.util.Sets;
-import com.gopivotal.cla.web.AgreementsController;
 
 public final class AgreementsControllerTest {
 
     private static final Agreement AGREEMENT = new Agreement(Long.MIN_VALUE, "test-name");
 
-    private static final Version VERSION = new Version(Long.MIN_VALUE + 1, AGREEMENT.getId(), "test-name", "test-individual-content",
+    private static final Version VERSION = new Version(Long.MIN_VALUE + 1, AGREEMENT, "test-name", "test-individual-content",
         "test-corporate-content");
 
-    private final GitHubRestOperations gitHubRestOperations = mock(GitHubRestOperations.class);
+    private final GitHubClient gitHubClient = mock(GitHubClient.class);
 
     private final AgreementRepository agreementRepository = mock(AgreementRepository.class);
 
     private final VersionRepository versionRepository = mock(VersionRepository.class);
 
-    private final AgreementsController controller = new AgreementsController(this.gitHubRestOperations, this.agreementRepository,
-        this.versionRepository);
+    private final MarkdownService markdownService = mock(MarkdownService.class);
+
+    private final AgreementsController controller = new AgreementsController(this.gitHubClient, this.agreementRepository, this.versionRepository,
+        this.markdownService);
 
     @Test
     public void listAgreements() {
@@ -100,18 +102,14 @@ public final class AgreementsControllerTest {
     @Test
     public void readVersion() {
         when(this.versionRepository.read(VERSION.getId())).thenReturn(VERSION);
-        when(this.agreementRepository.read(AGREEMENT.getId())).thenReturn(AGREEMENT);
-        when(this.gitHubRestOperations.postForObject("/markdown/raw", VERSION.getIndividualAgreementContent(), String.class)).thenReturn(
-            "test-individual-html");
-        when(this.gitHubRestOperations.postForObject("/markdown/raw", VERSION.getCorporateAgreementContent(), String.class)).thenReturn(
-            "test-corporate-html");
+        when(this.markdownService.render(VERSION.getIndividualAgreementContent())).thenReturn("test-individual-html");
+        when(this.markdownService.render(VERSION.getCorporateAgreementContent())).thenReturn("test-corporate-html");
 
         ModelMap model = new ModelMap();
         String result = this.controller.readVersion(VERSION.getId(), model);
 
         assertEquals("version", result);
         assertEquals(VERSION, model.get("version"));
-        assertEquals(AGREEMENT, model.get("agreement"));
         assertEquals("test-individual-html", model.get("individualContent"));
         assertEquals("test-corporate-html", model.get("corporateContent"));
     }

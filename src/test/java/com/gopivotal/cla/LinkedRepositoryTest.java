@@ -23,61 +23,60 @@ import com.gopivotal.cla.testutil.ComparableTestUtils;
 import com.gopivotal.cla.testutil.EqualsAndHashCodeTestUtils;
 import com.gopivotal.cla.testutil.ToStringTestUtils;
 
-public final class VersionTest extends AbstractTypeTest<Version> {
+public final class LinkedRepositoryTest extends AbstractTypeTest<LinkedRepository> {
 
     private static final Agreement AGREEMENT = new Agreement(Long.MIN_VALUE, "test-agreement");
 
     @Override
-    protected Version getInstance() {
-        return new Version(Long.MIN_VALUE + 1, AGREEMENT, "B", "test-individual-content", "test-corporate-content");
+    protected LinkedRepository getInstance() {
+        return new LinkedRepository(Long.MIN_VALUE + 2, AGREEMENT, "B", "test-access-token");
     }
 
     @Override
-    protected Version getInstanceWithNulls() {
-        return new Version(null, null, null, null, null);
+    protected LinkedRepository getInstanceWithNulls() {
+        return new LinkedRepository(null, null, null, null);
     }
 
     @Override
-    protected void assertState(Version instance) {
-        assertEquals((Long) (Long.MIN_VALUE + 1), instance.getId());
+    protected void assertState(LinkedRepository instance) {
+        assertEquals((Long) (Long.MIN_VALUE + 2), instance.getId());
         assertEquals(AGREEMENT, instance.getAgreement());
         assertEquals("B", instance.getName());
-        assertEquals("test-individual-content", instance.getIndividualAgreementContent());
-        assertEquals("test-corporate-content", instance.getCorporateAgreementContent());
+        assertEquals("test-access-token", instance.getAccessToken());
     }
 
     @Override
-    protected void assertEqualsAndHashCode(EqualsAndHashCodeTestUtils<Version> instance, EqualsAndHashCodeTestUtils<Version> instanceWithNulls) {
+    protected void assertEqualsAndHashCode(EqualsAndHashCodeTestUtils<LinkedRepository> instance,
+        EqualsAndHashCodeTestUtils<LinkedRepository> instanceWithNulls) {
         // @formatter:off
         instance
             .assertEqual(getInstance())
-            .assertNotEqual(new Version(Long.MIN_VALUE + 2, null, null, null, null));
+            .assertNotEqual(new LinkedRepository(Long.MIN_VALUE + 3, null, null, null));
 
         instanceWithNulls
             .assertEqual(getInstanceWithNulls())
-            .assertNotEqual(new Version(Long.MIN_VALUE + 2, null, null, null, null));
+            .assertNotEqual(new LinkedRepository(Long.MIN_VALUE + 3, null, null, null));
         // @formatter:on
     }
 
     @Override
-    protected void assertComparable(ComparableTestUtils<Version> instance) {
+    protected void assertComparable(ComparableTestUtils<LinkedRepository> instance) {
         // @formatter:off
         instance
             .assertBefore(
-                new Version(null, null, "a", null, null),
-                new Version(null, null, "A", null, null))
+                new LinkedRepository(null, null, "a",null),
+                new LinkedRepository(null, null, "A", null))
             .assertEqual(
-                new Version(null, null, "b", null, null),
-                new Version(null, null, "B", null, null))
+                new LinkedRepository(null, null, "b", null),
+                new LinkedRepository(null, null, "B",  null))
             .assertAfter(
-                new Version(null, null, "c", null, null),
-                new Version(null, null, "C", null, null));
+                new LinkedRepository(null, null, "c",  null),
+                new LinkedRepository(null, null, "C",  null));
         // @formatter:on
     }
 
     @Override
     protected void assertToString(ToStringTestUtils instance) {
-        instance.assertToString("id", "agreement", "name", "individualAgreementContent", "corporateAgreementContent");
+        instance.assertToString("id", "agreement", "name", "accessToken");
     }
-
 }

@@ -16,17 +16,29 @@
 
 package com.gopivotal.cla.github;
 
-import java.util.SortedSet;
-
 /**
- * Methods for interacting with the collection of GitHub repositories visible to a user
+ * A GitHub Repository
  */
-public interface GitHubRepositories {
+public interface Repository extends Comparable<Repository> {
 
     /**
-     * Returns the collection of {@code full_name}s for all repositories that this user can administer
+     * Returns the full name of the repository
      * 
-     * @return the collection of {@code full_name}s for all repositories that this user can administer
+     * @return the full name of the repository
      */
-    SortedSet<String> getAdminRepositories();
+    String getFullName();
+
+    /**
+     * Returns the name of the repository
+     * 
+     * @return the name of the repository
+     */
+    String getName();
+
+    /**
+     * Returns the user's permissions in this repository
+     * 
+     * @return the user's permissions in this repository
+     */
+    Permissions getPermissions();
 }

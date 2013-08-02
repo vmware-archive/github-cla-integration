@@ -16,14 +16,13 @@
 
 package com.gopivotal.cla.web;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import com.gopivotal.cla.github.GitHubRestOperations;
+import com.gopivotal.cla.github.GitHubClient;
+import com.gopivotal.cla.github.User;
 
 @SessionAttributes({ "userInfo", "hrefPrefix" })
 abstract class AbstractController {
@@ -34,20 +33,19 @@ abstract class AbstractController {
 
     private static final String HEADER_HOST = "host";
 
-    private final GitHubRestOperations gitHubRestOperations;
+    private final GitHubClient gitHubClient;
 
-    protected AbstractController(GitHubRestOperations gitHubRestOperations) {
-        this.gitHubRestOperations = gitHubRestOperations;
+    protected AbstractController(GitHubClient gitHubClient) {
+        this.gitHubClient = gitHubClient;
     }
 
-    @SuppressWarnings("unchecked")
-    @ModelAttribute("userInfo")
-    final Map<String, Object> userInfo() {
-        return this.gitHubRestOperations.getForObject("/user", Map.class);
+    @ModelAttribute("user")
+    final User user() {
+        return this.gitHubClient.getUser();
     }
 
     @ModelAttribute("hrefPrefix")
-    final String getHrefPrefix(HttpServletRequest httpServletRequest) {
+    final String hrefPrefix(HttpServletRequest httpServletRequest) {
         if (httpServletRequest != null) {
             String scheme = getScheme(httpServletRequest);
             String host = httpServletRequest.getHeader(HEADER_HOST);

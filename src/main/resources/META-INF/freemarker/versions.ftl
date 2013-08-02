@@ -16,7 +16,7 @@
 
 <ul>
 <#list versions as version>
-	<li><a href="/agreements/${version.agreementId}/versions/${version.id}">${version.name}</a></li>
+	<li><a href="/agreements/${version.agreement.id}/versions/${version.id}">${version.name}</a></li>
 </#list>
 </ul>
 </div>

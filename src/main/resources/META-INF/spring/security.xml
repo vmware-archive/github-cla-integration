@@ -13,7 +13,7 @@
 
 	<rest-template id="restOperations" resource="gitHubResource">
 		<beans:property name="interceptors">
-			<util:list value-type="org.springframework.http.client.ClientHttpRequestInterceptor">
+			<util:list>
 				<beans:ref bean="rateLimitingClientHttpRequestInterceptor"/>
 			</util:list>
 		</beans:property>

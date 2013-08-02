@@ -23,7 +23,7 @@ public final class Version implements Comparable<Version> {
 
     private final Long id;
 
-    private final Long agreementId;
+    private final Agreement agreement;
 
     private final String name;
 
@@ -35,14 +35,14 @@ public final class Version implements Comparable<Version> {
      * Create a new instance
      * 
      * @param id The synthetic id of the version
-     * @param agreementId The synthetic id of the agreement
+     * @param agreement The agreement this version is related to
      * @param name The name of the version
      * @param individualAgreementContent The content of the individual agreement
      * @param corporateAgreementContent The content of the corporate agreement
      */
-    public Version(Long id, Long agreementId, String name, String individualAgreementContent, String corporateAgreementContent) {
+    public Version(Long id, Agreement agreement, String name, String individualAgreementContent, String corporateAgreementContent) {
         this.id = id;
-        this.agreementId = agreementId;
+        this.agreement = agreement;
         this.name = name;
         this.individualAgreementContent = individualAgreementContent;
         this.corporateAgreementContent = corporateAgreementContent;
@@ -58,12 +58,12 @@ public final class Version implements Comparable<Version> {
     }
 
     /**
-     * Returns the synthetic id of the agreement
+     * Returns the agreement this version is related to
      * 
-     * @return the synthetic id of the agreement
+     * @return agreement this version is related to
      */
-    public Long getAgreementId() {
-        return this.agreementId;
+    public Agreement getAgreement() {
+        return this.agreement;
     }
 
     /**
@@ -95,14 +95,14 @@ public final class Version implements Comparable<Version> {
 
     @Override
     public int compareTo(Version o) {
-        return this.name.compareTo(o.name);
+        return this.name.compareToIgnoreCase(o.name);
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = (prime * result) + this.id.hashCode();
+        result = (prime * result) + ((this.id == null) ? 0 : this.id.hashCode());
         return result;
     }
 
@@ -118,7 +118,11 @@ public final class Version implements Comparable<Version> {
             return false;
         }
         Version other = (Version) obj;
-        if (!this.id.equals(other.id)) {
+        if (this.id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!this.id.equals(other.id)) {
             return false;
         }
         return true;
@@ -126,7 +130,8 @@ public final class Version implements Comparable<Version> {
 
     @Override
     public String toString() {
-        return "Version [id=" + this.id + ", agreementId=" + this.agreementId + ", name=" + this.name + "]";
+        return "Version [id=" + this.id + ", agreement=" + this.agreement + ", name=" + this.name + ", individualAgreementContent="
+            + this.individualAgreementContent + ", corporateAgreementContent=" + this.corporateAgreementContent + "]";
     }
 
 }

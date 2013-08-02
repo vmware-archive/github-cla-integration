@@ -18,17 +18,61 @@ package com.gopivotal.cla;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import com.gopivotal.cla.testutil.AbstractTypeTest;
+import com.gopivotal.cla.testutil.ComparableTestUtils;
+import com.gopivotal.cla.testutil.EqualsAndHashCodeTestUtils;
+import com.gopivotal.cla.testutil.ToStringTestUtils;
 
-import com.gopivotal.cla.Agreement;
+public final class AgreementTest extends AbstractTypeTest<Agreement> {
 
-public final class AgreementTest {
-
-    @Test
-    public void test() {
-        Agreement agreement = new Agreement(Long.MIN_VALUE, "test-name");
-
-        assertEquals((Long) Long.MIN_VALUE, agreement.getId());
-        assertEquals("test-name", agreement.getName());
+    @Override
+    protected Agreement getInstance() {
+        return new Agreement(Long.MIN_VALUE, "B");
     }
+
+    @Override
+    protected Agreement getInstanceWithNulls() {
+        return new Agreement(null, null);
+    }
+
+    @Override
+    protected void assertState(Agreement instance) {
+        assertEquals((Long) Long.MIN_VALUE, instance.getId());
+        assertEquals("B", instance.getName());
+    }
+
+    @Override
+    protected void assertEqualsAndHashCode(EqualsAndHashCodeTestUtils<Agreement> instance, EqualsAndHashCodeTestUtils<Agreement> instanceWithNulls) {
+        // @formatter:off
+        instance
+            .assertEqual(getInstance())
+            .assertNotEqual(new Agreement(Long.MIN_VALUE + 1, null));
+
+        instanceWithNulls
+            .assertEqual(getInstanceWithNulls())
+            .assertNotEqual(new Agreement(Long.MIN_VALUE + 1, null));
+        // @formatter:on
+    }
+
+    @Override
+    protected void assertComparable(ComparableTestUtils<Agreement> instance) {
+        // @formatter:off
+        instance
+            .assertBefore(
+                new Agreement(null, "a"),
+                new Agreement(null, "A"))
+            .assertEqual(
+                new Agreement(null, "b"),
+                new Agreement(null, "B"))
+            .assertAfter(
+                new Agreement(null, "c"),
+                new Agreement(null, "C"));
+        // @formatter:on
+    }
+
+    @Override
+    protected void assertToString(ToStringTestUtils instance) {
+        instance.assertToString("id", "name");
+    }
+
 }

@@ -16,22 +16,22 @@
 
 package com.gopivotal.cla.github;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import org.junit.Test;
 import org.springframework.web.client.RestOperations;
 
-/**
- * Configuration of utility components
- */
-@Configuration
-@ComponentScan
-public class GitHubConfiguration {
+public final class StandardMarkdownServiceTest {
 
-    @Bean
-    public GitHubConditional wireGitHubConditional(RestOperations restOperations) {
-        GitHubConditional gitHubConditional = GitHubConditional.aspectOf();
-        gitHubConditional.setRestOperations(restOperations);
-        return gitHubConditional;
+    private final RestOperations restOperations = mock(RestOperations.class);
+
+    private final StandardMarkdownService markdownService = new StandardMarkdownService(this.restOperations);
+
+    @Test
+    public void test() {
+        this.markdownService.render("test-markdown");
+        verify(this.restOperations).postForObject("https://api.github.com/markdown/raw", "test-markdown", String.class);
     }
+
 }

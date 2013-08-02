@@ -31,12 +31,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
-import com.gopivotal.cla.Repository;
+import com.gopivotal.cla.Agreement;
+import com.gopivotal.cla.LinkedRepository;
 
 @org.springframework.stereotype.Repository
-final class JdbcRepositoryRepository implements RepositoryRepository {
-
-    private final RowMapper<Repository> rowMapper;
+final class JdbcLinkedRepositoryRepository implements LinkedRepositoryRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -44,21 +43,23 @@ final class JdbcRepositoryRepository implements RepositoryRepository {
 
     private final TextEncryptor textEncryptor;
 
+    private final RowMapper<LinkedRepository> rowMapper;
+
     @Autowired
-    JdbcRepositoryRepository(DataSource dataSource, TextEncryptor textEncryptor) {
+    JdbcLinkedRepositoryRepository(DataSource dataSource, AgreementRepository agreementRepository, TextEncryptor textEncryptor) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.createStatement = new SimpleJdbcInsert(dataSource).withTableName("repositories").usingGeneratedKeyColumns("id");
         this.textEncryptor = textEncryptor;
-        this.rowMapper = new RepositoryRowMapper(textEncryptor);
+        this.rowMapper = new RepositoryRowMapper(agreementRepository, textEncryptor);
     }
 
     @Override
-    public SortedSet<Repository> find() {
+    public SortedSet<LinkedRepository> find() {
         return new TreeSet<>(this.jdbcTemplate.query("SELECT * FROM repositories", this.rowMapper));
     }
 
     @Override
-    public Repository create(String name, Long agreementId, String accessToken) {
+    public LinkedRepository create(String name, Long agreementId, String accessToken) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", name);
         parameters.put("agreementId", agreementId);
@@ -70,21 +71,25 @@ final class JdbcRepositoryRepository implements RepositoryRepository {
     }
 
     @Override
-    public Repository read(Long id) {
+    public LinkedRepository read(Long id) {
         return this.jdbcTemplate.queryForObject("SELECT * FROM repositories WHERE id = ?", this.rowMapper, id);
     }
 
-    private static final class RepositoryRowMapper implements RowMapper<Repository> {
+    private static final class RepositoryRowMapper implements RowMapper<LinkedRepository> {
+
+        private final AgreementRepository agreementRepository;
 
         private final TextEncryptor textEncryptor;
 
-        private RepositoryRowMapper(TextEncryptor textEncryptor) {
+        private RepositoryRowMapper(AgreementRepository agreementRepository, TextEncryptor textEncryptor) {
+            this.agreementRepository = agreementRepository;
             this.textEncryptor = textEncryptor;
         }
 
         @Override
-        public Repository mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Repository(rs.getLong(1), rs.getString(2), rs.getLong(3), this.textEncryptor.decrypt(rs.getString(4)));
+        public LinkedRepository mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Agreement agreement = this.agreementRepository.read(rs.getLong(3));
+            return new LinkedRepository(rs.getLong(1), agreement, rs.getString(2), this.textEncryptor.decrypt(rs.getString(4)));
         }
 
     }

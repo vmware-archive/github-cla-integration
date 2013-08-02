@@ -16,22 +16,30 @@
 
 package com.gopivotal.cla.github;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestOperations;
-
 /**
- * Configuration of utility components
+ * A GitHub email
  */
-@Configuration
-@ComponentScan
-public class GitHubConfiguration {
+public interface Email extends Comparable<Email> {
 
-    @Bean
-    public GitHubConditional wireGitHubConditional(RestOperations restOperations) {
-        GitHubConditional gitHubConditional = GitHubConditional.aspectOf();
-        gitHubConditional.setRestOperations(restOperations);
-        return gitHubConditional;
-    }
+    /**
+     * Returns the address
+     * 
+     * @return the address
+     */
+    String getAddress();
+
+    /**
+     * Returns whether the email is primary
+     * 
+     * @return whether the email is primary
+     */
+    Boolean isPrimary();
+
+    /**
+     * Returns whether the email is verified
+     * 
+     * @return whether the email is verified
+     */
+    Boolean isVerified();
+
 }

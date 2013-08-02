@@ -16,22 +16,17 @@
 
 package com.gopivotal.cla.github;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestOperations;
+import java.util.Map;
 
-/**
- * Configuration of utility components
- */
-@Configuration
-@ComponentScan
-public class GitHubConfiguration {
+final class StandardRepositories extends AbstractCollection<Repository> implements Repositories {
 
-    @Bean
-    public GitHubConditional wireGitHubConditional(RestOperations restOperations) {
-        GitHubConditional gitHubConditional = GitHubConditional.aspectOf();
-        gitHubConditional.setRestOperations(restOperations);
-        return gitHubConditional;
+    StandardRepositories(String url) {
+        super(url);
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    Repository initialize(Map raw) {
+        return new StandardRepository(raw);
     }
 }

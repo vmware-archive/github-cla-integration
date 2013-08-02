@@ -17,14 +17,11 @@
 package com.gopivotal.cla.web.security;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.HashSet;
 
 import javax.servlet.ServletException;
 
@@ -35,64 +32,52 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.http.AccessTokenRequiredException;
 
-import com.gopivotal.cla.github.GitHubRestOperations;
-import com.gopivotal.cla.util.Sets;
-import com.gopivotal.cla.web.security.AdminUser;
-import com.gopivotal.cla.web.security.OAuth2SsoFilter;
+import com.gopivotal.cla.github.Email;
+import com.gopivotal.cla.github.Emails;
+import com.gopivotal.cla.github.GitHubClient;
+import com.gopivotal.cla.github.User;
 
 public final class OAuth2SsoFilterTest {
 
-    private final GitHubRestOperations gitHubRestOperations = mock(GitHubRestOperations.class);
+    private final GitHubClient gitHubClient = mock(GitHubClient.class);
 
-    private final OAuth2SsoFilter oAuth2SsoFilter = new OAuth2SsoFilter(new String[] { "test.domain" }, "test-url", this.gitHubRestOperations);
+    private final OAuth2SsoFilter oAuth2SsoFilter = new OAuth2SsoFilter(new String[] { "test.domain" }, "test-url", this.gitHubClient);
 
     @Test
     public void attemptAuthentication() throws IOException, ServletException {
-        Map<String, Object> email = new HashMap<>();
-        email.put("email", "email@test.domain");
-        email.put("verified", true);
+        Emails emails = new StubEmails();
+        when(this.gitHubClient.getEmails()).thenReturn(emails);
+        emails.add(new StubEmail("email@test.domain", false, true));
 
-        Set<Map<String, Object>> emailInfo = Sets.asSet();
-        emailInfo.add(email);
-
-        Map<String, Object> userInfo = new HashMap<>();
-        userInfo.put("login", "test-login");
-
-        when(this.gitHubRestOperations.getForObjectV3("/user/emails", Set.class)).thenReturn(emailInfo);
-        when(this.gitHubRestOperations.getForObject("/user", Map.class)).thenReturn(userInfo);
+        User user = mock(User.class);
+        when(this.gitHubClient.getUser()).thenReturn(user);
 
         Authentication authentication = this.oAuth2SsoFilter.attemptAuthentication(new MockHttpServletRequest(), new MockHttpServletResponse());
 
-        AdminUser expectedAdminUser = new AdminUser("test-login");
-        assertEquals(expectedAdminUser, authentication.getPrincipal());
-        assertNull(authentication.getCredentials());
-        assertEquals(expectedAdminUser.getAuthorities().iterator().next(), authentication.getAuthorities().iterator().next());
+        assertEquals(user, authentication.getPrincipal());
     }
 
     @Test(expected = BadCredentialsException.class)
     public void attemptAuthenticationNonVerifiedEmail() throws IOException, ServletException {
-        Map<String, Object> email = new HashMap<>();
-        email.put("email", "email@test.domain");
-        email.put("verified", false);
+        Emails emails = new StubEmails();
+        when(this.gitHubClient.getEmails()).thenReturn(emails);
+        emails.add(new StubEmail("email@test.domain", false, false));
 
-        Set<Map<String, Object>> emailInfo = Sets.asSet();
-        emailInfo.add(email);
-
-        when(this.gitHubRestOperations.getForObjectV3("/user/emails", Set.class)).thenReturn(emailInfo);
+        User user = mock(User.class);
+        when(this.gitHubClient.getUser()).thenReturn(user);
 
         this.oAuth2SsoFilter.attemptAuthentication(new MockHttpServletRequest(), new MockHttpServletResponse());
     }
 
     @Test(expected = BadCredentialsException.class)
     public void attemptAuthenticationNonValidAdminDomain() throws IOException, ServletException {
-        Map<String, Object> email = new HashMap<>();
-        email.put("email", "email@other.domain");
-        email.put("verified", true);
 
-        Set<Map<String, Object>> emailInfo = Sets.asSet();
-        emailInfo.add(email);
+        Emails emails = new StubEmails();
+        when(this.gitHubClient.getEmails()).thenReturn(emails);
+        emails.add(new StubEmail("email@other.domain", false, true));
 
-        when(this.gitHubRestOperations.getForObjectV3("/user/emails", Set.class)).thenReturn(emailInfo);
+        User user = mock(User.class);
+        when(this.gitHubClient.getUser()).thenReturn(user);
 
         this.oAuth2SsoFilter.attemptAuthentication(new MockHttpServletRequest(), new MockHttpServletResponse());
     }
@@ -107,6 +92,48 @@ public final class OAuth2SsoFilterTest {
     public void unsuccessfulAuthenticationWithAccessTokenRequiredException() throws IOException, ServletException {
         this.oAuth2SsoFilter.unsuccessfulAuthentication(new MockHttpServletRequest(), new MockHttpServletResponse(),
             new AccessTokenRequiredException(null));
+    }
+
+    private static final class StubEmails extends HashSet<Email> implements Emails {
+
+        private static final long serialVersionUID = 5555232529640927085L;
+
+    }
+
+    private static final class StubEmail implements Email {
+
+        private final String address;
+
+        private final Boolean primary;
+
+        private final Boolean verified;
+
+        private StubEmail(String address, Boolean primary, Boolean verified) {
+            this.address = address;
+            this.primary = primary;
+            this.verified = verified;
+        }
+
+        @Override
+        public int compareTo(Email o) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getAddress() {
+            return this.address;
+        }
+
+        @Override
+        public Boolean isPrimary() {
+            return this.primary;
+        }
+
+        @Override
+        public Boolean isVerified() {
+            return this.verified;
+        }
+
     }
 
 }

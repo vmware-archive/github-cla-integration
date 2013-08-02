@@ -14,24 +14,32 @@
  * limitations under the License.
  */
 
-package com.gopivotal.cla;
+package com.gopivotal.cla.github;
 
-import static org.junit.Assert.assertEquals;
+/**
+ * GitHub repository permissions
+ */
+public interface Permissions extends Comparable<Permissions> {
 
-import org.junit.Test;
+    /**
+     * Returns whether the user has admin permissions
+     * 
+     * @return whether the user has admin permissions
+     */
+    Boolean isAdmin();
 
-import com.gopivotal.cla.Repository;
+    /**
+     * Returns whether the user has push permissions
+     * 
+     * @return whether the user has push permissions
+     */
+    Boolean isPush();
 
-public final class RepositoryTest {
-
-    @Test
-    public void test() {
-        Repository repository = new Repository(Long.MIN_VALUE + 2, "test-name", Long.MIN_VALUE, "test-access-token");
-
-        assertEquals((Long) (Long.MIN_VALUE + 2), repository.getId());
-        assertEquals("test-name", repository.getName());
-        assertEquals((Long) Long.MIN_VALUE, repository.getAgreementId());
-        assertEquals("test-access-token", repository.getAccessToken());
-    }
+    /**
+     * Returns whether the user has pull permissions
+     * 
+     * @return whether the user has pull permissions
+     */
+    Boolean isPull();
 
 }

@@ -14,28 +14,35 @@
  * limitations under the License.
  */
 
-package com.gopivotal.cla.web.security;
+package com.gopivotal.cla.util;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.junit.Test;
-import org.springframework.security.core.GrantedAuthority;
 
-import com.gopivotal.cla.web.security.AdminUser;
-
-public final class AdminUserTest {
+public final class SetsTest {
 
     @Test
-    public void test() {
-        AdminUser user = new AdminUser("test-login");
-        assertEquals("test-login", user.getUsername());
-        assertEquals("unused", user.getPassword());
+    public void asSet() {
+        Set<String> expected = new HashSet<>();
+        expected.add("a");
+        expected.add("b");
 
-        Collection<GrantedAuthority> authorities = user.getAuthorities();
-        assertEquals(1, authorities.size());
-        assertEquals("ROLE_ADMIN", authorities.iterator().next().getAuthority());
+        assertEquals(expected, Sets.asSet("a", "b"));
+    }
+
+    @Test
+    public void asSortedSet() {
+        SortedSet<String> expected = new TreeSet<>();
+        expected.add("a");
+        expected.add("b");
+
+        assertEquals(expected, Sets.asSortedSet("a", "b"));
     }
 
 }
