@@ -8,14 +8,20 @@
 <body>
 
 <#include "header.ftl">
+<div class ="container">
+<#include "sidebar.ftl">
+<div class = "content">
 
-<h1>${agreement.name} ${version.name} Version</h1>
-
-<h2>Individual Agreement Content</h2>
+<h2>${agreement.name} ${version.name} Version</h2>
+<div class="box fixed-box">
+<h1>Individual Agreement Content</h1>
 ${individualContent}
-
-<h2>Corporate Agreement Content</h2>
+</div>
+<div class="box fixed-box">
+<h1>Corporate Agreement Content</h1>
 ${corporateContent}
-
+</div>
+</div>
+</div>
 </body>
 </html>
