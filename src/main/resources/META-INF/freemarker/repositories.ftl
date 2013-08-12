@@ -6,26 +6,29 @@
 
 </head>
 <body>
-
 <#include "header.ftl">
-
+<div class="container">
+<#include "sidebar.ftl">
+<div class = "content">
+<div class = "box">
 <h1>Linked Repositories</h1>
-
-<table>
+<br style="clear: both;" /> 
+<table class="repositories_table">
 	<tbody>
 	<#list repositoryMapping?keys?sort as repository>
 		<tr>
-			<td>${repository}</td>
+			<td>${repository} <p class="url">${hrefPrefix}/${repository}</p> </td>
 			<td>${repositoryMapping[repository]}</td>
-			<td>${hrefPrefix}/${repository}</td>
 		</tr>
 	</#list>
 	</tbody>
 </table>
-
+</div>
+<h2>Link a repository to an agreement</h2>
+<div class="box-outer">
+<div class = "box">
 <form method="POST" action="/repositories">
-	<fieldset>
-		<legend>Link a repository to an agreement</legend>
+		
 
 		<label for="repository">Repository:</label>
 		<select name="repository" required="true">
@@ -41,8 +44,10 @@
 		</select>
 
 		<button type="submit">Link</button>
-	</fieldset>
 </form>
-
+</div>
+</div>
+</div>
+</div>
 </body>
 </html>
