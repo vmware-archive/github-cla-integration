@@ -4,11 +4,13 @@ jdk:
   - openjdk7
 before_script:
   - psql -c 'create database cla;' -U postgres
-after_success:
-  - "bundle install --binstubs"
-  - "bin/cf target $TARGET"
-  - "bin/cf login --username $USERNAME --password $PASSWORD --organization $ORGANIZATION --space $SPACE"
-  - "bin/cf push"
+after_success: |
+  if [[ $TRAVIS_BRANCH == 'master' && $TRAVIS_SECURE_ENV_VARS == 'true' ]] ; then
+    bundle install --binstubs
+    bin/cf target $TARGET
+    bin/cf login --username $USERNAME --password $PASSWORD --organization $ORGANIZATION --space $SPACE
+    bin/cf push
+  fi
 env:
   global:
     - "DATABASE_URL=postgresql://travis@127.0.0.1:5432/cla"
@@ -23,6 +25,3 @@ env:
       secure: B8w6l+idADvjwVNDsifbyb3xpjILaf8B9ftRunBMaane/AuXtY3NUOBX5Qxzes4qkvq2IqG04/YAVyvNJE2MYuSSDcaU809hkOX5iJqC/fgrgprV/5oO+5fTUKNh/d+GYI6SX5s5WH8DSFHTMLUCQ+omBMs3AoXNZ1ykW/GKoa4= # $SPACE
     -
       secure: B/E5TQUpgwNterNTAG9Q9fOOw1up8ffhTTsFx8EU0SbPz11FxX1eMM19lHMmGKpDwzscyzU22htrN4ZkaIA2yTxkUaHPQZpVKJDj6/3lgR8f5D9Zfm66HDzuYiaf/EQBxxM4ha3FKjSPzQa2M8ED0Tm27dZgq0WAC3LWAFMG6kw= # $TARGET
-branches:
-  only:
-    - master
