@@ -7,9 +7,14 @@ applications:
   domain: cfapps.io
   path: target/github-cla-integration-1-SNAPSHOT.war
   services:
-    gopivotal-cla:
+    gopivotal-cla-elephantsql:
       label: elephantsql
       provider: elephantsql
       version: n/a
       plan: turtle
+    gopivotal-cla-newrelic:
+      label: newrelic
+      provider: newrelic
+      version: n/a
+      plan: standard
   buildpack: https://github.com/cloudfoundry/java-buildpack
