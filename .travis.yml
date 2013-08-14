@@ -16,12 +16,12 @@ env:
     - "DATABASE_URL=postgresql://travis@127.0.0.1:5432/cla"
     - "ENCRYPTION_KEY='OAI]TQ(aYvcyUMwzGpKh7HptueVQJPkCVSYjxpOOSZeVby4FWP'" # This is a test-only value
     -
-      secure: KmU5dVk9w6lNZvDlKLlUd8Sse33JZgvMaG1msp0l2SG1HSlFqxwo9Gc6vUbJlgZT6VaICKmsFAfHZQaji3sqVQ3plhztYynQGuKz0wyE11B+JYeodADz+rAU9esAxpnenl9xhp+mdWv1sgqbkTtcxqc9CDMNKprb0mWbfPb+wfc= # $USERNAME
+      secure: T/zNcNbxbEhvK/egxkdI6sGyRyewuDEwITnCWYXHbrrwNgc1bGdgCKfaFI7flegQGNjTfdranoxWb69o7XPjUCW8YTKztycn3fv0NvQQmL2eTiQsVRyakpJ88UNOmwnsTu77k4oE156t9N9pHcnhmRbuqym0+CiEDWV/4j2M/RU= # $USERNAME
     -
-      secure: bnk7xbaeLmVpuWrW/8f4g8DOz/Vi2J7QYdPBvk0wnWb1BrYC7X92az/8ev6n27iGb9yX3bfbfb/J7XMMul9AlbJybAsFmH5KyPduKZ4hXikXKPEsbnWpIxN8A6TUxnnlYX0NYLu3cFNc7m6Xv6upYrFGjGpau0DQG7135ofXhwo= # $PASSWORD
+      secure: YKcY/yTdw0ChjJD75k+7jGSroxLJpPWzD7XveOQFhqrcsNDPDUlsIiOLfvACJOddghNH2GAtBd0lmcE2bzWhRdYaRkhgfh/MjrH7eaU/ArDkcjdWAf/FTl8o9QXs1wJhiCZZVCpuRMBjLu8eqrnj43sdAKdj8S/OAzi3Y1kNh7w= # $PASSWORD
     -
-      secure: Z3i6GJXCWQrsD343fJk7rv7hm2XKZEIGKFFPF0XPz2xT/Jqirx9Fiwl8odm48jG6G8yBMyk34AgJkjPTf28vK59v+/8eLueqGbPaZrJtZEvuGdEeLGT3UpvXdzOjwZbPspFFYgXAb6NHn2HpgtLQ2RvIjTXG4iRfUJ41+OoQ9wc= # $ORGANIZATION
+      secure: bCCaiKwT/yu1mZKx8UIEcnaeEu7RVfmzk59lbYw3J+iGZYIdnGDhQMBECeGfttMzR6MCzARKeAf0laqkzsTmZqsU7e+lus9Anuwm5jP/6Yy3ZuuxirJXkKaf+S2JNOg3K8dvpgSMbC64Sx76VLpEI90tKs3gQ3XxyPo2QzVLpz8= # $ORGANIZATION
     -
-      secure: PTUHOOROIi994+V3UR7CS5OFsAjuso/LI2ENPFIqvTcn+twv82UblT0NO8jdlVgrmc/0eeuhej2jP+2XynWNp+eOFGr/QZq1tNCAigw5Z35Erh0QwxzniX1Rk+nY9LlV7E9zgQpCiAyW8PkZo0zDh+XtF3RlgYb3auOc8W4iizk= # $SPACE
+      secure: CulVPY2MKRjoOWU7rC7JbN15PL1DFaPoqAqWiB74KMy6fnDQh+ribBDB1bF42aSS40gx7u59mMNn1QJWNQoFxGFaaRObFqB4FaduvTHqxB6pDM0IGa9+m989OCRea8N/eLT/yF7rAM811rP/aOJ2LpVbT9CZFaC4oWTD5S+Sok4= # $SPACE
     -
-      secure: B/E5TQUpgwNterNTAG9Q9fOOw1up8ffhTTsFx8EU0SbPz11FxX1eMM19lHMmGKpDwzscyzU22htrN4ZkaIA2yTxkUaHPQZpVKJDj6/3lgR8f5D9Zfm66HDzuYiaf/EQBxxM4ha3FKjSPzQa2M8ED0Tm27dZgq0WAC3LWAFMG6kw= # $TARGET
+      secure: T/o1dHYbRm4xnvj6Tye4UUJr/70QvpHx4PYZZL/EFw5+qBXUtmY6kwLI7ZaQxUEtXWMvoFOowUxXwuTnotZQbSMnXeEmk4fz6w2sbYpUoqCeqEeo6Tp9G0Te9rOedoGrOx83VO7NjXiAIi4XLReZo/O6Uug9o4ssfaZ/m/WY5ds= # $TARGET
