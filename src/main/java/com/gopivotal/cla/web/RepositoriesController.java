@@ -56,12 +56,12 @@ final class RepositoriesController extends AbstractController {
     @RequestMapping(method = RequestMethod.GET, value = "")
     String listRepositories(ModelMap model) {
         SortedSet<LinkedRepository> linkedRepositories = this.linkedRepositoryRepository.find();
+        SortedSet<Repository> adminRepositories = getAdminRepositories();
         SortedSet<Agreement> candidateAgreements = this.agreementRepository.find();
-        SortedSet<Repository> candidateRepositories = candidateRepositories(getAdminRepositories(), linkedRepositories);
 
-        model.put("linkedRepositories", linkedRepositories);
+        model.put("linkedRepositories", filterLinkedRepositories(linkedRepositories, adminRepositories));
         model.put("candidateAgreements", candidateAgreements);
-        model.put("candidateRepositories", candidateRepositories);
+        model.put("candidateRepositories", filterAdminRepositories(adminRepositories, linkedRepositories));
 
         return "repositories";
     }
@@ -89,17 +89,35 @@ final class RepositoriesController extends AbstractController {
         return adminRepositories;
     }
 
-    private SortedSet<Repository> candidateRepositories(SortedSet<Repository> repositories, SortedSet<LinkedRepository> linkedRepositories) {
+    private SortedSet<Repository> filterAdminRepositories(SortedSet<Repository> adminRepositories, SortedSet<LinkedRepository> linkedRepositories) {
         Set<String> linkedRepositoryNames = Sets.asSet();
         for (LinkedRepository linkedRepository : linkedRepositories) {
             linkedRepositoryNames.add(linkedRepository.getName().toLowerCase());
         }
 
-        SortedSet<Repository> candidateRepositories = Sets.asSortedSet();
+        SortedSet<Repository> filteredAdminRepositories = Sets.asSortedSet();
 
-        for (Repository repository : repositories) {
-            if (!linkedRepositoryNames.contains(repository.getFullName().toLowerCase())) {
-                candidateRepositories.add(repository);
+        for (Repository adminRepository : adminRepositories) {
+            if (!linkedRepositoryNames.contains(adminRepository.getFullName().toLowerCase())) {
+                filteredAdminRepositories.add(adminRepository);
+            }
+        }
+
+        return filteredAdminRepositories;
+    }
+
+    private SortedSet<LinkedRepository> filterLinkedRepositories(SortedSet<LinkedRepository> linkedRepositories,
+        SortedSet<Repository> adminRepositories) {
+        Set<String> adminRepositoryNames = Sets.asSet();
+        for (Repository adminRepository : adminRepositories) {
+            adminRepositoryNames.add(adminRepository.getFullName().toLowerCase());
+        }
+
+        SortedSet<LinkedRepository> candidateRepositories = Sets.asSortedSet();
+
+        for (LinkedRepository linkedRepository : linkedRepositories) {
+            if (adminRepositoryNames.contains(linkedRepository.getName().toLowerCase())) {
+                candidateRepositories.add(linkedRepository);
             }
         }
 
