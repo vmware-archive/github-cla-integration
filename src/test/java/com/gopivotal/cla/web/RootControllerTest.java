@@ -17,17 +17,38 @@
 package com.gopivotal.cla.web;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
+import org.springframework.ui.ModelMap;
+
+import com.gopivotal.cla.Agreement;
+import com.gopivotal.cla.LinkedRepository;
+import com.gopivotal.cla.repository.LinkedRepositoryRepository;
+import com.gopivotal.cla.util.Sets;
 
 public final class RootControllerTest {
 
-    private final RootController controller = new RootController();
+    private static final String ACCESS_TOKEN = "access-token";
+
+    private static final Agreement AGREEMENT = new Agreement(Long.MIN_VALUE, "test-agreement");
+
+    private static final LinkedRepository LINKED_REPOSITORY = new LinkedRepository(Long.MIN_VALUE + 1, AGREEMENT, "admin", ACCESS_TOKEN);
+
+    private final LinkedRepositoryRepository linkedRepositoryRepository = mock(LinkedRepositoryRepository.class);
+
+    private final RootController controller = new RootController(this.linkedRepositoryRepository);
 
     @Test
     public void index() {
-        String result = this.controller.index();
+        when(this.linkedRepositoryRepository.find()).thenReturn(Sets.asSortedSet(LINKED_REPOSITORY));
+
+        ModelMap model = new ModelMap();
+        String result = this.controller.index(model);
+
         assertEquals("index", result);
+        assertEquals(Sets.asSortedSet(LINKED_REPOSITORY), model.get("linkedRepositories"));
     }
 
 }

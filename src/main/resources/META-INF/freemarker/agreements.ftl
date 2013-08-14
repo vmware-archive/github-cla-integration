@@ -8,29 +8,31 @@
 <body>
 
 <#include "header.ftl">
+
 <div class="container">
-	<#include "sidebar.ftl">
-<div class = "content">
-<div class ="box">
-<h1>Contributor License Agreements</h1>
+	<div class="list">
+		<h2>Agreements</h2>
 
-<ul>
-<#list agreements as agreement>
-	<li><a href="/agreements/${agreement.id}/versions">${agreement.name}</a></li>
-</#list>
-</ul>
-</div>
-<h2>Create new agreement</h2>
-<div class = "box-outer">
-<div class ="box">
-<form method="POST" action="/agreements">
+		<ul>
+		<#list agreements as agreement>
+			<li><a href="/agreements/${agreement.id}/versions">${agreement.name}</a></li>
+		</#list>
+		</ul>
+	</div>
 
-		<label for="name">Name:</label><input type="text" class="text" name="name">
-		<button type="submit">Create</button>
-</form>
+	<div class="content">
+		<form method="POST" action="/agreements">
+			<h2>Create a new agreement</h2>
+
+			<fieldset>
+				<label for="name">Name:</label>
+				<input type="text" class="text" name="name">
+
+				<button type="submit">Create</button>
+			</fieldset>
+		</form>
+	</div>
 </div>
-</div>
-</div>
-</div>
+
 </body>
 </html>

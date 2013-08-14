@@ -16,16 +16,29 @@
 
 package com.gopivotal.cla.web;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.gopivotal.cla.repository.LinkedRepositoryRepository;
 
 @Controller
 @RequestMapping("")
 final class RootController {
 
+    private final LinkedRepositoryRepository linkedRepositoryRepository;
+
+    @Autowired
+    RootController(LinkedRepositoryRepository linkedRepositoryRepository) {
+        this.linkedRepositoryRepository = linkedRepositoryRepository;
+    }
+
     @RequestMapping(method = RequestMethod.GET, value = "")
-    String index() {
+    String index(ModelMap model) {
+        model.put("linkedRepositories", this.linkedRepositoryRepository.find());
+
         return "index";
     }
 }
