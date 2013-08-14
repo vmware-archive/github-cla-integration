@@ -26,6 +26,9 @@ import java.util.TreeSet;
  */
 public final class Sets {
 
+    private Sets() {
+    }
+
     /**
      * Creates a {@link Set} containing specified items
      * 

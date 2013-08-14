@@ -28,17 +28,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.gopivotal.cla.Agreement;
-import com.gopivotal.cla.Repository;
-import com.gopivotal.cla.repository.JdbcAgreementRepository;
-import com.gopivotal.cla.repository.JdbcRepositoryRepository;
+import com.gopivotal.cla.LinkedRepository;
 
-public final class JdbcRepositoryRepositoryTest extends AbstractJdbcRepositoryTest {
+public final class JdbcLinkedRepositoryRepositoryTest extends AbstractJdbcRepositoryTest {
 
     @Autowired
     private volatile JdbcAgreementRepository agreementRepository;
 
     @Autowired
-    private volatile JdbcRepositoryRepository repositoryRepository;
+    private volatile JdbcLinkedRepositoryRepository linkedRepositoryRepository;
 
     @Autowired
     private volatile TextEncryptor textEncryptor;
@@ -52,33 +50,33 @@ public final class JdbcRepositoryRepositoryTest extends AbstractJdbcRepositoryTe
 
     @Test
     public void find() {
-        int initialSize = this.repositoryRepository.find().size();
+        int initialSize = this.linkedRepositoryRepository.find().size();
 
         this.jdbcTemplate.update("INSERT INTO repositories(id, name, agreementId, accessToken) VALUES(?, ?, ?, ?)", Integer.MAX_VALUE - 1,
             "test-name-1", this.agreement.getId(), this.textEncryptor.encrypt("test-access-token-1"));
         this.jdbcTemplate.update("INSERT INTO repositories(id, name, agreementId, accessToken) VALUES(?, ?, ?, ?)", Integer.MAX_VALUE - 2,
             "test-name-2", this.agreement.getId(), this.textEncryptor.encrypt("test-access-token-2"));
 
-        Set<Repository> repositories = this.repositoryRepository.find();
-        assertEquals(initialSize + 2, repositories.size());
+        Set<LinkedRepository> linkedRepositories = this.linkedRepositoryRepository.find();
+        assertEquals(initialSize + 2, linkedRepositories.size());
     }
 
     @Test
     public void create() {
-        int initialSize = this.repositoryRepository.find().size();
+        int initialSize = this.linkedRepositoryRepository.find().size();
 
-        Repository repository = this.repositoryRepository.create("test-name", this.agreement.getId(), "test-access-token");
+        LinkedRepository linkedRepository = this.linkedRepositoryRepository.create("test-name", this.agreement.getId(), "test-access-token");
 
-        assertEquals(initialSize + 1, this.repositoryRepository.find().size());
+        assertEquals(initialSize + 1, this.linkedRepositoryRepository.find().size());
 
-        Map<String, Object> row = this.jdbcTemplate.queryForMap("SELECT * FROM repositories WHERE id = ?", repository.getId());
+        Map<String, Object> row = this.jdbcTemplate.queryForMap("SELECT * FROM repositories WHERE id = ?", linkedRepository.getId());
         assertEquals("test-name", row.get("name"));
         assertEquals(this.agreement.getId(), new Long((int) row.get("agreementId")));
         assertEquals("test-access-token", this.textEncryptor.decrypt((String) row.get("accessToken")));
 
-        assertEquals("test-name", repository.getName());
-        assertEquals(this.agreement.getId(), repository.getAgreementId());
-        assertEquals("test-access-token", repository.getAccessToken());
+        assertEquals(this.agreement, linkedRepository.getAgreement());
+        assertEquals("test-name", linkedRepository.getName());
+        assertEquals("test-access-token", linkedRepository.getAccessToken());
     }
 
     @Test
@@ -86,16 +84,16 @@ public final class JdbcRepositoryRepositoryTest extends AbstractJdbcRepositoryTe
         this.jdbcTemplate.update("INSERT INTO repositories(id, name, agreementId, accessToken) VALUES(?, ?, ?, ?)", Integer.MAX_VALUE - 1,
             "test-name", this.agreement.getId(), this.textEncryptor.encrypt("test-access-token"));
 
-        Repository repository = this.repositoryRepository.read((long) Integer.MAX_VALUE - 1);
+        LinkedRepository linkedRepository = this.linkedRepositoryRepository.read((long) Integer.MAX_VALUE - 1);
 
-        assertEquals("test-name", repository.getName());
-        assertEquals(this.agreement.getId(), repository.getAgreementId());
-        assertEquals("test-access-token", repository.getAccessToken());
+        assertEquals(this.agreement, linkedRepository.getAgreement());
+        assertEquals("test-name", linkedRepository.getName());
+        assertEquals("test-access-token", linkedRepository.getAccessToken());
     }
 
     @Test(expected = EmptyResultDataAccessException.class)
     public void readUnknownId() {
-        this.repositoryRepository.read((long) Integer.MAX_VALUE);
+        this.linkedRepositoryRepository.read((long) Integer.MAX_VALUE);
     }
 
 }

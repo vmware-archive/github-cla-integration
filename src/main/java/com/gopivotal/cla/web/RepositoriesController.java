@@ -16,73 +16,93 @@
 
 package com.gopivotal.cla.web;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.gopivotal.cla.Repository;
-import com.gopivotal.cla.github.GitHubRepositories;
-import com.gopivotal.cla.github.GitHubRestOperations;
+import com.gopivotal.cla.Agreement;
+import com.gopivotal.cla.LinkedRepository;
+import com.gopivotal.cla.github.GitHubClient;
+import com.gopivotal.cla.github.Organization;
+import com.gopivotal.cla.github.Repository;
 import com.gopivotal.cla.repository.AgreementRepository;
-import com.gopivotal.cla.repository.RepositoryRepository;
+import com.gopivotal.cla.repository.LinkedRepositoryRepository;
+import com.gopivotal.cla.util.Sets;
 
 @Controller
 @RequestMapping("/repositories")
 final class RepositoriesController extends AbstractController {
 
+    private final GitHubClient gitHubClient;
+
     private final AgreementRepository agreementRepository;
 
-    private final GitHubRepositories gitHubRepositories;
-
-    private final RepositoryRepository repositoryRepository;
-
-    private final OAuth2RestOperations oAuth2RestOperations;
+    private final LinkedRepositoryRepository linkedRepositoryRepository;
 
     @Autowired
-    RepositoriesController(GitHubRestOperations gitHubRestOperations, AgreementRepository agreementRepository, GitHubRepositories gitHubRepositories,
-        RepositoryRepository repositoryRepository, OAuth2RestOperations oAuth2RestOperations) {
-        super(gitHubRestOperations);
+    RepositoriesController(GitHubClient gitHubClient, AgreementRepository agreementRepository, LinkedRepositoryRepository linkedRepositoryRepository) {
+        super(gitHubClient);
+        this.gitHubClient = gitHubClient;
         this.agreementRepository = agreementRepository;
-        this.gitHubRepositories = gitHubRepositories;
-        this.repositoryRepository = repositoryRepository;
-        this.oAuth2RestOperations = oAuth2RestOperations;
+        this.linkedRepositoryRepository = linkedRepositoryRepository;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     String listRepositories(ModelMap model) {
-        Map<String, String> repositoryMapping = getRepositoryMapping();
-        SortedSet<String> adminRepositories = this.gitHubRepositories.getAdminRepositories();
-        adminRepositories.removeAll(repositoryMapping.keySet());
+        SortedSet<LinkedRepository> linkedRepositories = this.linkedRepositoryRepository.find();
+        SortedSet<Agreement> candidateAgreements = this.agreementRepository.find();
+        SortedSet<Repository> candidateRepositories = candidateRepositories(getAdminRepositories(), linkedRepositories);
 
-        model.put("repositoryMapping", repositoryMapping);
-        model.put("candidateAgreements", this.agreementRepository.find());
-        model.put("candidateRepositories", adminRepositories);
+        model.put("linkedRepositories", linkedRepositories);
+        model.put("candidateAgreements", candidateAgreements);
+        model.put("candidateRepositories", candidateRepositories);
 
         return "repositories";
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "")
-    String createRepository(@RequestParam("repository") String name, @RequestParam("agreement") Long agreementId) {
-        this.repositoryRepository.create(name, agreementId, this.oAuth2RestOperations.getAccessToken().getValue());
+    String createLinkedRepository(@RequestParam("repository") String name, @RequestParam("agreement") Long agreementId) {
+        this.linkedRepositoryRepository.create(name, agreementId, this.gitHubClient.getAccessToken());
 
         return "redirect:/repositories";
     }
 
-    private Map<String, String> getRepositoryMapping() {
-        Map<String, String> repositoryMapping = new HashMap<>();
+    private SortedSet<Repository> getAdminRepositories() {
+        SortedSet<Repository> adminRepositories = Sets.asSortedSet();
 
-        for (Repository repository : this.repositoryRepository.find()) {
-            repositoryMapping.put(repository.getName(), this.agreementRepository.read(repository.getAgreementId()).getName());
+        for (Organization organization : this.gitHubClient.getUser().getOrganizations()) {
+            for (Repository repository : organization.getRepositories()) {
+                if (repository.getPermissions().isAdmin()) {
+                    adminRepositories.add(repository);
+                }
+            }
         }
 
-        return repositoryMapping;
+        adminRepositories.addAll(this.gitHubClient.getUser().getRepositories());
+
+        return adminRepositories;
+    }
+
+    private SortedSet<Repository> candidateRepositories(SortedSet<Repository> repositories, SortedSet<LinkedRepository> linkedRepositories) {
+        Set<String> linkedRepositoryNames = Sets.asSet();
+        for (LinkedRepository linkedRepository : linkedRepositories) {
+            linkedRepositoryNames.add(linkedRepository.getName().toLowerCase());
+        }
+
+        SortedSet<Repository> candidateRepositories = Sets.asSortedSet();
+
+        for (Repository repository : repositories) {
+            if (!linkedRepositoryNames.contains(repository.getFullName().toLowerCase())) {
+                candidateRepositories.add(repository);
+            }
+        }
+
+        return candidateRepositories;
     }
 }

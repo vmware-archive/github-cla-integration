@@ -17,35 +17,33 @@
 package com.gopivotal.cla.web.security;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.http.AccessTokenRequiredException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
-import com.gopivotal.cla.github.GitHubRestOperations;
+import com.gopivotal.cla.github.Email;
+import com.gopivotal.cla.github.GitHubClient;
 
 final class OAuth2SsoFilter extends AbstractAuthenticationProcessingFilter {
 
     private final String[] adminEmailDomains;
 
-    private final GitHubRestOperations gitHubRestOperations;
+    private final GitHubClient gitHubClient;
 
-    OAuth2SsoFilter(String[] adminEmailDomains, String defaultFilterProcessesUrl, GitHubRestOperations gitHubRestOperations) {
+    OAuth2SsoFilter(String[] adminEmailDomains, String defaultFilterProcessesUrl, GitHubClient gitHubClient) {
         super(defaultFilterProcessesUrl);
         this.adminEmailDomains = adminEmailDomains;
-        this.gitHubRestOperations = gitHubRestOperations;
+        this.gitHubClient = gitHubClient;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException,
         IOException, ServletException {
@@ -54,10 +52,7 @@ final class OAuth2SsoFilter extends AbstractAuthenticationProcessingFilter {
             throw new BadCredentialsException("Not a valid administrative user");
         }
 
-        Map<String, Object> userInfo = this.gitHubRestOperations.getForObject("/user", Map.class);
-        AdminUser adminUser = new AdminUser((String) userInfo.get("login"));
-
-        return new UsernamePasswordAuthenticationToken(adminUser, null, adminUser.getAuthorities());
+        return new PreAuthenticatedAuthenticationToken(this.gitHubClient.getUser(), null);
     }
 
     @Override
@@ -70,12 +65,9 @@ final class OAuth2SsoFilter extends AbstractAuthenticationProcessingFilter {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private boolean isValidAdminUser() {
-        Set<Map<String, Object>> emails = this.gitHubRestOperations.getForObjectV3("/user/emails", Set.class);
-
-        for (Map<String, Object> email : emails) {
-            if (isVerified(email) && isValidAdminEmailDomain(email)) {
+        for (Email email : this.gitHubClient.getEmails()) {
+            if (email.isVerified() && isValidAdminEmailDomain(email)) {
                 return true;
             }
         }
@@ -83,8 +75,8 @@ final class OAuth2SsoFilter extends AbstractAuthenticationProcessingFilter {
         return false;
     }
 
-    private boolean isValidAdminEmailDomain(Map<String, Object> email) {
-        String address = (String) email.get("email");
+    private boolean isValidAdminEmailDomain(Email email) {
+        String address = email.getAddress();
 
         for (String adminEmailDomain : this.adminEmailDomains) {
             if (address.endsWith(adminEmailDomain)) {
@@ -93,10 +85,6 @@ final class OAuth2SsoFilter extends AbstractAuthenticationProcessingFilter {
         }
 
         return false;
-    }
-
-    private boolean isVerified(Map<String, Object> email) {
-        return (boolean) email.get("verified");
     }
 
 }

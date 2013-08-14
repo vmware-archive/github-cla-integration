@@ -16,22 +16,23 @@
 
 package com.gopivotal.cla.github;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
-/**
- * Configuration of utility components
- */
-@Configuration
-@ComponentScan
-public class GitHubConfiguration {
+@Component
+final class StandardMarkdownService implements MarkdownService {
 
-    @Bean
-    public GitHubConditional wireGitHubConditional(RestOperations restOperations) {
-        GitHubConditional gitHubConditional = GitHubConditional.aspectOf();
-        gitHubConditional.setRestOperations(restOperations);
-        return gitHubConditional;
+    private final RestOperations restOperations;
+
+    @Autowired
+    StandardMarkdownService(RestOperations restOperations) {
+        this.restOperations = restOperations;
     }
+
+    @Override
+    public String render(String markdown) {
+        return this.restOperations.postForObject("https://api.github.com/markdown/raw", markdown, String.class);
+    }
+
 }

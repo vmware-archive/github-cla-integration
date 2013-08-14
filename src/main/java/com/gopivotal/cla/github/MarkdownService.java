@@ -16,22 +16,16 @@
 
 package com.gopivotal.cla.github;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestOperations;
-
 /**
- * Configuration of utility components
+ * A interface to a service that takes raw Markdown and returns it rendered as HTML
  */
-@Configuration
-@ComponentScan
-public class GitHubConfiguration {
+public interface MarkdownService {
 
-    @Bean
-    public GitHubConditional wireGitHubConditional(RestOperations restOperations) {
-        GitHubConditional gitHubConditional = GitHubConditional.aspectOf();
-        gitHubConditional.setRestOperations(restOperations);
-        return gitHubConditional;
-    }
+    /**
+     * Render raw Markdown into HTML
+     * 
+     * @param markdown The raw Markdown
+     * @return The rendered HTML
+     */
+    String render(String markdown);
 }

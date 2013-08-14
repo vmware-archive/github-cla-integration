@@ -18,19 +18,19 @@ package com.gopivotal.cla.repository;
 
 import java.util.SortedSet;
 
-import com.gopivotal.cla.Repository;
+import com.gopivotal.cla.LinkedRepository;
 
 /**
  * Data access method for {@link Repository}s
  */
-public interface RepositoryRepository {
+public interface LinkedRepositoryRepository {
 
     /**
      * Returns all of the {@link Repository}s in the repository
      * 
      * @return all of the repositories in the repository
      */
-    SortedSet<Repository> find();
+    SortedSet<LinkedRepository> find();
 
     /**
      * Create a new {@link Repository}
@@ -40,7 +40,7 @@ public interface RepositoryRepository {
      * @param accessToken The access token to use when accessing the repository
      * @return The newly created repository
      */
-    Repository create(String name, Long agreementId, String accessToken);
+    LinkedRepository create(String name, Long agreementId, String accessToken);
 
     /**
      * Read a {@link Repository} identified by its {@code id}
@@ -49,5 +49,5 @@ public interface RepositoryRepository {
      * @return The repository
      * @throws EmptyResultDataAccessException if no repository with {@code id} exists
      */
-    Repository read(Long id);
+    LinkedRepository read(Long id);
 }

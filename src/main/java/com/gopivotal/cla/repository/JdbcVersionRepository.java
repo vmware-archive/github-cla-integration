@@ -31,26 +31,28 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import com.gopivotal.cla.Agreement;
 import com.gopivotal.cla.Version;
 
 @Repository
 final class JdbcVersionRepository implements VersionRepository {
 
-    private static final RowMapper<Version> ROW_MAPPER = new VersionRowMapper();
-
     private final JdbcTemplate jdbcTemplate;
 
     private final SimpleJdbcInsert createStatement;
 
+    private final RowMapper<Version> rowMapper;
+
     @Autowired
-    JdbcVersionRepository(DataSource dataSource) {
+    JdbcVersionRepository(DataSource dataSource, AgreementRepository agreementRepository) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.createStatement = new SimpleJdbcInsert(dataSource).withTableName("versions").usingGeneratedKeyColumns("id");
+        this.rowMapper = new VersionRowMapper(agreementRepository);
     }
 
     @Override
     public SortedSet<Version> find(Long agreementId) {
-        return new TreeSet<>(this.jdbcTemplate.query("SELECT * FROM versions where agreementId = ?", ROW_MAPPER, agreementId));
+        return new TreeSet<>(this.jdbcTemplate.query("SELECT * FROM versions where agreementId = ?", this.rowMapper, agreementId));
     }
 
     @Override
@@ -68,14 +70,21 @@ final class JdbcVersionRepository implements VersionRepository {
 
     @Override
     public Version read(Long id) {
-        return this.jdbcTemplate.queryForObject("SELECT * FROM versions WHERE id = ?", ROW_MAPPER, id);
+        return this.jdbcTemplate.queryForObject("SELECT * FROM versions WHERE id = ?", this.rowMapper, id);
     }
 
     private static final class VersionRowMapper implements RowMapper<Version> {
 
+        private final AgreementRepository agreementRepository;
+
+        private VersionRowMapper(AgreementRepository agreementRepository) {
+            this.agreementRepository = agreementRepository;
+        }
+
         @Override
         public Version mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Version(rs.getLong(1), rs.getLong(2), rs.getString(3), rs.getString(4), rs.getString(5));
+            Agreement agreement = this.agreementRepository.read(rs.getLong(2));
+            return new Version(rs.getLong(1), agreement, rs.getString(3), rs.getString(4), rs.getString(5));
         }
 
     }

@@ -28,8 +28,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.gopivotal.cla.Agreement;
 import com.gopivotal.cla.Version;
-import com.gopivotal.cla.repository.JdbcAgreementRepository;
-import com.gopivotal.cla.repository.JdbcVersionRepository;
 
 public final class JdbcVersionRepositoryTest extends AbstractJdbcRepositoryTest {
 
@@ -73,7 +71,7 @@ public final class JdbcVersionRepositoryTest extends AbstractJdbcRepositoryTest 
         assertEquals("test-individual-content", row.get("individualContent"));
         assertEquals("test-corporate-content", row.get("corporateContent"));
 
-        assertEquals(this.agreement.getId(), version.getAgreementId());
+        assertEquals(this.agreement, version.getAgreement());
         assertEquals("test-name", version.getName());
         assertEquals("test-individual-content", version.getIndividualAgreementContent());
         assertEquals("test-corporate-content", version.getCorporateAgreementContent());
@@ -86,7 +84,7 @@ public final class JdbcVersionRepositoryTest extends AbstractJdbcRepositoryTest 
 
         Version version = this.versionRepository.read((long) Integer.MAX_VALUE - 1);
 
-        assertEquals(this.agreement.getId(), version.getAgreementId());
+        assertEquals(this.agreement, version.getAgreement());
         assertEquals("test-name", version.getName());
         assertEquals("test-individual-content", version.getIndividualAgreementContent());
         assertEquals("test-corporate-content", version.getCorporateAgreementContent());

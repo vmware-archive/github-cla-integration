@@ -56,14 +56,14 @@ public final class Agreement implements Comparable<Agreement> {
 
     @Override
     public int compareTo(Agreement o) {
-        return this.name.compareTo(o.name);
+        return this.name.compareToIgnoreCase(o.name);
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = (prime * result) + this.id.hashCode();
+        result = (prime * result) + ((this.id == null) ? 0 : this.id.hashCode());
         return result;
     }
 
@@ -79,7 +79,11 @@ public final class Agreement implements Comparable<Agreement> {
             return false;
         }
         Agreement other = (Agreement) obj;
-        if (!this.id.equals(other.id)) {
+        if (this.id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!this.id.equals(other.id)) {
             return false;
         }
         return true;

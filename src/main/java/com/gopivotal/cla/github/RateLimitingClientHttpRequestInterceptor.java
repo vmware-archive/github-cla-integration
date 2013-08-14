@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gopivotal.cla.web.security;
+package com.gopivotal.cla.github;
 
 import java.io.IOException;
 import java.util.Date;
@@ -77,8 +77,11 @@ final class RateLimitingClientHttpRequestInterceptor implements ClientHttpReques
 
     private int getRemaining(ClientHttpResponse response) {
         String remaining = response.getHeaders().getFirst(REMAINING);
-        this.logger.debug("{} requests remaining before rate limit", remaining);
-        return remaining != null ? Integer.parseInt(remaining) : Integer.MAX_VALUE;
+        int parsedRemaining = remaining != null ? Integer.parseInt(remaining) : Integer.MAX_VALUE;
+
+        this.logger.debug("{} requests remaining before rate limit", parsedRemaining);
+
+        return parsedRemaining;
     }
 
     private String getRequestString(HttpRequest request) {

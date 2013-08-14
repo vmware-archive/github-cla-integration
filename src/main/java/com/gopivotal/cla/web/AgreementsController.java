@@ -26,7 +26,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.gopivotal.cla.Agreement;
 import com.gopivotal.cla.Version;
-import com.gopivotal.cla.github.GitHubRestOperations;
+import com.gopivotal.cla.github.GitHubClient;
+import com.gopivotal.cla.github.MarkdownService;
 import com.gopivotal.cla.repository.AgreementRepository;
 import com.gopivotal.cla.repository.VersionRepository;
 
@@ -36,16 +37,17 @@ final class AgreementsController extends AbstractController {
 
     private final AgreementRepository agreementRepository;
 
-    private final GitHubRestOperations gitHubRestOperations;
-
     private final VersionRepository versionRepository;
 
+    private final MarkdownService markdownService;
+
     @Autowired
-    AgreementsController(GitHubRestOperations gitHubRestOperations, AgreementRepository agreementRepository, VersionRepository versionRepository) {
-        super(gitHubRestOperations);
-        this.gitHubRestOperations = gitHubRestOperations;
+    AgreementsController(GitHubClient gitHubClient, AgreementRepository agreementRepository, VersionRepository versionRepository,
+        MarkdownService markdownService) {
+        super(gitHubClient);
         this.agreementRepository = agreementRepository;
         this.versionRepository = versionRepository;
+        this.markdownService = markdownService;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "")
@@ -79,11 +81,9 @@ final class AgreementsController extends AbstractController {
         Version version = this.versionRepository.read(versionId);
 
         model.put("version", version);
-        model.put("agreement", this.agreementRepository.read(version.getAgreementId()));
-        model.put("individualContent", this.gitHubRestOperations.postForObject("/markdown/raw", version.getIndividualAgreementContent(), String.class));
-        model.put("corporateContent", this.gitHubRestOperations.postForObject("/markdown/raw", version.getCorporateAgreementContent(), String.class));
+        model.put("individualContent", this.markdownService.render(version.getIndividualAgreementContent()));
+        model.put("corporateContent", this.markdownService.render(version.getCorporateAgreementContent()));
 
         return "version";
     }
-
 }

@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-package com.gopivotal.cla.web.security;
+package com.gopivotal.cla.github;
 
-import java.util.Arrays;
-import java.util.List;
+/**
+ * The main entry point to the GitHub API
+ */
+public interface GitHubClient {
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+    /**
+     * Returns the current user's access token
+     * 
+     * @return the current user's access token
+     */
+    String getAccessToken();
 
-final class AdminUser extends User {
+    /**
+     * Returns the current user's emails
+     * 
+     * @return the current user's emails
+     */
+    Emails getEmails();
 
-    private static final long serialVersionUID = -5949420142556127344L;
+    /**
+     * Returns the current user
+     * 
+     * @return the current user
+     */
+    User getUser();
 
-    private static final List<? extends GrantedAuthority> ADMIN_AUTHORIES = Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
-
-    AdminUser(String login) {
-        super(login, "unused", ADMIN_AUTHORIES);
-    }
 }

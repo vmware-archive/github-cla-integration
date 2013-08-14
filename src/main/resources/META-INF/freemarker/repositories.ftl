@@ -12,13 +12,13 @@
 <div class = "content">
 <div class = "box">
 <h1>Linked Repositories</h1>
-<br style="clear: both;" /> 
+<br style="clear: both;" />
 <table class="repositories_table">
 	<tbody>
-	<#list repositoryMapping?keys?sort as repository>
+	<#list linkedRepositories as linkedRepository>
 		<tr>
-			<td>${repository} <p class="url">${hrefPrefix}/${repository}</p> </td>
-			<td>${repositoryMapping[repository]}</td>
+			<td>${linkedRepository.name} <p class="url">${hrefPrefix}/${linkedRepository.name}</p> </td>
+			<td>${linkedRepository.agreement.name}</td>
 		</tr>
 	</#list>
 	</tbody>
@@ -28,12 +28,11 @@
 <div class="box-outer">
 <div class = "box">
 <form method="POST" action="/repositories">
-		
 
 		<label for="repository">Repository:</label>
 		<select name="repository" required="true">
 		<#list candidateRepositories as candidateRepository>
-			<option value="${candidateRepository}">${candidateRepository}</option>
+			<option value="${candidateRepository.fullName}">${candidateRepository.fullName}</option>
 		</#list>
 		</select>
 		<label for="agreement">Agreement:</label>

@@ -20,36 +20,58 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 
-import com.gopivotal.cla.github.GitHubRestOperations;
-import com.gopivotal.cla.web.AbstractController;
+import com.gopivotal.cla.github.GitHubClient;
+import com.gopivotal.cla.github.User;
 
 public final class AbstractControllerTest {
 
-    private final GitHubRestOperations gitHubRestOperations = mock(GitHubRestOperations.class);
+    private final GitHubClient gitHubClient = mock(GitHubClient.class);
 
-    private final StubController controller = new StubController(this.gitHubRestOperations);
+    private final User user = mock(User.class);
+
+    private final StubController controller = new StubController(this.gitHubClient);
 
     @Test
-    public void userInfo() {
-        Map<String, Object> userInfo = new HashMap<>();
-        userInfo.put("login", "test-login");
+    public void user() {
+        when(this.gitHubClient.getUser()).thenReturn(this.user);
 
-        when(this.gitHubRestOperations.getForObject("/user", Map.class)).thenReturn(userInfo);
+        User result = this.controller.user();
+        assertEquals(this.user, result);
+    }
 
-        Map<String, Object> result = this.controller.userInfo();
+    @Test
+    public void hrefPrefixNull() {
+        String result = this.controller.hrefPrefix(null);
+        assertEquals("", result);
+    }
 
-        assertEquals(userInfo, result);
+    @Test
+    public void hrefPrefixDefaultScheme() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setSecure(false);
+        request.addHeader("HOST", "test.host");
+
+        String result = this.controller.hrefPrefix(request);
+        assertEquals("http://test.host", result);
+    }
+
+    @Test
+    public void hreafPrefixSecureScheme() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setSecure(true);
+        request.addHeader("HOST", "test.host");
+
+        String result = this.controller.hrefPrefix(request);
+        assertEquals("https://test.host", result);
     }
 
     private static final class StubController extends AbstractController {
 
-        private StubController(GitHubRestOperations gitHubRestOperations) {
-            super(gitHubRestOperations);
+        private StubController(GitHubClient gitHubClient) {
+            super(gitHubClient);
         }
 
     }

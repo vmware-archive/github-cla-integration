@@ -20,8 +20,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.gopivotal.cla.web.RootController;
-
 public final class RootControllerTest {
 
     private final RootController controller = new RootController();
@@ -29,7 +27,6 @@ public final class RootControllerTest {
     @Test
     public void index() {
         String result = this.controller.index();
-
         assertEquals("index", result);
     }
 
