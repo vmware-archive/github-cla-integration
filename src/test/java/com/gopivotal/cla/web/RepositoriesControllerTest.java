@@ -57,7 +57,8 @@ public final class RepositoriesControllerTest {
 
     @Test
     public void listRepositories() {
-        when(this.linkedRepositoryRepository.find()).thenReturn(Sets.asSortedSet(LINKED_REPOSITORY));
+        when(this.linkedRepositoryRepository.find()).thenReturn(
+            Sets.asSortedSet(LINKED_REPOSITORY, new LinkedRepository(Long.MIN_VALUE + 11, AGREEMENT, "alpha/bravo", ACCESS_TOKEN)));
         when(this.agreementRepository.find()).thenReturn(Sets.asSortedSet(AGREEMENT));
 
         getAdminRepositories();
