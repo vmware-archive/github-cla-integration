@@ -6,47 +6,46 @@
 
 </head>
 <body>
+
 <#include "header.ftl">
 <div class="container">
-<#include "sidebar.ftl">
-<div class = "content">
-<div class = "box">
-<h1>Linked Repositories</h1>
-<br style="clear: both;" />
-<table class="repositories_table">
-	<tbody>
-	<#list linkedRepositories as linkedRepository>
-		<tr>
-			<td>${linkedRepository.name} <p class="url">${hrefPrefix}/${linkedRepository.name}</p> </td>
-			<td>${linkedRepository.agreement.name}</td>
-		</tr>
-	</#list>
-	</tbody>
-</table>
-</div>
-<h2>Link a repository to an agreement</h2>
-<div class="box-outer">
-<div class = "box">
-<form method="POST" action="/repositories">
+	<div class="list">
+		<h2>Linked Repositories</h2>
 
-		<label for="repository">Repository:</label>
-		<select name="repository" required="true">
-		<#list candidateRepositories as candidateRepository>
-			<option value="${candidateRepository.fullName}">${candidateRepository.fullName}</option>
+		<ul>
+		<#list linkedRepositories as linkedRepository>
+			<li class="linked-repository">
+				${linkedRepository.name} | ${linkedRepository.agreement.name}<br />
+				<span class="url">${hrefPrefix}/${linkedRepository.name}</span>
+			</li>
 		</#list>
-		</select>
-		<label for="agreement">Agreement:</label>
-		<select name="agreement" required="true">
-		<#list candidateAgreements as candidateAgreement>
-			<option value="${candidateAgreement.id}">${candidateAgreement.name}</option>
-		</#list>
-		</select>
+		</ul>
+	</div>
 
-		<button type="submit">Link</button>
-</form>
+	<div class="content">
+		<form method="POST" action="/repositories">
+			<h2>Link a repository to an agreement</h2>
+
+			<fieldset>
+				<label for="repository">Repository:</label>
+				<select name="repository" required="true">
+				<#list candidateRepositories as candidateRepository>
+					<option value="${candidateRepository.fullName}">${candidateRepository.fullName}</option>
+				</#list>
+				</select>
+
+				<label for="agreement">Agreement:</label>
+				<select name="agreement" required="true">
+				<#list candidateAgreements as candidateAgreement>
+					<option value="${candidateAgreement.id}">${candidateAgreement.name}</option>
+				</#list>
+				</select>
+
+				<button type="submit">Link</button>
+			</fieldset>
+		</form>
+	</div>
 </div>
-</div>
-</div>
-</div>
+
 </body>
 </html>
