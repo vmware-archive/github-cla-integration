@@ -75,6 +75,12 @@ final class JdbcLinkedRepositoryRepository implements LinkedRepositoryRepository
         return this.jdbcTemplate.queryForObject("SELECT * FROM repositories WHERE id = ?", this.rowMapper, id);
     }
 
+    @Override
+    public LinkedRepository read(String organization, String name) {
+        return this.jdbcTemplate.queryForObject("SELECT * FROM repositories WHERE name = ?", this.rowMapper,
+            String.format("%s/%s", organization, name));
+    }
+
     private static final class RepositoryRowMapper implements RowMapper<LinkedRepository> {
 
         private final AgreementRepository agreementRepository;
