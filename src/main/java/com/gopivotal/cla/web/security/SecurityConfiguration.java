@@ -17,11 +17,12 @@
 package com.gopivotal.cla.web.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -29,10 +30,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-
-import com.gopivotal.cla.github.GitHubClient;
 
 /**
  * Configuration of security components
@@ -43,34 +40,15 @@ import com.gopivotal.cla.github.GitHubClient;
 @ImportResource("classpath:META-INF/spring/security.xml")
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private static final String LOGIN_URL = "/login";
-
-    private static final String LOGOUT_URL = "/logout";
-
-    @Autowired
-    private volatile OAuth2ClientContextFilter client;
-
-    @Autowired
-    private volatile OAuth2SsoFilter ssoFilter;
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/", "/errors/**", "/resources/**");
+    }
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        // @formatter:off
-        http
-            .addFilterAfter(this.client, ExceptionTranslationFilter.class)
-            .addFilterBefore(this.ssoFilter, FilterSecurityInterceptor.class)
-            .logout()
-                .logoutUrl(LOGOUT_URL)
-                .logoutSuccessUrl("/")
-                .and()
-            .anonymous()
-                .disable()
-            .exceptionHandling()
-                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(LOGIN_URL))
-                .and()
-            .authorizeUrls()
-                .antMatchers("/admin/**").hasRole("ADMIN");
-        // @formatter:on
+    @Bean
+    public AuthenticationManager authenticationManager() throws Exception {
+        return new AuthenticationManagerBuilder().inMemoryAuthentication().and().build();
     }
 
     @Override
@@ -78,16 +56,55 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         auth.inMemoryAuthentication();
     }
 
-    @Bean
-    OAuth2SsoFilter ssoFilter(@Value("#{@adminEmailDomains}") String[] adminEmailDomains, GitHubClient gitHubClient) throws Exception {
-        OAuth2SsoFilter filter = new OAuth2SsoFilter(adminEmailDomains, LOGIN_URL, gitHubClient);
-        filter.setAuthenticationManager(authenticationManager());
-        return filter;
+    private static HttpSecurity ssoHttpConfiguration(HttpSecurity http, OAuth2ClientContextFilter client) throws Exception {
+        // @formatter:off
+        http
+            .addFilterAfter(client, ExceptionTranslationFilter.class)
+            .anonymous()
+                .disable()
+            .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/");
+        // @formatter:on
+
+        return http;
     }
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/resources/**");
+    @Configuration
+    @Order(1)
+    public static class AdminSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+        @Autowired
+        private volatile AdminEmailDomainFilter adminEmailDomainFilter;
+
+        @Autowired
+        private volatile OAuth2ClientContextFilter client;
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            // @formatter:off
+            ssoHttpConfiguration(http, this.client)
+                .requestMatchers()
+                    .antMatchers("/agreements/**", "/repositories/**")
+                    .and()
+                .addFilterAfter(this.adminEmailDomainFilter, OAuth2ClientContextFilter.class)
+                .exceptionHandling()
+                    .accessDeniedPage("/errors/403");
+            // @formatter:on
+        }
+    }
+
+    @Configuration
+    @Order(2)
+    public static class SignatorySecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+        @Autowired
+        private volatile OAuth2ClientContextFilter client;
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            ssoHttpConfiguration(http, this.client);
+        }
     }
 
 }

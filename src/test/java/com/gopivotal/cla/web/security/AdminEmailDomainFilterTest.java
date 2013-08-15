@@ -16,7 +16,6 @@
 
 package com.gopivotal.cla.web.security;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,22 +25,21 @@ import java.util.HashSet;
 import javax.servlet.ServletException;
 
 import org.junit.Test;
+import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.http.AccessTokenRequiredException;
+import org.springframework.security.access.AccessDeniedException;
 
 import com.gopivotal.cla.github.Email;
 import com.gopivotal.cla.github.Emails;
 import com.gopivotal.cla.github.GitHubClient;
 import com.gopivotal.cla.github.User;
 
-public final class OAuth2SsoFilterTest {
+public final class AdminEmailDomainFilterTest {
 
     private final GitHubClient gitHubClient = mock(GitHubClient.class);
 
-    private final OAuth2SsoFilter oAuth2SsoFilter = new OAuth2SsoFilter(new String[] { "test.domain" }, "test-url", this.gitHubClient);
+    private final AdminEmailDomainFilter filter = new AdminEmailDomainFilter(new String[] { "test.domain" }, this.gitHubClient);
 
     @Test
     public void attemptAuthentication() throws IOException, ServletException {
@@ -52,12 +50,10 @@ public final class OAuth2SsoFilterTest {
         User user = mock(User.class);
         when(this.gitHubClient.getUser()).thenReturn(user);
 
-        Authentication authentication = this.oAuth2SsoFilter.attemptAuthentication(new MockHttpServletRequest(), new MockHttpServletResponse());
-
-        assertEquals(user, authentication.getPrincipal());
+        this.filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
     }
 
-    @Test(expected = BadCredentialsException.class)
+    @Test(expected = AccessDeniedException.class)
     public void attemptAuthenticationNonVerifiedEmail() throws IOException, ServletException {
         Emails emails = new StubEmails();
         when(this.gitHubClient.getEmails()).thenReturn(emails);
@@ -66,10 +62,10 @@ public final class OAuth2SsoFilterTest {
         User user = mock(User.class);
         when(this.gitHubClient.getUser()).thenReturn(user);
 
-        this.oAuth2SsoFilter.attemptAuthentication(new MockHttpServletRequest(), new MockHttpServletResponse());
+        this.filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
     }
 
-    @Test(expected = BadCredentialsException.class)
+    @Test(expected = AccessDeniedException.class)
     public void attemptAuthenticationNonValidAdminDomain() throws IOException, ServletException {
 
         Emails emails = new StubEmails();
@@ -79,19 +75,7 @@ public final class OAuth2SsoFilterTest {
         User user = mock(User.class);
         when(this.gitHubClient.getUser()).thenReturn(user);
 
-        this.oAuth2SsoFilter.attemptAuthentication(new MockHttpServletRequest(), new MockHttpServletResponse());
-    }
-
-    @Test
-    public void unsuccessfulAuthentication() throws IOException, ServletException {
-        this.oAuth2SsoFilter.unsuccessfulAuthentication(new MockHttpServletRequest(), new MockHttpServletResponse(),
-            new BadCredentialsException(null));
-    }
-
-    @Test(expected = AccessTokenRequiredException.class)
-    public void unsuccessfulAuthenticationWithAccessTokenRequiredException() throws IOException, ServletException {
-        this.oAuth2SsoFilter.unsuccessfulAuthentication(new MockHttpServletRequest(), new MockHttpServletResponse(),
-            new AccessTokenRequiredException(null));
+        this.filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
     }
 
     private static final class StubEmails extends HashSet<Email> implements Emails {

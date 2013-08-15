@@ -18,51 +18,40 @@ package com.gopivotal.cla.web.security;
 
 import java.io.IOException;
 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.oauth2.client.http.AccessTokenRequiredException;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.GenericFilterBean;
 
 import com.gopivotal.cla.github.Email;
 import com.gopivotal.cla.github.GitHubClient;
 
-final class OAuth2SsoFilter extends AbstractAuthenticationProcessingFilter {
+@Component
+final class AdminEmailDomainFilter extends GenericFilterBean {
 
     private final String[] adminEmailDomains;
 
     private final GitHubClient gitHubClient;
 
-    OAuth2SsoFilter(String[] adminEmailDomains, String defaultFilterProcessesUrl, GitHubClient gitHubClient) {
-        super(defaultFilterProcessesUrl);
+    @Autowired
+    AdminEmailDomainFilter(@Value("#{@adminEmailDomains}") String[] adminEmailDomains, GitHubClient gitHubClient) {
         this.adminEmailDomains = adminEmailDomains;
         this.gitHubClient = gitHubClient;
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException,
-        IOException, ServletException {
-
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (!isValidAdminUser()) {
-            throw new BadCredentialsException("Not a valid administrative user");
+            throw new AccessDeniedException("Not a valid administrative user");
         }
 
-        return new PreAuthenticatedAuthenticationToken(this.gitHubClient.getUser(), null);
-    }
-
-    @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
-        throws IOException, ServletException {
-        if (failed instanceof AccessTokenRequiredException) {
-            throw failed;
-        } else {
-            super.unsuccessfulAuthentication(request, response, failed);
-        }
+        chain.doFilter(request, response);
     }
 
     private boolean isValidAdminUser() {
@@ -86,5 +75,4 @@ final class OAuth2SsoFilter extends AbstractAuthenticationProcessingFilter {
 
         return false;
     }
-
 }
