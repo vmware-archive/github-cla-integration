@@ -14,12 +14,12 @@
 
 	<div class="agreement-content">
 		<h2>Individual Agreement Content</h2>
-		${individualContent}
+		<div class="markdown">${individualContent}</div>
 	</div>
 
 	<div class="agreement-content">
 		<h2>Corporate Agreement Content</h2>
-		${corporateContent}
+		<div class="markdown">${corporateContent}</div>
 	</div>
 </div>
 
