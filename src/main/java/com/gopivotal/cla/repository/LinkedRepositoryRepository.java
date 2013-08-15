@@ -50,4 +50,14 @@ public interface LinkedRepositoryRepository {
      * @throws EmptyResultDataAccessException if no repository with {@code id} exists
      */
     LinkedRepository read(Long id);
+
+    /**
+     * Read a {@link Repository} identified by its {@code organization} and {@code name}
+     * 
+     * @param organization The organization that owns the repository
+     * @param name The name of the repository
+     * @return The repository
+     * @throws EmptyResultDataAccessException if no repository with {@code organization} and {@code name} exists
+     */
+    LinkedRepository read(String organization, String name);
 }

@@ -11,7 +11,7 @@
 
 	<client id="client" />
 
-	<rest-template id="restOperations" resource="gitHubResource">
+	<rest-template id="adminRestOperations" resource="adminGitHubResource">
 		<beans:property name="interceptors">
 			<util:list>
 				<beans:ref bean="rateLimitingClientHttpRequestInterceptor"/>
@@ -19,7 +19,7 @@
 		</beans:property>
 	</rest-template>
 	
-	<resource id="gitHubResource"
+	<resource id="adminGitHubResource"
 			type="authorization_code"
 			client-id="#{@gitHubClientId}"
 			client-secret="#{@gitHubClientSecret}"
