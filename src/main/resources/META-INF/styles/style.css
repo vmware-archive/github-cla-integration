@@ -31,11 +31,6 @@ form h2,
 	padding: 7px 14px;
 }
 
-.agreement-content p {
-	padding-left: 14px;
-	padding-right: 14px;
-}
-
 body {
 	font-family: Helvetica, arial, freesans, clean, sans-serif;
 	font-size: 14px;
@@ -153,6 +148,11 @@ label {
 
 #logo {
 	float: left;
+}
+
+.markdown {
+	padding-left: 14px;
+	padding-right: 14px;
 }
 
 .name {
