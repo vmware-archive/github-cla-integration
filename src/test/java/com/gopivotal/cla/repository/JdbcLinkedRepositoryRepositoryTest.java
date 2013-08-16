@@ -80,7 +80,7 @@ public final class JdbcLinkedRepositoryRepositoryTest extends AbstractJdbcReposi
     }
 
     @Test
-    public void read() {
+    public void readId() {
         this.jdbcTemplate.update("INSERT INTO repositories(id, name, agreementId, accessToken) VALUES(?, ?, ?, ?)", Integer.MAX_VALUE - 1,
             "test-name", this.agreement.getId(), this.textEncryptor.encrypt("test-access-token"));
 
@@ -88,6 +88,18 @@ public final class JdbcLinkedRepositoryRepositoryTest extends AbstractJdbcReposi
 
         assertEquals(this.agreement, linkedRepository.getAgreement());
         assertEquals("test-name", linkedRepository.getName());
+        assertEquals("test-access-token", linkedRepository.getAccessToken());
+    }
+
+    @Test
+    public void readName() {
+        this.jdbcTemplate.update("INSERT INTO repositories(id, name, agreementId, accessToken) VALUES(?, ?, ?, ?)", Integer.MAX_VALUE - 1,
+            "test/name", this.agreement.getId(), this.textEncryptor.encrypt("test-access-token"));
+
+        LinkedRepository linkedRepository = this.linkedRepositoryRepository.read("test", "name");
+
+        assertEquals(this.agreement, linkedRepository.getAgreement());
+        assertEquals("test/name", linkedRepository.getName());
         assertEquals("test-access-token", linkedRepository.getAccessToken());
     }
 

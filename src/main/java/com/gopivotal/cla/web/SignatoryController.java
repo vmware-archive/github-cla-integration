@@ -38,7 +38,7 @@ final class SignatoryController extends AbstractController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "{organization}/{repository}")
-    String repository(@PathVariable String organization, @PathVariable String repository, ModelMap model) {
+    String readRepository(@PathVariable String organization, @PathVariable String repository, ModelMap model) {
         model.put("repository", this.linkedRepositoryRepository.read(organization, repository));
 
         return "repository";

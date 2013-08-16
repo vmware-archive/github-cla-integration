@@ -25,7 +25,7 @@
 			client-secret="#{@gitHubClientSecret}"
 			user-authorization-uri="https://github.com/login/oauth/authorize"
 			access-token-uri="https://github.com/login/oauth/access_token"
-			scope="user:email,public_repo"
+			scope="user:email"
 			client-authentication-scheme="form"
 			authentication-scheme="query" />
 
