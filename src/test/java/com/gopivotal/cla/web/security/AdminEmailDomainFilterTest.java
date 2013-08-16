@@ -67,7 +67,6 @@ public final class AdminEmailDomainFilterTest {
 
     @Test(expected = AccessDeniedException.class)
     public void attemptAuthenticationNonValidAdminDomain() throws IOException, ServletException {
-
         Emails emails = new StubEmails();
         when(this.gitHubClient.getEmails()).thenReturn(emails);
         emails.add(new StubEmail("email@other.domain", false, true));

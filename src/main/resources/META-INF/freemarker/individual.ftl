@@ -23,6 +23,49 @@
 		<div class="markdown">${version.individualAgreementContent}</div>
 	</div>
 
+	<form class="sign" method="POST" action="/${repository.name}/individual">
+		<h2>Sign Contributor License Agreement</h2>
+
+		<fieldset>
+			<label for="name">Name:</label>
+			<input type="text" class="text" name="name" id ="name">
+
+			<label for="contactEmail">Contact Email:</label>
+			<select name="contactEmail" required="true">
+			<#list emails as email>
+				<option value="${email.address}">${email.address}</option>
+			</#list>
+			</select>
+
+			<label for="mailingAddress">Mailing Address:</label>
+			<textarea name="mailingAddress" id="mailingAddress" class="text"></textarea>
+
+			<label for="country">Country:</label>
+			<input type="text" class="text" name="country" id ="country">
+
+			<label for="telephoneNumber">Telephone Number:</label>
+			<input type="text" class="text" name="telephoneNumber" id ="telephoneNumber">
+
+			<label>Contribution Email Addresses:</label>
+			<fieldset class="contribution">
+				<ul>
+				<#list emails as email>
+					<li>
+						<input type="checkbox" name="contributionEmail" value="${email.address}">
+						<label>${email.address}</label>
+					</li>
+				</#list>
+				</ul>
+			</fieldset>
+
+			<input type="checkbox" name="agree" id ="agree">
+			<label for="checkbox">I have head and agree to the terms of this Contributor License Agreement</label>
+
+			<input type="hidden" name="versionId" value="${version.id}">
+			<button type="submit">Sign</button>
+		</fieldset>
+	</form>
+
 </div>
 
 </body>

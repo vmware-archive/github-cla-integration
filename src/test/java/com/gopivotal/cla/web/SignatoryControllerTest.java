@@ -20,12 +20,16 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.HashSet;
+
 import org.junit.Test;
 import org.springframework.ui.ModelMap;
 
 import com.gopivotal.cla.Agreement;
 import com.gopivotal.cla.LinkedRepository;
 import com.gopivotal.cla.Version;
+import com.gopivotal.cla.github.Email;
+import com.gopivotal.cla.github.Emails;
 import com.gopivotal.cla.github.GitHubClient;
 import com.gopivotal.cla.repository.LinkedRepositoryRepository;
 import com.gopivotal.cla.repository.VersionRepository;
@@ -41,6 +45,8 @@ public final class SignatoryControllerTest {
 
     private static final Version VERSION = new Version(Long.MIN_VALUE + 2, AGREEMENT, "test-name", "test-individual-content",
         "test-corporate-content");
+
+    private static final Email EMAIL = new StubEmail("test@address", false, true);
 
     private final GitHubClient gitHubClient = mock(GitHubClient.class);
 
@@ -66,12 +72,18 @@ public final class SignatoryControllerTest {
         when(this.linkedRepositoryRepository.read("test", "name")).thenReturn(LINKED_REPOSITORY);
         when(this.versionRepository.find(AGREEMENT.getId())).thenReturn(Sets.asSortedSet(VERSION));
 
+        Emails emails = new StubEmails();
+        when(this.gitHubClient.getEmails()).thenReturn(emails);
+        emails.add(EMAIL);
+        emails.add(new StubEmail("email@other.domain", false, false));
+
         ModelMap model = new ModelMap();
         String result = this.controller.readIndividual("test", "name", model);
 
         assertEquals("individual", result);
         assertEquals(LINKED_REPOSITORY, model.get("repository"));
         assertEquals(VERSION, model.get("version"));
+        assertEquals(Sets.asSortedSet(EMAIL), model.get("emails"));
     }
 
     @Test
@@ -79,12 +91,60 @@ public final class SignatoryControllerTest {
         when(this.linkedRepositoryRepository.read("test", "name")).thenReturn(LINKED_REPOSITORY);
         when(this.versionRepository.find(AGREEMENT.getId())).thenReturn(Sets.asSortedSet(VERSION));
 
+        Emails emails = new StubEmails();
+        when(this.gitHubClient.getEmails()).thenReturn(emails);
+        emails.add(EMAIL);
+        emails.add(new StubEmail("email@other.domain", false, false));
+
         ModelMap model = new ModelMap();
         String result = this.controller.readCorporate("test", "name", model);
 
         assertEquals("corporate", result);
         assertEquals(LINKED_REPOSITORY, model.get("repository"));
         assertEquals(VERSION, model.get("version"));
+        assertEquals(Sets.asSortedSet(EMAIL), model.get("emails"));
+    }
+
+    private static final class StubEmails extends HashSet<Email> implements Emails {
+
+        private static final long serialVersionUID = 5555232529640927085L;
+
+    }
+
+    private static final class StubEmail implements Email {
+
+        private final String address;
+
+        private final Boolean primary;
+
+        private final Boolean verified;
+
+        private StubEmail(String address, Boolean primary, Boolean verified) {
+            this.address = address;
+            this.primary = primary;
+            this.verified = verified;
+        }
+
+        @Override
+        public int compareTo(Email o) {
+            return this.address.compareToIgnoreCase(o.getAddress());
+        }
+
+        @Override
+        public String getAddress() {
+            return this.address;
+        }
+
+        @Override
+        public Boolean isPrimary() {
+            return this.primary;
+        }
+
+        @Override
+        public Boolean isVerified() {
+            return this.verified;
+        }
+
     }
 
 }
