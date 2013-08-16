@@ -23,18 +23,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.gopivotal.cla.LinkedRepository;
+import com.gopivotal.cla.Version;
 import com.gopivotal.cla.github.GitHubClient;
 import com.gopivotal.cla.repository.LinkedRepositoryRepository;
+import com.gopivotal.cla.repository.VersionRepository;
 
 @Controller
 final class SignatoryController extends AbstractController {
 
     private final LinkedRepositoryRepository linkedRepositoryRepository;
 
+    private final VersionRepository versionRepository;
+
     @Autowired
-    SignatoryController(GitHubClient gitHubClient, LinkedRepositoryRepository linkedRepositoryRepository) {
+    SignatoryController(GitHubClient gitHubClient, LinkedRepositoryRepository linkedRepositoryRepository, VersionRepository versionRepository) {
         super(gitHubClient);
         this.linkedRepositoryRepository = linkedRepositoryRepository;
+        this.versionRepository = versionRepository;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "{organization}/{repository}")
@@ -44,4 +50,14 @@ final class SignatoryController extends AbstractController {
         return "repository";
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "{organization}/{repository}/individual")
+    String readIndividual(@PathVariable String organization, @PathVariable String repository, ModelMap model) {
+        LinkedRepository linkedRepository = this.linkedRepositoryRepository.read(organization, repository);
+        Version version = this.versionRepository.find(linkedRepository.getAgreement().getId()).last();
+
+        model.put("repository", linkedRepository);
+        model.put("version", version);
+
+        return "individual";
+    }
 }
