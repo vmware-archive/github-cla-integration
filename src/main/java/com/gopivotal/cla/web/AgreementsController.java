@@ -72,7 +72,10 @@ final class AgreementsController extends AbstractController {
     @RequestMapping(method = RequestMethod.POST, value = "/{agreementId}/versions")
     String createVersion(@PathVariable Long agreementId, @RequestParam String name, @RequestParam String individualContent,
         @RequestParam String corporateContent) {
-        Version version = this.versionRepository.create(agreementId, name, individualContent, corporateContent);
+        String renderedIndividualContent = this.markdownService.render(individualContent);
+        String renderedCorporateContent = this.markdownService.render(corporateContent);
+
+        Version version = this.versionRepository.create(agreementId, name, renderedIndividualContent, renderedCorporateContent);
         return String.format("redirect:/agreements/%d/versions/%d", agreementId, version.getId());
     }
 
@@ -81,8 +84,8 @@ final class AgreementsController extends AbstractController {
         Version version = this.versionRepository.read(versionId);
 
         model.put("version", version);
-        model.put("individualContent", this.markdownService.render(version.getIndividualAgreementContent()));
-        model.put("corporateContent", this.markdownService.render(version.getCorporateAgreementContent()));
+        model.put("individualContent", version.getIndividualAgreementContent());
+        model.put("corporateContent", version.getCorporateAgreementContent());
 
         return "version";
     }
