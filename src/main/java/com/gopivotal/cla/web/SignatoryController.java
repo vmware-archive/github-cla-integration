@@ -52,12 +52,21 @@ final class SignatoryController extends AbstractController {
 
     @RequestMapping(method = RequestMethod.GET, value = "{organization}/{repository}/individual")
     String readIndividual(@PathVariable String organization, @PathVariable String repository, ModelMap model) {
+        populateAgreementModel(organization, repository, model);
+        return "individual";
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "{organization}/{repository}/corporate")
+    String readCorporate(@PathVariable String organization, @PathVariable String repository, ModelMap model) {
+        populateAgreementModel(organization, repository, model);
+        return "corporate";
+    }
+
+    private void populateAgreementModel(String organization, String repository, ModelMap model) {
         LinkedRepository linkedRepository = this.linkedRepositoryRepository.read(organization, repository);
         Version version = this.versionRepository.find(linkedRepository.getAgreement().getId()).last();
 
         model.put("repository", linkedRepository);
         model.put("version", version);
-
-        return "individual";
     }
 }

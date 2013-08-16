@@ -25,8 +25,11 @@ import org.springframework.ui.ModelMap;
 
 import com.gopivotal.cla.Agreement;
 import com.gopivotal.cla.LinkedRepository;
+import com.gopivotal.cla.Version;
 import com.gopivotal.cla.github.GitHubClient;
 import com.gopivotal.cla.repository.LinkedRepositoryRepository;
+import com.gopivotal.cla.repository.VersionRepository;
+import com.gopivotal.cla.util.Sets;
 
 public final class SignatoryControllerTest {
 
@@ -36,11 +39,16 @@ public final class SignatoryControllerTest {
 
     private static final LinkedRepository LINKED_REPOSITORY = new LinkedRepository(Long.MIN_VALUE + 1, AGREEMENT, "test/name", ACCESS_TOKEN);
 
+    private static final Version VERSION = new Version(Long.MIN_VALUE + 2, AGREEMENT, "test-name", "test-individual-content",
+        "test-corporate-content");
+
     private final GitHubClient gitHubClient = mock(GitHubClient.class);
 
     private final LinkedRepositoryRepository linkedRepositoryRepository = mock(LinkedRepositoryRepository.class);
 
-    private final SignatoryController controller = new SignatoryController(this.gitHubClient, this.linkedRepositoryRepository);
+    private final VersionRepository versionRepository = mock(VersionRepository.class);
+
+    private final SignatoryController controller = new SignatoryController(this.gitHubClient, this.linkedRepositoryRepository, this.versionRepository);
 
     @Test
     public void readRepository() {
@@ -51,6 +59,32 @@ public final class SignatoryControllerTest {
 
         assertEquals("repository", result);
         assertEquals(LINKED_REPOSITORY, model.get("repository"));
+    }
+
+    @Test
+    public void readIndividual() {
+        when(this.linkedRepositoryRepository.read("test", "name")).thenReturn(LINKED_REPOSITORY);
+        when(this.versionRepository.find(AGREEMENT.getId())).thenReturn(Sets.asSortedSet(VERSION));
+
+        ModelMap model = new ModelMap();
+        String result = this.controller.readIndividual("test", "name", model);
+
+        assertEquals("individual", result);
+        assertEquals(LINKED_REPOSITORY, model.get("repository"));
+        assertEquals(VERSION, model.get("version"));
+    }
+
+    @Test
+    public void readCorporate() {
+        when(this.linkedRepositoryRepository.read("test", "name")).thenReturn(LINKED_REPOSITORY);
+        when(this.versionRepository.find(AGREEMENT.getId())).thenReturn(Sets.asSortedSet(VERSION));
+
+        ModelMap model = new ModelMap();
+        String result = this.controller.readCorporate("test", "name", model);
+
+        assertEquals("corporate", result);
+        assertEquals(LINKED_REPOSITORY, model.get("repository"));
+        assertEquals(VERSION, model.get("version"));
     }
 
 }
