@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 import java.util.HashSet;
 
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.ui.ModelMap;
 
 import com.gopivotal.cla.Agreement;
@@ -80,6 +81,32 @@ public final class RepositoriesControllerTest {
         String result = this.controller.createLinkedRepository("test-linked-repository", AGREEMENT.getId());
 
         assertEquals("redirect:/repositories", result);
+    }
+
+    @Test
+    public void hrefPrefixNull() {
+        String result = this.controller.hrefPrefix(null);
+        assertEquals("", result);
+    }
+
+    @Test
+    public void hrefPrefixDefaultScheme() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setSecure(false);
+        request.addHeader("HOST", "test.host");
+
+        String result = this.controller.hrefPrefix(request);
+        assertEquals("http://test.host", result);
+    }
+
+    @Test
+    public void hreafPrefixSecureScheme() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setSecure(true);
+        request.addHeader("HOST", "test.host");
+
+        String result = this.controller.hrefPrefix(request);
+        assertEquals("https://test.host", result);
     }
 
     private void getAdminRepositories() {

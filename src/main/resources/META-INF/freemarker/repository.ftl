@@ -10,7 +10,21 @@
 <#include "header.ftl">
 
 <div class ="container">
-	SIGNATORY
+
+	<div class="agreement-selector">
+		<div id="individual">
+			<form class="" action="/${repository.name}/individual">
+				<button type="submit">Sign the Individual Contributor License Agreement</button>
+			</form>
+		</div>
+
+		<div id="corporate">
+			<form action="/${repository.name}/corporate">
+				<button type="submit">Sign the Corporate Contributor License Agreement</button>
+			</form>
+		</div>
+	</div>
+
 </div>
 
 </body>

@@ -19,9 +19,12 @@ package com.gopivotal.cla.web;
 import java.util.Set;
 import java.util.SortedSet;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +41,12 @@ import com.gopivotal.cla.util.Sets;
 @Controller
 @RequestMapping("/repositories")
 final class RepositoriesController extends AbstractController {
+
+    private static final String DEFAULT_SCHEME = "http";
+
+    private static final String SECURE_SCHEME = "https";
+
+    private static final String HEADER_HOST = "host";
 
     private final GitHubClient gitHubClient;
 
@@ -71,6 +80,21 @@ final class RepositoriesController extends AbstractController {
         this.linkedRepositoryRepository.create(name, agreementId, this.gitHubClient.getAccessToken());
 
         return "redirect:/repositories";
+    }
+
+    @ModelAttribute("hrefPrefix")
+    final String hrefPrefix(HttpServletRequest httpServletRequest) {
+        if (httpServletRequest != null) {
+            String scheme = getScheme(httpServletRequest);
+            String host = httpServletRequest.getHeader(HEADER_HOST);
+
+            return String.format("%s://%s", scheme, host);
+        }
+        return "";
+    }
+
+    private static String getScheme(HttpServletRequest httpServletRequest) {
+        return httpServletRequest.isSecure() ? SECURE_SCHEME : DEFAULT_SCHEME;
     }
 
     private SortedSet<Repository> getAdminRepositories() {
