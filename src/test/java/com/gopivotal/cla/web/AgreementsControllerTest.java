@@ -37,8 +37,7 @@ public final class AgreementsControllerTest {
 
     private static final Agreement AGREEMENT = new Agreement(Long.MIN_VALUE, "test-name");
 
-    private static final Version VERSION = new Version(Long.MIN_VALUE + 1, AGREEMENT, "test-name", "test-individual-content",
-        "test-corporate-content");
+    private static final Version VERSION = new Version(Long.MIN_VALUE + 1, AGREEMENT, "test-name", "test-individual-html", "test-corporate-html");
 
     private final GitHubClient gitHubClient = mock(GitHubClient.class);
 
@@ -92,7 +91,9 @@ public final class AgreementsControllerTest {
 
     @Test
     public void createVersion() {
-        when(this.versionRepository.create(AGREEMENT.getId(), "test-name", "test-individual-content", "test-corporate-content")).thenReturn(VERSION);
+        when(this.markdownService.render("test-individual-content")).thenReturn("test-individual-html");
+        when(this.markdownService.render("test-corporate-content")).thenReturn("test-corporate-html");
+        when(this.versionRepository.create(AGREEMENT.getId(), "test-name", "test-individual-html", "test-corporate-html")).thenReturn(VERSION);
 
         String result = this.controller.createVersion(Long.MIN_VALUE, "test-name", "test-individual-content", "test-corporate-content");
 
@@ -102,8 +103,6 @@ public final class AgreementsControllerTest {
     @Test
     public void readVersion() {
         when(this.versionRepository.read(VERSION.getId())).thenReturn(VERSION);
-        when(this.markdownService.render(VERSION.getIndividualAgreementContent())).thenReturn("test-individual-html");
-        when(this.markdownService.render(VERSION.getCorporateAgreementContent())).thenReturn("test-corporate-html");
 
         ModelMap model = new ModelMap();
         String result = this.controller.readVersion(VERSION.getId(), model);
