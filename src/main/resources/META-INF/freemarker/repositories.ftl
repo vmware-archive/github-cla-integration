@@ -16,7 +16,7 @@
 		<#list linkedRepositories as linkedRepository>
 			<li class="linked-repository">
 				${linkedRepository.name} | ${linkedRepository.agreement.name}<br />
-				<span class="url">${hrefPrefix}/${linkedRepository.name}</span>
+				<a href="/${linkedRepository.name}" class="url">${hrefPrefix}/${linkedRepository.name}</a>
 			</li>
 		</#list>
 		</ul>

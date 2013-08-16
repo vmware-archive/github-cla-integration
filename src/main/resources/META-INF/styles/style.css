@@ -31,6 +31,26 @@ form h2,
 	padding: 7px 14px;
 }
 
+.agreement-selector button {
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.agreement-selector form {
+	border: none;
+	padding: 0;
+}
+
+.agreement-selector #individual {
+	float: left;
+	margin: auto;
+	width: 50%;
+}
+
+.agreement-selector #corporate {
+	overflow: hidden;
+}
+
 body {
 	font-family: Helvetica, arial, freesans, clean, sans-serif;
 	font-size: 14px;

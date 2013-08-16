@@ -21,7 +21,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.gopivotal.cla.github.GitHubClient;
 import com.gopivotal.cla.github.User;
@@ -40,32 +39,6 @@ public final class AbstractControllerTest {
 
         User result = this.controller.user();
         assertEquals(this.user, result);
-    }
-
-    @Test
-    public void hrefPrefixNull() {
-        String result = this.controller.hrefPrefix(null);
-        assertEquals("", result);
-    }
-
-    @Test
-    public void hrefPrefixDefaultScheme() {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setSecure(false);
-        request.addHeader("HOST", "test.host");
-
-        String result = this.controller.hrefPrefix(request);
-        assertEquals("http://test.host", result);
-    }
-
-    @Test
-    public void hreafPrefixSecureScheme() {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setSecure(true);
-        request.addHeader("HOST", "test.host");
-
-        String result = this.controller.hrefPrefix(request);
-        assertEquals("https://test.host", result);
     }
 
     private static final class StubController extends AbstractController {
