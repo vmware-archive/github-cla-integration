@@ -15,13 +15,8 @@ env:
   global:
     - "DATABASE_URL=postgresql://travis@127.0.0.1:5432/cla"
     - "ENCRYPTION_KEY='OAI]TQ(aYvcyUMwzGpKh7HptueVQJPkCVSYjxpOOSZeVby4FWP'" # This is a test-only value
-    -
-      secure: G55DG5X1TGteGNeo8NNyONXrbBsLEvXH4v2K2XjEc7Xza2JNYzsPTLAhSezcuOJlF7jD2rtlE+dX1yo+g8NlXCX/JekURcs6eLl3mh9Qunf4kCekOwiN5NaUcYCm9lN5aUkZb5NjRULfbzdCqt8gTJ3qZANHMR+HK/aLpDrq4TQ= # $USERNAME
-    -
-      secure: QTMF1ucNHsjTNCkYgfE7wGnK3vHNDl2tyhllRnI8xg+TpiI9x6TcVqLhzwazNlpdUbjHjtsA7zFEL6vwMxV+UUTydBWRecDAqT1cpoRDZ7zgcr4i+SQtvazuBtPDOBsvHslodGzRksfbH3IC6+OXZb7b+5SIbHTxNVAbyhrykiY= # $PASSWORD
-    -
-      secure: UNVIZRL57MaFoPYLwwsemSvZi+T/gg+SlR+RLEBngpi5MXhXUEXhL7S+gAOj6V6otDj9Af8hG41+qEwGDVKMOjyCnjAPmiVzgUJgmBXO2lcB0G42nPfPyGI1mMTwqdHQoCh0meevcnutQ+l3Hi9jD5RI+ETJvXF309eUlYfhMK0= # $ORGANIZATION
-    -
-      secure: EynJa+7llSrdMAfa0QoQr6zGYngbSgOEYRlnP+IJXpFEG+xBFwUFeZjYzhrvmhhYvhztxo5oLCLTETyubq9N55G8Kesbnm9zjczlhhmBlzmgSWaqgdw037Vjoo+cwO+2k8XYsDIATAB1iEw17n6rhftCq7TCkObUQnc6pq7VER0= # $SPACE
-    -
-      secure: f15vVG6JR6Gsh21pFh1ZY6KmCwbrZLImCYzljNAh7kwsgw0+FA7ynHK7CsDC7K+pYY/NOMwsoyhKTiWgiVa6WcgfTSYG+0nBeRUNxf4EfF45xqUV8H0Nbe4EB1lrEne+BVYtfU8LFmlMvJ7w6FGAvc8WgnQx+8JnkvzkmoddaXg= # $TARGET
+    - secure: TzFyjd5/722WSR6nqCgxTZbf0ofWJ7S460hOEG4epoIolvwTQDM2gi2Cdu4nus8wZ5RvNXT56opbw2auLryuT5K2YHDxn//4/kW2fi0PAQ9lH6FMrZkmT2GAWC4G7XaeJPZmRqwlcLEAIfJZWGTpqOUFe5BHHW4K4LqJAvDUmug= # $TARGET
+    - secure: MeabSbrgvVBrgi37QOKaWlL/k65QY0wha/SScOCJDGGSrYeQqORiqP/SFPLhmES9yPFv5acWqw1Q42so4DfIZoLmJzz/4Hu8bMHL08i2prJS1Lgnw33Oo06qbZG/4uRiX62LeifsWVfEgp5gyFBPn53gH9TKMMdTH9CNk75oKh8= # USERNAME
+    - secure: I7tSYfdQkPCAI/1qS7j+gYDPJrx/2VqfKBevUq/Gj4gbs/b59qeJ//KvGp4mSJlXjRm2pbGV6IH786cCUrFfv5L3+RdXmz233VATGoa+xCDv0R1H1uNQ3N1F+9nas7gW9bcFfB3JU891bB3bZTVSFwWr/6siNblKYfahzhJbgAQ= # PASSWORD
+    - secure: bokEUbTa/5RLykqItOI7qFjllwIe+GERA9jkmLOapufBVk7DU1RuA5h1d2qIaXIGgbo7Qw/nQHG+U+jv0CQrXG3msNK2rvd9eklAJWSiNuaacHBQsRGdu1WCd6yhNPj6jSt45NsoKUqEOp10GD0R4JTVIUe0bAkbrpAo+cST/kA= # ORGANIZATION
+    - secure: TMaXD0vXvwEB/Mb601ulM31K0tqvw346SSvr+i3fhkNneZEsmowPVaXIC5Pzjx3Bc9VH2vIzX8MELnrd5ZJ2nqoSGVitOnPW+BRFDaNXzbxUBljzw5JcQKp4RTrOQw8/xaqVRdJ9n01Zbf++UAkWTGN5LCFLXZjG1SogEyhsM0A= # SPACE

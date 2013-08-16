@@ -29,10 +29,10 @@
 				<input type="text" class="text" name="name" id ="name">
 
 				<label for="individualContent">Individual Agreement Content:</label>
-				<textarea name="individualContent" class="text">Use Markdown in here</textarea>
+				<textarea name="individualContent" id="individualContent" class="text">Use Markdown in here</textarea>
 
 				<label for="corporateContent">Corporate Agreement Content:</label>
-				<textarea name="corporateContent" class="text">Use Markdown in here</textarea>
+				<textarea name="corporateContent" id="corporateContent" class="text">Use Markdown in here</textarea>
 
 				<button type="submit">Create</button>
 			</fieldset>

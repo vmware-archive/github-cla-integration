@@ -13,7 +13,7 @@
 
 	<div class="agreement-selector">
 		<div id="individual">
-			<form class="" action="/${repository.name}/individual">
+			<form action="/${repository.name}/individual">
 				<button type="submit">Sign the Individual Contributor License Agreement</button>
 			</form>
 		</div>

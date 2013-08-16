@@ -1,7 +1,7 @@
 <html>
 <head>
 
-<title>Sign the Corporate GoPivotal, Inc. ${repository.agreement.name} Coprorate Contributor License Agreement</title>
+<title>Sign the Corporate GoPivotal, Inc. ${repository.agreement.name} Corporate Contributor License Agreement</title>
 <link rel="stylesheet" type="text/css" href="/resources/styles/style.css">
 
 </head>
@@ -22,7 +22,6 @@
 	<div class="agreement-content">
 		<div class="markdown">${version.corporateAgreementContent}</div>
 	</div>
-
 </div>
 
 </body>
