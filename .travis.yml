@@ -4,19 +4,20 @@ jdk:
   - openjdk7
 before_script:
   - psql -c 'create database cla;' -U postgres
-after_success: |
-  if [[ $TRAVIS_BRANCH == 'master' && $TRAVIS_SECURE_ENV_VARS == 'true' ]] ; then
-    bundle install --binstubs
-    bin/cf target $TARGET
-    bin/cf login --username $USERNAME --password $PASSWORD --organization $ORGANIZATION --space $SPACE
-    bin/cf push
-  fi
+deploy:
+  provider: CloudFoundry
+  edge: true
+  target:
+    secure: TzFyjd5/722WSR6nqCgxTZbf0ofWJ7S460hOEG4epoIolvwTQDM2gi2Cdu4nus8wZ5RvNXT56opbw2auLryuT5K2YHDxn//4/kW2fi0PAQ9lH6FMrZkmT2GAWC4G7XaeJPZmRqwlcLEAIfJZWGTpqOUFe5BHHW4K4LqJAvDUmug=
+  username:
+    secure: MeabSbrgvVBrgi37QOKaWlL/k65QY0wha/SScOCJDGGSrYeQqORiqP/SFPLhmES9yPFv5acWqw1Q42so4DfIZoLmJzz/4Hu8bMHL08i2prJS1Lgnw33Oo06qbZG/4uRiX62LeifsWVfEgp5gyFBPn53gH9TKMMdTH9CNk75oKh8=
+  password:
+    secure: I7tSYfdQkPCAI/1qS7j+gYDPJrx/2VqfKBevUq/Gj4gbs/b59qeJ//KvGp4mSJlXjRm2pbGV6IH786cCUrFfv5L3+RdXmz233VATGoa+xCDv0R1H1uNQ3N1F+9nas7gW9bcFfB3JU891bB3bZTVSFwWr/6siNblKYfahzhJbgAQ=
+  organization:
+    secure: bokEUbTa/5RLykqItOI7qFjllwIe+GERA9jkmLOapufBVk7DU1RuA5h1d2qIaXIGgbo7Qw/nQHG+U+jv0CQrXG3msNK2rvd9eklAJWSiNuaacHBQsRGdu1WCd6yhNPj6jSt45NsoKUqEOp10GD0R4JTVIUe0bAkbrpAo+cST/kA=
+  space:
+    secure: TMaXD0vXvwEB/Mb601ulM31K0tqvw346SSvr+i3fhkNneZEsmowPVaXIC5Pzjx3Bc9VH2vIzX8MELnrd5ZJ2nqoSGVitOnPW+BRFDaNXzbxUBljzw5JcQKp4RTrOQw8/xaqVRdJ9n01Zbf++UAkWTGN5LCFLXZjG1SogEyhsM0A=
 env:
   global:
     - "DATABASE_URL=postgresql://travis@127.0.0.1:5432/cla"
     - "ENCRYPTION_KEY='OAI]TQ(aYvcyUMwzGpKh7HptueVQJPkCVSYjxpOOSZeVby4FWP'" # This is a test-only value
-    - secure: TzFyjd5/722WSR6nqCgxTZbf0ofWJ7S460hOEG4epoIolvwTQDM2gi2Cdu4nus8wZ5RvNXT56opbw2auLryuT5K2YHDxn//4/kW2fi0PAQ9lH6FMrZkmT2GAWC4G7XaeJPZmRqwlcLEAIfJZWGTpqOUFe5BHHW4K4LqJAvDUmug= # $TARGET
-    - secure: MeabSbrgvVBrgi37QOKaWlL/k65QY0wha/SScOCJDGGSrYeQqORiqP/SFPLhmES9yPFv5acWqw1Q42so4DfIZoLmJzz/4Hu8bMHL08i2prJS1Lgnw33Oo06qbZG/4uRiX62LeifsWVfEgp5gyFBPn53gH9TKMMdTH9CNk75oKh8= # USERNAME
-    - secure: I7tSYfdQkPCAI/1qS7j+gYDPJrx/2VqfKBevUq/Gj4gbs/b59qeJ//KvGp4mSJlXjRm2pbGV6IH786cCUrFfv5L3+RdXmz233VATGoa+xCDv0R1H1uNQ3N1F+9nas7gW9bcFfB3JU891bB3bZTVSFwWr/6siNblKYfahzhJbgAQ= # PASSWORD
-    - secure: bokEUbTa/5RLykqItOI7qFjllwIe+GERA9jkmLOapufBVk7DU1RuA5h1d2qIaXIGgbo7Qw/nQHG+U+jv0CQrXG3msNK2rvd9eklAJWSiNuaacHBQsRGdu1WCd6yhNPj6jSt45NsoKUqEOp10GD0R4JTVIUe0bAkbrpAo+cST/kA= # ORGANIZATION
-    - secure: TMaXD0vXvwEB/Mb601ulM31K0tqvw346SSvr+i3fhkNneZEsmowPVaXIC5Pzjx3Bc9VH2vIzX8MELnrd5ZJ2nqoSGVitOnPW+BRFDaNXzbxUBljzw5JcQKp4RTrOQw8/xaqVRdJ9n01Zbf++UAkWTGN5LCFLXZjG1SogEyhsM0A= # SPACE
