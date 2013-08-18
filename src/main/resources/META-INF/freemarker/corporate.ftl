@@ -22,6 +22,55 @@
 	<div class="agreement-content">
 		<div class="markdown">${version.corporateAgreementContent}</div>
 	</div>
+
+	<form class="sign" method="POST" action="/${repository.name}/corporate">
+		<h2>Sign Contributor License Agreement</h2>
+
+		<fieldset>
+			<label for="company">Company Name:</label>
+			<input type="text" class="text" name="company" id ="company" value="${user.company}">
+
+			<label for="name">Contact Name:</label>
+			<input type="text" class="text" name="name" id ="name">
+
+			<label for="title">Contact Title:</label>
+			<input type="text" class="text" name="title" id ="title">
+
+			<label for="email">Contact Email Address:</label>
+			<select name="email" required="true">
+			<#list emails as email>
+				<option value="${email.address}">${email.address}</option>
+			</#list>
+			</select>
+
+			<label for="mailingAddress">Contact Mailing Address:</label>
+			<textarea name="mailingAddress" id="mailingAddress" class="text"></textarea>
+
+			<label for="country">Contact Country:</label>
+			<input type="text" class="text" name="country" id ="country">
+
+			<label for="telephoneNumber">Contact Telephone Number:</label>
+			<input type="text" class="text" name="telephoneNumber" id ="telephoneNumber">
+
+			<label>Contribution Email Domains:</label>
+			<fieldset class="contribution">
+				<ul>
+				<#list domains as domain>
+					<li>
+						<input type="checkbox" name="contribution" value="${domain}">
+						<label>${domain}</label>
+					</li>
+				</#list>
+				</ul>
+			</fieldset>
+
+			<input type="checkbox" name="agree" id ="agree">
+			<label for="checkbox">I have head and agree to the terms of this Contributor License Agreement</label>
+
+			<input type="hidden" name="versionId" value="${version.id}">
+			<button type="submit">Sign</button>
+		</fieldset>
+	</form>
 </div>
 
 </body>

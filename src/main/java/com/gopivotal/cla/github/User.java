@@ -29,6 +29,13 @@ public interface User extends Comparable<User> {
     String getAvatarUrl();
 
     /**
+     * Returns the user's company
+     * 
+     * @return the user's company
+     */
+    String getCompany();
+
+    /**
      * Returns the user's login
      * 
      * @return the user's login

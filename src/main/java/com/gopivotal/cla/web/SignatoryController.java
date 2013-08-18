@@ -19,6 +19,8 @@ package com.gopivotal.cla.web;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,6 +40,8 @@ import com.gopivotal.cla.util.Sets;
 
 @Controller
 final class SignatoryController extends AbstractController {
+
+    private static final Pattern DOMAIN = Pattern.compile(".+(@.+)");
 
     private final GitHubClient gitHubClient;
 
@@ -63,20 +67,21 @@ final class SignatoryController extends AbstractController {
     @RequestMapping(method = RequestMethod.GET, value = "{organization}/{repository}/individual")
     String readIndividual(@PathVariable String organization, @PathVariable String repository, ModelMap model) {
         populateAgreementModel(organization, repository, model);
+        model.put("emails", verifiedEmails(this.gitHubClient.getEmails()));
+
         return "individual";
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "{organization}/{repository}/individual")
-    String createIndividual(@RequestParam String name, @RequestParam String contactEmail, @RequestParam String mailingAddress,
-        @RequestParam String country, @RequestParam String telephoneNumber, @RequestParam("contributionEmail") String[] contributionEmails,
-        @RequestParam String versionId) {
+    String createIndividual(@RequestParam String name, @RequestParam String email, @RequestParam String mailingAddress, @RequestParam String country,
+        @RequestParam String telephoneNumber, @RequestParam("contribution") String[] contributions, @RequestParam String versionId) {
 
         System.out.println(name);
-        System.out.println(contactEmail);
+        System.out.println(email);
         System.out.println(mailingAddress);
         System.out.println(country);
         System.out.println(telephoneNumber);
-        System.out.println(Arrays.toString(contributionEmails));
+        System.out.println(Arrays.toString(contributions));
         System.out.println(versionId);
 
         return "redirect:/";
@@ -85,7 +90,30 @@ final class SignatoryController extends AbstractController {
     @RequestMapping(method = RequestMethod.GET, value = "{organization}/{repository}/corporate")
     String readCorporate(@PathVariable String organization, @PathVariable String repository, ModelMap model) {
         populateAgreementModel(organization, repository, model);
+        SortedSet<Email> verifiedEmails = verifiedEmails(this.gitHubClient.getEmails());
+
+        model.put("emails", verifiedEmails);
+        model.put("domains", domains(verifiedEmails));
+
         return "corporate";
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "{organization}/{repository}/corporate")
+    String createCorporate(@RequestParam String company, @RequestParam String name, @RequestParam String title, @RequestParam String email,
+        @RequestParam String mailingAddress, @RequestParam String country, @RequestParam String telephoneNumber,
+        @RequestParam("contribution") String[] contributions, @RequestParam String versionId) {
+
+        System.out.println(company);
+        System.out.println(name);
+        System.out.println(title);
+        System.out.println(email);
+        System.out.println(mailingAddress);
+        System.out.println(country);
+        System.out.println(telephoneNumber);
+        System.out.println(Arrays.toString(contributions));
+        System.out.println(versionId);
+
+        return "redirect:/";
     }
 
     private void populateAgreementModel(String organization, String repository, ModelMap model) {
@@ -94,7 +122,6 @@ final class SignatoryController extends AbstractController {
 
         model.put("repository", linkedRepository);
         model.put("version", version);
-        model.put("emails", verifiedEmails(this.gitHubClient.getEmails()));
     }
 
     private SortedSet<Email> verifiedEmails(Set<Email> emails) {
@@ -107,5 +134,18 @@ final class SignatoryController extends AbstractController {
         }
 
         return verifiedEmails;
+    }
+
+    private SortedSet<String> domains(Set<Email> emails) {
+        SortedSet<String> domains = Sets.asSortedSet();
+
+        for (Email email : emails) {
+            Matcher matcher = DOMAIN.matcher(email.getAddress());
+            if (matcher.find()) {
+                domains.add(matcher.group(1));
+            }
+        }
+
+        return domains;
     }
 }
