@@ -23,6 +23,8 @@ final class StandardUser extends AbstractGitHubType<Map> implements User {
 
     private volatile String avatarUrl;
 
+    private volatile String company;
+
     private volatile String login;
 
     private volatile String name;
@@ -38,6 +40,7 @@ final class StandardUser extends AbstractGitHubType<Map> implements User {
     @Override
     void initialize(Map raw) {
         this.avatarUrl = getString("avatar_url", raw);
+        this.company = getString("company", raw);
         this.login = getString("login", raw);
         this.name = getString("name", raw);
         this.organizations = new StandardOrganizations(getString("organizations_url", raw));
@@ -47,6 +50,11 @@ final class StandardUser extends AbstractGitHubType<Map> implements User {
     @Override
     public String getAvatarUrl() {
         return this.avatarUrl;
+    }
+
+    @Override
+    public String getCompany() {
+        return this.company;
     }
 
     @Override
@@ -102,8 +110,8 @@ final class StandardUser extends AbstractGitHubType<Map> implements User {
 
     @Override
     public String toString() {
-        return "StandardUser [avatarUrl=" + this.avatarUrl + ", login=" + this.login + ", name=" + this.name + ", organizations="
-            + this.organizations + ", repositories=" + this.repositories + "]";
+        return "StandardUser [avatarUrl=" + this.avatarUrl + ", company=" + this.company + ", login=" + this.login + ", name=" + this.name
+            + ", organizations=" + this.organizations + ", repositories=" + this.repositories + "]";
     }
 
 }

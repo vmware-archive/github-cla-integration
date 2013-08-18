@@ -38,6 +38,7 @@ public final class StandardUserTest extends AbstractTypeTest<User> {
 
         Map<String, Object> raw = new HashMap<>();
         raw.put("avatar_url", "test-avatar-url");
+        raw.put("company", "test-company");
         raw.put("login", "test-login");
         raw.put("name", "B");
         raw.put("organizations_url", "test-organizations-url");
@@ -52,13 +53,13 @@ public final class StandardUserTest extends AbstractTypeTest<User> {
 
     @Override
     protected User getInstanceWithNulls() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     protected void assertState(User instance) {
         assertEquals("test-avatar-url", instance.getAvatarUrl());
+        assertEquals("test-company", instance.getCompany());
         assertEquals("test-login", instance.getLogin());
         assertEquals("B", instance.getName());
         assertNotNull(instance.getOrganizations());
@@ -94,7 +95,7 @@ public final class StandardUserTest extends AbstractTypeTest<User> {
 
     @Override
     protected void assertToString(ToStringTestUtils instance) {
-        instance.assertToString("avatarUrl", "login", "name", "organizations", "repositories");
+        instance.assertToString("avatarUrl", "company", "login", "name", "organizations", "repositories");
     }
 
 }

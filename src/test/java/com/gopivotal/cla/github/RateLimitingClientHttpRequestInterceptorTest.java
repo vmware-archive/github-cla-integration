@@ -90,7 +90,6 @@ public final class RateLimitingClientHttpRequestInterceptorTest {
 
                 this.interceptor.intercept(request, new byte[0], execution);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
             } finally {
                 this.latch.countDown();
             }

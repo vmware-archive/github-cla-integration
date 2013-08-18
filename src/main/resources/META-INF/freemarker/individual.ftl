@@ -30,8 +30,8 @@
 			<label for="name">Name:</label>
 			<input type="text" class="text" name="name" id ="name">
 
-			<label for="contactEmail">Contact Email:</label>
-			<select name="contactEmail" required="true">
+			<label for="email">Email Address:</label>
+			<select name="email" required="true">
 			<#list emails as email>
 				<option value="${email.address}">${email.address}</option>
 			</#list>
@@ -51,7 +51,7 @@
 				<ul>
 				<#list emails as email>
 					<li>
-						<input type="checkbox" name="contributionEmail" value="${email.address}">
+						<input type="checkbox" name="contribution" value="${email.address}">
 						<label>${email.address}</label>
 					</li>
 				</#list>
