@@ -24,8 +24,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping("/errors")
 final class ErrorsController {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/403")
+    @RequestMapping(method = { RequestMethod.GET, RequestMethod.POST }, value = "/403")
     String accessDenied() {
         return "errors/403";
     }
+
 }

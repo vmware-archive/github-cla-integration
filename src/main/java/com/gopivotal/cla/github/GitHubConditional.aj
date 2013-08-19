@@ -53,9 +53,11 @@ final aspect GitHubConditional {
     private volatile RestOperations restOperations;
 
     pointcut fields(): get(private volatile * AbstractGitHubType+.*);
-
+    
+    pointcut toStringMethod(): withincode(public String *.toString());
+    
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    before(AbstractGitHubType instance) : this(instance) && fields() {
+    before(AbstractGitHubType instance) : this(instance) && fields() && !toStringMethod() {
         if (isNull(instance, thisJoinPointStaticPart)) {
             ResponseEntity<?> response = getResponse(instance);
             instance.initialize(response.getBody());

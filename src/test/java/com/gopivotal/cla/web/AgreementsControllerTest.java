@@ -17,99 +17,104 @@
 package com.gopivotal.cla.web;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-import java.util.SortedSet;
+import java.util.Arrays;
+import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.ui.ModelMap;
+import org.mockito.internal.matchers.Matches;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.gopivotal.cla.Agreement;
-import com.gopivotal.cla.Version;
-import com.gopivotal.cla.github.GitHubClient;
 import com.gopivotal.cla.github.MarkdownService;
+import com.gopivotal.cla.model.Agreement;
+import com.gopivotal.cla.model.Version;
 import com.gopivotal.cla.repository.AgreementRepository;
 import com.gopivotal.cla.repository.VersionRepository;
-import com.gopivotal.cla.util.Sets;
 
-public final class AgreementsControllerTest {
+public final class AgreementsControllerTest extends AbstractControllerTest {
 
-    private static final Agreement AGREEMENT = new Agreement(Long.MIN_VALUE, "test-name");
+    @Autowired
+    private volatile AgreementRepository agreementRepository;
 
-    private static final Version VERSION = new Version(Long.MIN_VALUE + 1, AGREEMENT, "test-name", "test-individual-html", "test-corporate-html");
+    @Autowired
+    private volatile VersionRepository versionRepository;
 
-    private final GitHubClient gitHubClient = mock(GitHubClient.class);
-
-    private final AgreementRepository agreementRepository = mock(AgreementRepository.class);
-
-    private final VersionRepository versionRepository = mock(VersionRepository.class);
-
-    private final MarkdownService markdownService = mock(MarkdownService.class);
-
-    private final AgreementsController controller = new AgreementsController(this.gitHubClient, this.agreementRepository, this.versionRepository,
-        this.markdownService);
+    @Autowired
+    private volatile MarkdownService markdownService;
 
     @Test
-    public void listAgreements() {
-        SortedSet<Agreement> agreements = Sets.asSortedSet();
-        agreements.add(AGREEMENT);
+    public void listAgreements() throws Exception {
+        Agreement bravo = this.agreementRepository.save(new Agreement("bravo"));
+        Agreement alpha = this.agreementRepository.save(new Agreement("alpha"));
 
-        when(this.agreementRepository.find()).thenReturn(agreements);
-
-        ModelMap model = new ModelMap();
-        String result = this.controller.listAgreements(model);
-
-        assertEquals("agreements", result);
-        assertEquals(new ModelMap("agreements", agreements), model);
+        this.mockMvc.perform(get("/agreements")) //
+        .andExpect(status().isOk()) //
+        .andExpect(view().name("agreements")) //
+        .andExpect(model().attribute("agreements", Arrays.asList(alpha, bravo)));
     }
 
     @Test
-    public void createAgreement() {
-        when(this.agreementRepository.create("test-name")).thenReturn(AGREEMENT);
+    public void createAgreement() throws Exception {
+        this.mockMvc.perform(post("/agreements").param("name", "test-name")) //
+        .andExpect(status().isFound()) //
+        .andExpect(view().name(new Matches("redirect:/agreements/[\\d]+/versions")));
 
-        String result = this.controller.createAgreement("test-name");
-
-        assertEquals(String.format("redirect:/agreements/%d/versions", Long.MIN_VALUE), result);
+        assertEquals(1, countRowsInTable("agreements"));
+        Map<String, Object> row = this.jdbcTemplate.queryForMap("SELECT * FROM agreements");
+        assertEquals("test-name", row.get("name"));
     }
 
     @Test
-    public void listVersions() {
-        SortedSet<Version> versions = Sets.asSortedSet();
-        versions.add(VERSION);
+    public void listVersions() throws Exception {
+        Agreement agreement = this.agreementRepository.save(new Agreement("alpha"));
+        Version bravo = this.versionRepository.save(new Version(agreement, "bravo", "test-content", "test-content"));
+        Version alpha = this.versionRepository.save(new Version(agreement, "alpha", "test-content", "test-content"));
 
-        when(this.agreementRepository.read(Long.MIN_VALUE)).thenReturn(AGREEMENT);
-        when(this.versionRepository.find(Long.MIN_VALUE)).thenReturn(versions);
-
-        ModelMap model = new ModelMap();
-        String result = this.controller.listVersions(Long.MIN_VALUE, model);
-
-        assertEquals("versions", result);
-        assertEquals(AGREEMENT, model.get("agreement"));
-        assertEquals(versions, model.get("versions"));
+        this.mockMvc.perform(get("/agreements/{agreementId}/versions", agreement.getId())) //
+        .andExpect(status().isOk()) //
+        .andExpect(view().name("versions")) //
+        .andExpect(model().attribute("agreement", agreement)) //
+        .andExpect(model().attribute("versions", Arrays.asList(alpha, bravo)));
     }
 
     @Test
-    public void createVersion() {
+    public void createVersion() throws Exception {
         when(this.markdownService.render("test-individual-content")).thenReturn("test-individual-html");
         when(this.markdownService.render("test-corporate-content")).thenReturn("test-corporate-html");
-        when(this.versionRepository.create(AGREEMENT.getId(), "test-name", "test-individual-html", "test-corporate-html")).thenReturn(VERSION);
 
-        String result = this.controller.createVersion(Long.MIN_VALUE, "test-name", "test-individual-content", "test-corporate-content");
+        Agreement agreement = this.agreementRepository.save(new Agreement("test-name"));
 
-        assertEquals(String.format("redirect:/agreements/%d/versions/%d", AGREEMENT.getId(), VERSION.getId()), result);
+        this.mockMvc.perform(
+            post("/agreements/{agreementId}/versions", agreement.getId()).param("name", "test-name").param("individualContent",
+                "test-individual-content").param("corporateContent", "test-corporate-content")) //
+        .andExpect(status().isFound()) //
+        .andExpect(view().name(new Matches("redirect:/agreements/[\\d]+/versions/[\\d]+")));
+
+        assertEquals(1, countRowsInTable("versions"));
+        Map<String, Object> row = this.jdbcTemplate.queryForMap("SELECT * FROM versions");
+        assertEquals(agreement.getId(), row.get("agreementId"));
+        assertEquals("test-name", row.get("name"));
+        assertEquals("test-individual-html", row.get("individualContent"));
+        assertEquals("test-corporate-html", row.get("corporateContent"));
     }
 
     @Test
-    public void readVersion() {
-        when(this.versionRepository.read(VERSION.getId())).thenReturn(VERSION);
+    public void readVersion() throws Exception {
+        Agreement agreement = this.agreementRepository.save(new Agreement("test-name"));
+        Version version = this.versionRepository.save(new Version(agreement, "test-name", "test-individual-content", "test-corporate-content"));
 
-        ModelMap model = new ModelMap();
-        String result = this.controller.readVersion(VERSION.getId(), model);
-
-        assertEquals("version", result);
-        assertEquals(VERSION, model.get("version"));
-        assertEquals("test-individual-html", model.get("individualContent"));
-        assertEquals("test-corporate-html", model.get("corporateContent"));
+        this.mockMvc.perform(get("/agreements/{agreementId}/versions/{versionId}", agreement.getId(), version.getId())) //
+        .andExpect(status().isOk()) //
+        .andExpect(view().name("version")) //
+        .andExpect(model().attribute("version", version)) //
+        .andExpect(model().attribute("individualContent", "test-individual-content")) //
+        .andExpect(model().attribute("corporateContent", "test-corporate-content"));
     }
+
 }

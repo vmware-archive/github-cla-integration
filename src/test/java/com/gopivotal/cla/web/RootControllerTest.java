@@ -16,39 +16,38 @@
 
 package com.gopivotal.cla.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+import java.util.Arrays;
 
 import org.junit.Test;
-import org.springframework.ui.ModelMap;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.gopivotal.cla.Agreement;
-import com.gopivotal.cla.LinkedRepository;
+import com.gopivotal.cla.model.Agreement;
+import com.gopivotal.cla.model.LinkedRepository;
+import com.gopivotal.cla.repository.AgreementRepository;
 import com.gopivotal.cla.repository.LinkedRepositoryRepository;
-import com.gopivotal.cla.util.Sets;
 
-public final class RootControllerTest {
+public final class RootControllerTest extends AbstractControllerTest {
 
-    private static final String ACCESS_TOKEN = "access-token";
+    @Autowired
+    private volatile AgreementRepository agreementRepository;
 
-    private static final Agreement AGREEMENT = new Agreement(Long.MIN_VALUE, "test-agreement");
-
-    private static final LinkedRepository LINKED_REPOSITORY = new LinkedRepository(Long.MIN_VALUE + 1, AGREEMENT, "admin", ACCESS_TOKEN);
-
-    private final LinkedRepositoryRepository linkedRepositoryRepository = mock(LinkedRepositoryRepository.class);
-
-    private final RootController controller = new RootController(this.linkedRepositoryRepository);
+    @Autowired
+    private volatile LinkedRepositoryRepository linkedRepositoryRepository;
 
     @Test
-    public void index() {
-        when(this.linkedRepositoryRepository.find()).thenReturn(Sets.asSortedSet(LINKED_REPOSITORY));
+    public void index() throws Exception {
+        Agreement agreement = this.agreementRepository.save(new Agreement("test-name"));
+        LinkedRepository bravo = this.linkedRepositoryRepository.save(new LinkedRepository(agreement, "bravo", "test-access-token"));
+        LinkedRepository alpha = this.linkedRepositoryRepository.save(new LinkedRepository(agreement, "alpha", "test-access-token"));
 
-        ModelMap model = new ModelMap();
-        String result = this.controller.index(model);
-
-        assertEquals("index", result);
-        assertEquals(Sets.asSortedSet(LINKED_REPOSITORY), model.get("linkedRepositories"));
+        this.mockMvc.perform(get("/")) //
+        .andExpect(status().isOk()) //
+        .andExpect(view().name("index")) //
+        .andExpect(model().attribute("linkedRepositories", Arrays.asList(alpha, bravo)));
     }
-
 }

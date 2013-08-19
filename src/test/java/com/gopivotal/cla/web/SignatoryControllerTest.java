@@ -16,135 +16,36 @@
 
 package com.gopivotal.cla.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.HashSet;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import org.junit.Test;
-import org.springframework.ui.ModelMap;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.gopivotal.cla.Agreement;
-import com.gopivotal.cla.LinkedRepository;
-import com.gopivotal.cla.Version;
-import com.gopivotal.cla.github.Email;
-import com.gopivotal.cla.github.Emails;
-import com.gopivotal.cla.github.GitHubClient;
+import com.gopivotal.cla.model.Agreement;
+import com.gopivotal.cla.model.LinkedRepository;
+import com.gopivotal.cla.repository.AgreementRepository;
 import com.gopivotal.cla.repository.LinkedRepositoryRepository;
-import com.gopivotal.cla.repository.VersionRepository;
-import com.gopivotal.cla.util.Sets;
 
-public final class SignatoryControllerTest {
+public final class SignatoryControllerTest extends AbstractControllerTest {
 
-    private static final String ACCESS_TOKEN = "access-token";
+    @Autowired
+    private volatile AgreementRepository agreementRepository;
 
-    private static final Agreement AGREEMENT = new Agreement(Long.MIN_VALUE, "test-agreement");
-
-    private static final LinkedRepository LINKED_REPOSITORY = new LinkedRepository(Long.MIN_VALUE + 1, AGREEMENT, "test/name", ACCESS_TOKEN);
-
-    private static final Version VERSION = new Version(Long.MIN_VALUE + 2, AGREEMENT, "test-name", "test-individual-content",
-        "test-corporate-content");
-
-    private static final Email EMAIL = new StubEmail("test@address", false, true);
-
-    private final GitHubClient gitHubClient = mock(GitHubClient.class);
-
-    private final LinkedRepositoryRepository linkedRepositoryRepository = mock(LinkedRepositoryRepository.class);
-
-    private final VersionRepository versionRepository = mock(VersionRepository.class);
-
-    private final SignatoryController controller = new SignatoryController(this.gitHubClient, this.linkedRepositoryRepository, this.versionRepository);
+    @Autowired
+    private volatile LinkedRepositoryRepository linkedRepositoryRepository;
 
     @Test
-    public void readRepository() {
-        when(this.linkedRepositoryRepository.read("test", "name")).thenReturn(LINKED_REPOSITORY);
+    public void readRepository() throws Exception {
+        Agreement agreement = this.agreementRepository.save(new Agreement("test-name"));
+        LinkedRepository linkedRepository = this.linkedRepositoryRepository.save(new LinkedRepository(agreement, "org/repo", "test-access-token"));
 
-        ModelMap model = new ModelMap();
-        String result = this.controller.readRepository("test", "name", model);
-
-        assertEquals("repository", result);
-        assertEquals(LINKED_REPOSITORY, model.get("repository"));
-    }
-
-    @Test
-    public void readIndividual() {
-        when(this.linkedRepositoryRepository.read("test", "name")).thenReturn(LINKED_REPOSITORY);
-        when(this.versionRepository.find(AGREEMENT.getId())).thenReturn(Sets.asSortedSet(VERSION));
-
-        Emails emails = new StubEmails();
-        when(this.gitHubClient.getEmails()).thenReturn(emails);
-        emails.add(EMAIL);
-        emails.add(new StubEmail("email@other.domain", false, false));
-
-        ModelMap model = new ModelMap();
-        String result = this.controller.readIndividual("test", "name", model);
-
-        assertEquals("individual", result);
-        assertEquals(LINKED_REPOSITORY, model.get("repository"));
-        assertEquals(VERSION, model.get("version"));
-        assertEquals(Sets.asSortedSet(EMAIL), model.get("emails"));
-    }
-
-    @Test
-    public void readCorporate() {
-        when(this.linkedRepositoryRepository.read("test", "name")).thenReturn(LINKED_REPOSITORY);
-        when(this.versionRepository.find(AGREEMENT.getId())).thenReturn(Sets.asSortedSet(VERSION));
-
-        Emails emails = new StubEmails();
-        when(this.gitHubClient.getEmails()).thenReturn(emails);
-        emails.add(EMAIL);
-        emails.add(new StubEmail("email@other.domain", false, false));
-
-        ModelMap model = new ModelMap();
-        String result = this.controller.readCorporate("test", "name", model);
-
-        assertEquals("corporate", result);
-        assertEquals(LINKED_REPOSITORY, model.get("repository"));
-        assertEquals(VERSION, model.get("version"));
-        assertEquals(Sets.asSortedSet(EMAIL), model.get("emails"));
-    }
-
-    private static final class StubEmails extends HashSet<Email> implements Emails {
-
-        private static final long serialVersionUID = 5555232529640927085L;
-
-    }
-
-    private static final class StubEmail implements Email {
-
-        private final String address;
-
-        private final Boolean primary;
-
-        private final Boolean verified;
-
-        private StubEmail(String address, Boolean primary, Boolean verified) {
-            this.address = address;
-            this.primary = primary;
-            this.verified = verified;
-        }
-
-        @Override
-        public int compareTo(Email o) {
-            return this.address.compareToIgnoreCase(o.getAddress());
-        }
-
-        @Override
-        public String getAddress() {
-            return this.address;
-        }
-
-        @Override
-        public Boolean isPrimary() {
-            return this.primary;
-        }
-
-        @Override
-        public Boolean isVerified() {
-            return this.verified;
-        }
-
+        this.mockMvc.perform(get("/org/repo")) //
+        .andExpect(status().isOk()) //
+        .andExpect(view().name("repository")) //
+        .andExpect(model().attribute("repository", linkedRepository));
     }
 
 }

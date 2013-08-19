@@ -16,22 +16,90 @@
 
 package com.gopivotal.cla.github;
 
-/**
- * A GitHub Organization
- */
-public interface Organization extends Comparable<Organization> {
+import java.util.Map;
+
+@SuppressWarnings("rawtypes")
+public final class Organization extends AbstractGitHubType<Map> implements Comparable<Organization> {
+
+    private volatile String name;
+
+    private volatile Repositories repositories;
+
+    /**
+     * Creates a new pre-initialized instance
+     * 
+     * @param name The name of the organization
+     * @param repositories The repositories in this organization
+     */
+    public Organization(String name, Repositories repositories) {
+        super(null, null);
+        this.name = name;
+        this.repositories = repositories;
+    }
+
+    Organization(Map raw) {
+        super(getString("url", raw), Map.class);
+        initialize(raw);
+    }
+
+    @Override
+    void initialize(Map raw) {
+        this.name = getString("login", raw);
+        this.repositories = new Repositories(getString("repos_url", raw));
+    }
 
     /**
      * Returns the name of the organization
      * 
      * @return the name of the organization
      */
-    String getName();
+    public String getName() {
+        return this.name;
+    }
 
     /**
      * Returns the repositories in this organization
      * 
      * @return the repositories in this organization
      */
-    Repositories getRepositories();
+    public Repositories getRepositories() {
+        return this.repositories;
+    }
+
+    @Override
+    public int compareTo(Organization o) {
+        return this.name.compareToIgnoreCase(o.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = (prime * result) + this.name.toLowerCase().hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Organization)) {
+            return false;
+        }
+        Organization other = (Organization) obj;
+        if (!this.name.equalsIgnoreCase(other.getName())) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Organization [name=" + this.name + ", repositories=" + this.repositories + "]";
+    }
+
 }

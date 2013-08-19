@@ -16,11 +16,27 @@
 
 package com.gopivotal.cla.github;
 
-import java.util.Set;
+import java.util.Map;
 
 /**
  * A collection of GitHub organizations
  */
-public interface Organizations extends Set<Organization> {
+public final class Organizations extends AbstractCollection<Organization> {
 
+    /**
+     * Creates a new pre-initialized instance
+     */
+    public Organizations() {
+        super();
+    }
+
+    Organizations(String url) {
+        super(url);
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    Organization initialize(Map raw) {
+        return new Organization(raw);
+    }
 }

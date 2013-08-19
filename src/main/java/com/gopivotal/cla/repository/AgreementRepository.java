@@ -16,36 +16,12 @@
 
 package com.gopivotal.cla.repository;
 
-import java.util.SortedSet;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.gopivotal.cla.Agreement;
+import com.gopivotal.cla.model.Agreement;
 
 /**
  * Data access methods for {@link Agreement}s
  */
-public interface AgreementRepository {
-
-    /**
-     * Returns all of the {@link Agreement}s in the repository
-     * 
-     * @return all of the agreements in the repository
-     */
-    SortedSet<Agreement> find();
-
-    /**
-     * Create a new {@link Agreement}
-     * 
-     * @param name The name of the agreement
-     * @return The newly created agreement
-     */
-    Agreement create(String name);
-
-    /**
-     * Read an {@link Agreement} identified by its {@code id}
-     * 
-     * @param id The id of the agreement
-     * @return The agreement
-     * @throws EmptyResultDataAccessException if no agreement with {@code id} exists
-     */
-    Agreement read(Long id);
+public interface AgreementRepository extends JpaRepository<Agreement, Integer> {
 }

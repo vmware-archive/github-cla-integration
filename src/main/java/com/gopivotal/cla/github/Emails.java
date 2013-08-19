@@ -16,11 +16,28 @@
 
 package com.gopivotal.cla.github;
 
-import java.util.Set;
+import java.util.Map;
 
 /**
  * A collection of GitHub emails
  */
-public interface Emails extends Set<Email> {
+public final class Emails extends AbstractCollection<Email> {
+
+    /**
+     * Creates a new pre-initialized instance
+     */
+    public Emails() {
+        super();
+    }
+
+    Emails(String url) {
+        super(url);
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    Email initialize(Map raw) {
+        return new Email(raw);
+    }
 
 }

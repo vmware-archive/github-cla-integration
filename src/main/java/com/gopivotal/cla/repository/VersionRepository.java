@@ -16,39 +16,25 @@
 
 package com.gopivotal.cla.repository;
 
-import java.util.SortedSet;
+import java.util.List;
 
-import com.gopivotal.cla.Version;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.gopivotal.cla.model.Agreement;
+import com.gopivotal.cla.model.Version;
 
 /**
  * Data access methods for {@link Version}s
  */
-public interface VersionRepository {
+public interface VersionRepository extends JpaRepository<Version, Integer> {
 
     /**
-     * Returns all of the {@link Version}s in the repository related to a specific {Agreement}
+     * Returns all versions for an {@link Agreement}, sorted by the given options.
      * 
-     * @return all of the versions in the repository related to a specific agreement
+     * @param agreement The agreement
+     * @param sort The sort options
+     * @return all versions for an {@link Agreement}, sorted by the given options.
      */
-    SortedSet<Version> find(Long agreementId);
-
-    /**
-     * Create a new {@link Version}
-     * 
-     * @param agreementId The id of the related agreement
-     * @param name The name of the version
-     * @param individualAgreementContent The content of the individual agreement
-     * @param corporateAgreementContent The content of the corporate agreement
-     * @return The newly created version
-     */
-    Version create(Long agreementId, String name, String individualAgreementContent, String corporateAgreementContent);
-
-    /**
-     * Read a {@link Version} identified by its {@code id}
-     * 
-     * @param id The id of the version
-     * @return The version
-     * @throws EmptyResultDataAccessException if no version with {@code id} exists
-     */
-    Version read(Long id);
+    List<Version> findByAgreement(Agreement agreement, Sort sort);
 }

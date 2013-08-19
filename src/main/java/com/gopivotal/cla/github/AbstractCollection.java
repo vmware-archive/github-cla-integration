@@ -17,16 +17,20 @@
 package com.gopivotal.cla.github;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
-import com.gopivotal.cla.util.Sets;
 
 @SuppressWarnings("rawtypes")
 abstract class AbstractCollection<T> extends AbstractGitHubType<Set> implements Set<T> {
 
     private volatile Set<T> delegate;
+
+    protected AbstractCollection() {
+        super(null, null);
+        this.delegate = new HashSet<>();
+    }
 
     protected AbstractCollection(String url) {
         super(url, Set.class);
@@ -35,7 +39,7 @@ abstract class AbstractCollection<T> extends AbstractGitHubType<Set> implements 
     @SuppressWarnings("unchecked")
     @Override
     final void initialize(Set raw) {
-        Set<T> delegate = Sets.asSet();
+        Set<T> delegate = new HashSet<>();
 
         for (Map rawItem : (Set<Map>) raw) {
             delegate.add(initialize(rawItem));

@@ -17,17 +17,19 @@
 package com.gopivotal.cla.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.gopivotal.cla.Agreement;
-import com.gopivotal.cla.Version;
 import com.gopivotal.cla.github.GitHubClient;
 import com.gopivotal.cla.github.MarkdownService;
+import com.gopivotal.cla.model.Agreement;
+import com.gopivotal.cla.model.Version;
 import com.gopivotal.cla.repository.AgreementRepository;
 import com.gopivotal.cla.repository.VersionRepository;
 
@@ -50,43 +52,50 @@ final class AgreementsController extends AbstractController {
         this.markdownService = markdownService;
     }
 
+    @Transactional(readOnly = true)
     @RequestMapping(method = RequestMethod.GET, value = "")
     String listAgreements(ModelMap model) {
-        model.put("agreements", this.agreementRepository.find());
+        model.put("agreements", this.agreementRepository.findAll(new Sort("name")));
+
         return "agreements";
     }
 
+    @Transactional
     @RequestMapping(method = RequestMethod.POST, value = "")
     String createAgreement(@RequestParam String name) {
-        Agreement agreement = this.agreementRepository.create(name);
+        Agreement agreement = this.agreementRepository.save(new Agreement(name));
+
         return String.format("redirect:/agreements/%d/versions", agreement.getId());
     }
 
+    @Transactional(readOnly = true)
     @RequestMapping(method = RequestMethod.GET, value = "/{agreementId}/versions")
-    String listVersions(@PathVariable Long agreementId, ModelMap model) {
-        model.put("agreement", this.agreementRepository.read(agreementId));
-        model.put("versions", this.versionRepository.find(agreementId));
+    String listVersions(@PathVariable("agreementId") Agreement agreement, ModelMap model) {
+        model.put("agreement", agreement);
+        model.put("versions", this.versionRepository.findByAgreement(agreement, new Sort("name")));
+
         return "versions";
     }
 
+    @Transactional
     @RequestMapping(method = RequestMethod.POST, value = "/{agreementId}/versions")
-    String createVersion(@PathVariable Long agreementId, @RequestParam String name, @RequestParam String individualContent,
+    String createVersion(@PathVariable("agreementId") Agreement agreement, @RequestParam String name, @RequestParam String individualContent,
         @RequestParam String corporateContent) {
         String renderedIndividualContent = this.markdownService.render(individualContent);
         String renderedCorporateContent = this.markdownService.render(corporateContent);
+        Version version = this.versionRepository.save(new Version(agreement, name, renderedIndividualContent, renderedCorporateContent));
 
-        Version version = this.versionRepository.create(agreementId, name, renderedIndividualContent, renderedCorporateContent);
-        return String.format("redirect:/agreements/%d/versions/%d", agreementId, version.getId());
+        return String.format("redirect:/agreements/%d/versions/%d", agreement.getId(), version.getId());
     }
 
+    @Transactional(readOnly = true)
     @RequestMapping(method = RequestMethod.GET, value = "/{agreementId}/versions/{versionId}")
-    String readVersion(@PathVariable Long versionId, ModelMap model) {
-        Version version = this.versionRepository.read(versionId);
-
+    String readVersion(@PathVariable("versionId") Version version, ModelMap model) {
         model.put("version", version);
         model.put("individualContent", version.getIndividualAgreementContent());
         model.put("corporateContent", version.getCorporateAgreementContent());
 
         return "version";
     }
+
 }
