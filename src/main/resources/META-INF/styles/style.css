@@ -176,6 +176,7 @@ label {
 	line-height: 16px;
 	color: rgb(255, 255, 255);
 	white-space: nowrap;
+	bottom:6px;
 }
 
 select {
@@ -212,7 +213,7 @@ textarea {
 
 #user-links {
 	float: right;
-	margin: 7px 0 0;
+	margin: 18px 0 0;
 	padding: 0;
 	list-style: none;
 }
