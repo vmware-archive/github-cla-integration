@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -45,10 +46,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/", "/errors/**", "/resources/**");
     }
 
-    @Override
     @Bean
-    public AuthenticationManager authenticationManager() throws Exception {
-        return new AuthenticationManagerBuilder().inMemoryAuthentication().and().build();
+    public AuthenticationManager authenticationManager(ObjectPostProcessor<Object> objectPostProcessor) throws Exception {
+        return new AuthenticationManagerBuilder(objectPostProcessor).inMemoryAuthentication().and().build();
     }
 
     @Override
