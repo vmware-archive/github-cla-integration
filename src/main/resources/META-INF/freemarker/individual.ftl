@@ -2,6 +2,7 @@
 <head>
 
 <title>Sign the Individual GoPivotal, Inc. ${repository.agreement.name} Individual Contributor License Agreement</title>
+<link rel="stylesheet" type="text/css" href="/resources/styles/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="/resources/styles/style.css">
 
 </head>
