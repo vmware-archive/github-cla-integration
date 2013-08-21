@@ -2,6 +2,7 @@
 <head>
 
 <title>Repository Agreement Administration</title>
+<link rel="stylesheet" type="text/css" href="/resources/styles/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="/resources/styles/style.css">
 
 </head>

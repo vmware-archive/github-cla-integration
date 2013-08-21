@@ -6,7 +6,7 @@
 			<#if user??>
 
 			<li class="name"><img height="20" width="20" src="${user.avatarUrl}&amp;s=40">${user.name}</li>
-			<li><a href="/logout">Logout</a></li>
+			<li><a href="/logout"><i class="icon-signout icon-large"></i></a></li>
 
 			<#else>
 
