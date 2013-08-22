@@ -176,7 +176,12 @@ label {
 	line-height: 16px;
 	color: rgb(255, 255, 255);
 	white-space: nowrap;
-	bottom:6px;
+	bottom:3px;
+}
+.name img{
+    margin-right: 7px;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 #fff;
 }
 
 select {
@@ -213,7 +218,7 @@ textarea {
 
 #user-links {
 	float: right;
-	margin: 18px 0 0;
+	margin: 12px 0 0;
 	padding: 0;
 	list-style: none;
 }
@@ -221,5 +226,27 @@ textarea {
 #user-links li {
 	position: relative;
 	float: left;
-	margin-left: 5px;
+	margin-left: 10px;
+	margin-right:5px;
+	color:#fff;
+}
+#user-links li a{
+	color:#fff;
+	
+}
+#user-links li a:hover{
+	color:#a8f1eb;
+}
+#user-links a[data-title]:hover:after {
+  content: attr(data-title);
+  padding: 4px 8px;
+  color: #fff;
+  background-color: rgb(85, 85, 85);
+  position: absolute;
+  left: 0;
+  top: 100%;
+  font-size:11px;
+  white-space: nowrap;
+  border-radius: 5px;
+  text-shadow:none;
 }

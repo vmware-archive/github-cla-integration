@@ -2,7 +2,7 @@
 <head>
 
 <title>Sign the Individual GoPivotal, Inc. ${repository.agreement.name} Individual Contributor License Agreement</title>
-<link rel="stylesheet" type="text/css" href="/resources/styles/font-awesome.min.css">
+<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/resources/styles/style.css">
 
 </head>
@@ -29,7 +29,7 @@
 
 		<fieldset>
 			<label for="name">Name:</label>
-			<input type="text" class="text" name="name" id ="name" value="${user.name}">
+			<input type="text" class="text" name="name" id ="name" value="${user.name}" required="true">
 
 			<label for="email">Email Address:</label>
 			<select name="email" required="true">
@@ -39,13 +39,13 @@
 			</select>
 
 			<label for="mailingAddress">Mailing Address:</label>
-			<textarea name="mailingAddress" id="mailingAddress" class="text"></textarea>
+			<textarea name="mailingAddress" id="mailingAddress" class="text" required="true"></textarea>
 
 			<label for="country">Country:</label>
-			<input type="text" class="text" name="country" id ="country">
+			<input type="text" class="text" name="country" id ="country" required="true">
 
 			<label for="telephoneNumber">Telephone Number:</label>
-			<input type="text" class="text" name="telephoneNumber" id ="telephoneNumber">
+			<input type="text" class="text" name="telephoneNumber" id ="telephoneNumber" required="true">
 
 			<label>Contribution Email Addresses:</label>
 			<fieldset class="contribution">
@@ -57,9 +57,12 @@
 					</li>
 				</#list>
 				</ul>
+				 <div class="error" id="nameError">
+				  
+    			 </div> 
 			</fieldset>
 
-			<input type="checkbox" name="agree" id ="agree">
+			<input type="checkbox" name="agree" id ="agree" required="true">
 			<label for="checkbox">I have head and agree to the terms of this Contributor License Agreement</label>
 
 			<input type="hidden" name="versionId" value="${version.id}">

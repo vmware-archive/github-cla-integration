@@ -2,7 +2,7 @@
 <head>
 
 <title>Agreements Administration</title>
-<link rel="stylesheet" type="text/css" href="/resources/styles/font-awesome.min.css">
+<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/resources/styles/style.css">
 
 </head>
@@ -27,7 +27,7 @@
 
 			<fieldset>
 				<label for="name">Name:</label>
-				<input type="text" class="text" name="name">
+				<input type="text" class="text" name="name" required="true">
 
 				<button type="submit">Create</button>
 			</fieldset>
