@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -69,14 +69,15 @@ final class RepositoriesController extends AbstractController {
 
     @Transactional(readOnly = true)
     @RequestMapping(method = RequestMethod.GET, value = "")
-    String listRepositories(ModelMap model) {
+    String listRepositories(Model model) {
         List<LinkedRepository> linkedRepositories = this.linkedRepositoryRepository.findAll(new Sort("name"));
         SortedSet<Repository> adminRepositories = getAdminRepositories();
         List<Agreement> candidateAgreements = this.agreementRepository.findAll(new Sort("name"));
 
-        model.put("linkedRepositories", filterLinkedRepositories(linkedRepositories, adminRepositories));
-        model.put("candidateAgreements", candidateAgreements);
-        model.put("candidateRepositories", filterAdminRepositories(adminRepositories, linkedRepositories));
+        model //
+        .addAttribute("linkedRepositories", filterLinkedRepositories(linkedRepositories, adminRepositories)) //
+        .addAttribute("candidateAgreements", candidateAgreements) //
+        .addAttribute("candidateRepositories", filterAdminRepositories(adminRepositories, linkedRepositories));
 
         return "repositories";
     }

@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -99,7 +100,9 @@ public final class CorporateSignatoryControllerTest extends AbstractControllerTe
         .param("contribution", "contribution-1,contribution-2") //
         .param("versionId", String.valueOf(version.getId()))) //
         .andExpect(status().isFound()) //
-        .andExpect(view().name("redirect:/"));
+        .andExpect(view().name("redirect:/confirmation")) //
+        .andExpect(flash().attribute("organization", "org")) //
+        .andExpect(flash().attribute("repository", "repo"));
 
         assertEquals(1, countRowsInTable("signatories"));
         Map<String, Object> row = this.jdbcTemplate.queryForMap("SELECT * FROM signatories");

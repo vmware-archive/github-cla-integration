@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -54,8 +54,8 @@ final class AgreementsController extends AbstractController {
 
     @Transactional(readOnly = true)
     @RequestMapping(method = RequestMethod.GET, value = "")
-    String listAgreements(ModelMap model) {
-        model.put("agreements", this.agreementRepository.findAll(new Sort("name")));
+    String listAgreements(Model model) {
+        model.addAttribute("agreements", this.agreementRepository.findAll(new Sort("name")));
 
         return "agreements";
     }
@@ -70,9 +70,10 @@ final class AgreementsController extends AbstractController {
 
     @Transactional(readOnly = true)
     @RequestMapping(method = RequestMethod.GET, value = "/{agreementId}/versions")
-    String listVersions(@PathVariable("agreementId") Agreement agreement, ModelMap model) {
-        model.put("agreement", agreement);
-        model.put("versions", this.versionRepository.findByAgreement(agreement, new Sort("name")));
+    String listVersions(@PathVariable("agreementId") Agreement agreement, Model model) {
+        model //
+        .addAttribute("agreement", agreement) //
+        .addAttribute("versions", this.versionRepository.findByAgreement(agreement, new Sort("name")));
 
         return "versions";
     }
@@ -90,10 +91,11 @@ final class AgreementsController extends AbstractController {
 
     @Transactional(readOnly = true)
     @RequestMapping(method = RequestMethod.GET, value = "/{agreementId}/versions/{versionId}")
-    String readVersion(@PathVariable("versionId") Version version, ModelMap model) {
-        model.put("version", version);
-        model.put("individualContent", version.getIndividualAgreementContent());
-        model.put("corporateContent", version.getCorporateAgreementContent());
+    String readVersion(@PathVariable("versionId") Version version, Model model) {
+        model //
+        .addAttribute("version", version) //
+        .addAttribute("individualContent", version.getIndividualAgreementContent()) //
+        .addAttribute("corporateContent", version.getCorporateAgreementContent());
 
         return "version";
     }
