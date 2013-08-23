@@ -2,11 +2,16 @@
 <head>
 
 <title>Repository Agreement Administration</title>
-<link rel="stylesheet" type="text/css" href="/resources/styles/font-awesome.min.css">
+<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/resources/styles/style.css">
-
+<script type='text/javascript'>
+   function load(){
+    document.getElementById('repository').selectedIndex = -1;
+    document.getElementById('agreement').selectedIndex = -1;
+  }
+</script>
 </head>
-<body>
+<body onload="load()">
 
 <#include "header.ftl">
 <div class="container">
@@ -29,14 +34,13 @@
 
 			<fieldset>
 				<label for="repository">Repository:</label>
-				<select name="repository" required="true">
+				<select id="repository" name="repository" required="true">
 				<#list candidateRepositories as candidateRepository>
 					<option value="${candidateRepository.fullName}">${candidateRepository.fullName}</option>
 				</#list>
 				</select>
-
 				<label for="agreement">Agreement:</label>
-				<select name="agreement" required="true">
+				<select id="agreement" name="agreement" required="true">
 				<#list candidateAgreements as candidateAgreement>
 					<option value="${candidateAgreement.id}">${candidateAgreement.name}</option>
 				</#list>

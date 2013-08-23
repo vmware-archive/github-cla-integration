@@ -2,7 +2,7 @@
 <head>
 
 <title>${agreement.name} - Versions Administration</title>
-<link rel="stylesheet" type="text/css" href="/resources/styles/font-awesome.min.css">
+<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/resources/styles/style.css">
 
 </head>
@@ -27,13 +27,13 @@
 
 			<fieldset>
 				<label for="name">Name:</label>
-				<input type="text" class="text" name="name" id ="name">
+				<input type="text" class="text" name="name" id ="name" required="true">
 
 				<label for="individualContent">Individual Agreement Content:</label>
-				<textarea name="individualContent" id="individualContent" class="text">Use Markdown in here</textarea>
+				<textarea name="individualContent" id="individualContent" class="text" required="true" placeholder="Use Markdown in here"></textarea>
 
 				<label for="corporateContent">Corporate Agreement Content:</label>
-				<textarea name="corporateContent" id="corporateContent" class="text">Use Markdown in here</textarea>
+				<textarea name="corporateContent" id="corporateContent" class="text" required="true" placeholder="Use Markdown in here"></textarea>
 
 				<input type="hidden" name="${(_csrf.parameterName)!}" value="${(_csrf.token)!}"/>
 				<button type="submit">Create</button>

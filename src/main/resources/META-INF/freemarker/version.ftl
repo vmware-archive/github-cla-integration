@@ -2,7 +2,7 @@
 <head>
 
 <title>${version.agreement.name} ${version.name} -  Version Administration</title>
-<link rel="stylesheet" type="text/css" href="/resources/styles/font-awesome.min.css">
+<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/resources/styles/style.css">
 
 </head>
