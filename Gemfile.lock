@@ -1,0 +1,56 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activemodel (4.0.0)
+      activesupport (= 4.0.0)
+      builder (~> 3.1.0)
+    activesupport (4.0.0)
+      i18n (~> 0.6, >= 0.6.4)
+      minitest (~> 4.2)
+      multi_json (~> 1.3)
+      thread_safe (~> 0.1)
+      tzinfo (~> 0.3.37)
+    addressable (2.3.5)
+    atomic (1.1.12)
+    builder (3.1.4)
+    caldecott-client (0.0.2)
+      multi_json (~> 1.3)
+    cf (5.2.0)
+      addressable (~> 2.2)
+      caldecott-client (~> 0.0.2)
+      cfoundry (~> 4.3.0)
+      interact (~> 0.5)
+      json_pure (~> 1.6)
+      mothership (>= 0.5.1, < 1.0)
+      multi_json (~> 1.3)
+      rest-client (~> 1.6)
+      uuidtools (~> 2.1)
+    cf-uaa-lib (2.0.0)
+      multi_json
+    cfoundry (4.3.3)
+      activemodel (>= 3.2.13, < 5.0.0)
+      cf-uaa-lib (~> 2.0.0)
+      multi_json (~> 1.7)
+      multipart-post (~> 1.1)
+      rubyzip (~> 0.9)
+    i18n (0.6.5)
+    interact (0.5.2)
+    json_pure (1.8.0)
+    mime-types (1.23)
+    minitest (4.7.5)
+    mothership (0.5.1)
+    multi_json (1.7.9)
+    multipart-post (1.2.0)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
+    rubyzip (0.9.9)
+    thread_safe (0.1.2)
+      atomic
+    tzinfo (0.3.37)
+    uuidtools (2.1.4)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  cf
