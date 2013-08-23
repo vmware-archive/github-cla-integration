@@ -29,10 +29,10 @@
 
 		<fieldset>
 			<label for="company">Company Name:</label>
-			<input type="text" class="text" name="company" id ="company" value="${user.company}">
+			<input type="text" class="text" name="company" id ="company" value="${user.company!}">
 
 			<label for="name">Contact Name:</label>
-			<input type="text" class="text" name="name" id ="name" value="${user.name}">
+			<input type="text" class="text" name="name" id ="name" value="${user.name!}">
 
 			<label for="title">Contact Title:</label>
 			<input type="text" class="text" name="title" id ="title">
