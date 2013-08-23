@@ -29,7 +29,7 @@
 
 		<fieldset>
 			<label for="name">Name:</label>
-			<input type="text" class="text" name="name" id ="name" value="${user.name}">
+			<input type="text" class="text" name="name" id ="name" value="${user.name!}">
 
 			<label for="email">Email Address:</label>
 			<select name="email" required="true">
