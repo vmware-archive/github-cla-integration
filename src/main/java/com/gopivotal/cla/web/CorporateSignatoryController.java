@@ -25,11 +25,12 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.gopivotal.cla.github.Email;
 import com.gopivotal.cla.github.GitHubClient;
@@ -63,20 +64,20 @@ final class CorporateSignatoryController extends AbstractSignatoryController {
     }
 
     @Transactional(readOnly = true)
-    @RequestMapping(method = RequestMethod.GET, value = "{organization}/{repository}/corporate")
-    String readCorporate(@PathVariable String organization, @PathVariable String repository, ModelMap model) {
+    @RequestMapping(method = RequestMethod.GET, value = "/{organization}/{repository}/corporate")
+    String readCorporate(@PathVariable String organization, @PathVariable String repository, Model model) {
         populateAgreementModel(organization, repository, model);
-        model.put("domains", domains(verifiedEmails()));
+        model.addAttribute("domains", domains(verifiedEmails()));
 
         return "corporate";
     }
 
     @Transactional
-    @RequestMapping(method = RequestMethod.POST, value = "{organization}/{repository}/corporate")
+    @RequestMapping(method = RequestMethod.POST, value = "/{organization}/{repository}/corporate")
     String createCorporate(@PathVariable String organization, @PathVariable String repository, @RequestParam String company,
         @RequestParam String name, @RequestParam String title, @RequestParam("email") String emailAddress, @RequestParam String mailingAddress,
         @RequestParam String country, @RequestParam String telephoneNumber, @RequestParam("contribution") String[] domains,
-        @RequestParam("versionId") Version version) {
+        @RequestParam("versionId") Version version, RedirectAttributes model) {
 
         Agreement agreement = this.linkedRepositoryRepository.findByOrganizationAndRepository(organization, repository).getAgreement();
         CorporateSignatory corporateSignatory = this.corporateSignatoryRepository.save(new CorporateSignatory(version, name, emailAddress,
@@ -86,7 +87,11 @@ final class CorporateSignatoryController extends AbstractSignatoryController {
             this.signedDomainRepository.save(new SignedDomain(domain, agreement, corporateSignatory));
         }
 
-        return "redirect:/";
+        model //
+        .addFlashAttribute("organization", organization) //
+        .addFlashAttribute("repository", repository);
+
+        return "redirect:/confirmation";
     }
 
     private SortedSet<String> domains(Set<Email> emails) {

@@ -21,7 +21,7 @@ import java.util.TreeSet;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.ui.ModelMap;
+import org.springframework.ui.Model;
 
 import com.gopivotal.cla.github.Email;
 import com.gopivotal.cla.github.GitHubClient;
@@ -46,13 +46,14 @@ abstract class AbstractSignatoryController extends AbstractController {
         this.versionRepository = versionRepository;
     }
 
-    protected final void populateAgreementModel(String organization, String repository, ModelMap model) {
+    protected final void populateAgreementModel(String organization, String repository, Model model) {
         LinkedRepository linkedRepository = this.linkedRepositoryRepository.findByOrganizationAndRepository(organization, repository);
         Version version = this.versionRepository.findByAgreement(linkedRepository.getAgreement(), new Sort(Direction.DESC, "name")).get(0);
 
-        model.put("emails", verifiedEmails());
-        model.put("repository", linkedRepository);
-        model.put("version", version);
+        model //
+        .addAttribute("emails", verifiedEmails()) //
+        .addAttribute("repository", linkedRepository) //
+        .addAttribute("version", version);
     }
 
     protected final SortedSet<Email> verifiedEmails() {
