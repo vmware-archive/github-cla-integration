@@ -35,6 +35,7 @@
 				<label for="corporateContent">Corporate Agreement Content:</label>
 				<textarea name="corporateContent" id="corporateContent" class="text">Use Markdown in here</textarea>
 
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 				<button type="submit">Create</button>
 			</fieldset>
 		</form>

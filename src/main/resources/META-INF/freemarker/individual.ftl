@@ -63,6 +63,7 @@
 			<label for="checkbox">I have head and agree to the terms of this Contributor License Agreement</label>
 
 			<input type="hidden" name="versionId" value="${version.id}">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 			<button type="submit">Sign</button>
 		</fieldset>
 	</form>
