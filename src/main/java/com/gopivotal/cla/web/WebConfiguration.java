@@ -19,6 +19,8 @@ package com.gopivotal.cla.web;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.support.ConfigurableConversionService;
+import org.springframework.data.repository.support.DomainClassConverter;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -39,6 +41,11 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
         registry.addResourceHandler("/resources/font/**").addResourceLocations("classpath:/META-INF/font/");
         registry.addResourceHandler("/resources/images/**").addResourceLocations("classpath:/META-INF/images/");
         registry.addResourceHandler("/resources/styles/**").addResourceLocations("classpath:/META-INF/styles/");
+    }
+
+    @Bean
+    public DomainClassConverter<?> domainClassConverter(ConfigurableConversionService conversionService) {
+        return new DomainClassConverter<>(conversionService);
     }
 
     @Bean

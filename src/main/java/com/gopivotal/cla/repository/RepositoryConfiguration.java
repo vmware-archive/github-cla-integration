@@ -17,18 +17,24 @@
 package com.gopivotal.cla.repository;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.jasypt.util.text.BasicTextEncryptor;
-import org.jasypt.util.text.TextEncryptor;
+import org.jasypt.encryption.pbe.PBEStringEncryptor;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.hibernate4.encryptor.HibernatePBEEncryptorRegistry;
 import org.postgresql.Driver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.dao.support.PersistenceExceptionTranslator;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -39,13 +45,16 @@ import com.jolbox.bonecp.BoneCPDataSource;
  * Configuration of repository components
  */
 @Configuration
-@ComponentScan
+@EnableJpaRepositories("com.gopivotal.cla.repository")
 @EnableTransactionManagement(mode = AdviceMode.ASPECTJ)
 public class RepositoryConfiguration {
 
+    @Autowired
+    private volatile String databaseUrl;
+
     @Bean
-    DataSource dataSource(String databaseUrl) throws URISyntaxException {
-        URI dbUri = new URI(databaseUrl);
+    DataSource dataSource() {
+        URI dbUri = URI.create(this.databaseUrl);
 
         String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
 
@@ -68,15 +77,36 @@ public class RepositoryConfiguration {
     }
 
     @Bean
-    PlatformTransactionManager transactionManager(String databaseUrl) throws URISyntaxException {
-        return new DataSourceTransactionManager(dataSource(databaseUrl));
+    EntityManagerFactory entityManagerFactory() {
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+
+        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+        factory.setJpaVendorAdapter(vendorAdapter);
+        factory.setDataSource(dataSource());
+        factory.afterPropertiesSet();
+
+        return factory.getObject();
     }
 
     @Bean
-    TextEncryptor textEncryptor(String encryptionKey) {
-        BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-        textEncryptor.setPassword(encryptionKey);
+    PlatformTransactionManager transactionManager() {
+        return new JpaTransactionManager(entityManagerFactory());
+    }
 
-        return textEncryptor;
+    @Bean
+    public PersistenceExceptionTranslator persistenceExceptionTranslator() {
+        return new HibernateExceptionTranslator();
+    }
+
+    @Bean
+    PBEStringEncryptor stringEncryptor(String encryptionKey) {
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor.setAlgorithm("PBEWithMD5AndDES");
+        encryptor.setKeyObtentionIterations(1000);
+        encryptor.setPassword(encryptionKey);
+
+        HibernatePBEEncryptorRegistry.getInstance().registerPBEStringEncryptor("basicStringEncryptor", encryptor);
+
+        return encryptor;
     }
 }

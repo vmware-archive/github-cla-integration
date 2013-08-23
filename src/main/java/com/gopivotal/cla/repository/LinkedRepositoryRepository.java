@@ -16,48 +16,23 @@
 
 package com.gopivotal.cla.repository;
 
-import java.util.SortedSet;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-import com.gopivotal.cla.LinkedRepository;
+import com.gopivotal.cla.model.LinkedRepository;
 
 /**
  * Data access method for {@link Repository}s
  */
-public interface LinkedRepositoryRepository {
+public interface LinkedRepositoryRepository extends JpaRepository<LinkedRepository, Integer> {
 
     /**
-     * Returns all of the {@link Repository}s in the repository
+     * Returns a repository identified by its organization and repository
      * 
-     * @return all of the repositories in the repository
+     * @param organization The name of the organization
+     * @param repository The name of the repository
+     * @return a repository identified by its organization and repository
      */
-    SortedSet<LinkedRepository> find();
-
-    /**
-     * Create a new {@link Repository}
-     * 
-     * @param name The name of the repository
-     * @param agreementId The id of the related agreement
-     * @param accessToken The access token to use when accessing the repository
-     * @return The newly created repository
-     */
-    LinkedRepository create(String name, Long agreementId, String accessToken);
-
-    /**
-     * Read a {@link Repository} identified by its {@code id}
-     * 
-     * @param id The id of the repository
-     * @return The repository
-     * @throws EmptyResultDataAccessException if no repository with {@code id} exists
-     */
-    LinkedRepository read(Long id);
-
-    /**
-     * Read a {@link Repository} identified by its {@code organization} and {@code name}
-     * 
-     * @param organization The organization that owns the repository
-     * @param name The name of the repository
-     * @return The repository
-     * @throws EmptyResultDataAccessException if no repository with {@code organization} and {@code name} exists
-     */
-    LinkedRepository read(String organization, String name);
+    @Query("select r from LinkedRepository r where r.name = CONCAT(?1, '/', ?2)")
+    LinkedRepository findByOrganizationAndRepository(String organization, String repository);
 }

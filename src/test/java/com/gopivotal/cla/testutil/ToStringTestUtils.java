@@ -18,6 +18,8 @@ package com.gopivotal.cla.testutil;
 
 import static org.junit.Assert.assertTrue;
 
+import org.springframework.util.StringUtils;
+
 /**
  * A utility class for testing that the {@link Object#toString()} method on an instance works properly
  */
@@ -45,7 +47,8 @@ public final class ToStringTestUtils {
 
         assertTrue("control does not start with simple class name", s.startsWith(this.control.getClass().getSimpleName()));
         for (String key : keys) {
-            assertTrue(String.format("control does not contain key '%s'", key), s.contains(String.format("%s=", key)));
+            boolean contains = s.contains(String.format("%s=", key)) || s.contains(String.format("get%s()=", StringUtils.capitalize(key)));
+            assertTrue(String.format("control does not contain key '%s', '%s'", key, s), contains);
         }
     }
 }

@@ -29,7 +29,7 @@
 				<label for="name">Name:</label>
 				<input type="text" class="text" name="name">
 
-				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				<input type="hidden" name="${(_csrf.parameterName)!}" value="${(_csrf.token)!}"/>
 				<button type="submit">Create</button>
 			</fieldset>
 		</form>

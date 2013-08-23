@@ -16,37 +16,65 @@
 
 package com.gopivotal.cla.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
+import org.jasypt.encryption.pbe.PBEStringEncryptor;
+import org.junit.Before;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ContextHierarchy;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.gopivotal.cla.github.GitHubClient;
+import com.gopivotal.cla.github.Organization;
+import com.gopivotal.cla.github.Organizations;
+import com.gopivotal.cla.github.Repositories;
 import com.gopivotal.cla.github.User;
+import com.gopivotal.cla.repository.RepositoryConfiguration;
 
-public final class AbstractControllerTest {
+@WebAppConfiguration
+@ContextHierarchy({ @ContextConfiguration(classes = { TestConfiguration.class, RepositoryConfiguration.class }),
+    @ContextConfiguration(classes = WebConfiguration.class) //
+})
+public abstract class AbstractControllerTest extends AbstractTransactionalJUnit4SpringContextTests {
 
-    private final GitHubClient gitHubClient = mock(GitHubClient.class);
+    protected volatile MockMvc mockMvc;
 
-    private final User user = mock(User.class);
+    protected volatile Organization organization;
 
-    private final StubController controller = new StubController(this.gitHubClient);
+    protected volatile User user;
 
-    @Test
-    public void user() {
-        when(this.gitHubClient.getUser()).thenReturn(this.user);
+    @Autowired
+    private volatile GitHubClient gitHubClient;
 
-        User result = this.controller.user();
-        assertEquals(this.user, result);
+    @Autowired
+    private volatile PBEStringEncryptor stringEncryptor;
+
+    @Autowired
+    private volatile WebApplicationContext wac;
+
+    @Before
+    public final void mockMvc() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
-    private static final class StubController extends AbstractController {
+    @Before
+    public final void gitHubClient() {
+        this.organization = new Organization("test-name", new Repositories());
 
-        private StubController(GitHubClient gitHubClient) {
-            super(gitHubClient);
-        }
+        Organizations organizations = new Organizations();
+        organizations.add(this.organization);
 
+        this.user = new User("test-avatar-url", "test-company", "test-login", "test-name", organizations, new Repositories());
+        when(this.gitHubClient.getUser()).thenReturn(this.user);
+    }
+
+    protected final String decrypt(Object value) {
+        return this.stringEncryptor.decrypt((String) value);
     }
 
 }

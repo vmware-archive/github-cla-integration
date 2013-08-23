@@ -17,199 +17,85 @@
 package com.gopivotal.cla.web;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.ui.ModelMap;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.gopivotal.cla.Agreement;
-import com.gopivotal.cla.LinkedRepository;
 import com.gopivotal.cla.github.GitHubClient;
-import com.gopivotal.cla.github.Organization;
-import com.gopivotal.cla.github.Organizations;
 import com.gopivotal.cla.github.Permissions;
-import com.gopivotal.cla.github.Repositories;
 import com.gopivotal.cla.github.Repository;
-import com.gopivotal.cla.github.User;
+import com.gopivotal.cla.model.Agreement;
+import com.gopivotal.cla.model.LinkedRepository;
 import com.gopivotal.cla.repository.AgreementRepository;
 import com.gopivotal.cla.repository.LinkedRepositoryRepository;
-import com.gopivotal.cla.util.Sets;
+import com.gopivotal.cla.testutil.Sets;
 
-public final class RepositoriesControllerTest {
+public final class RepositoriesControllerTest extends AbstractControllerTest {
 
-    private static final String ACCESS_TOKEN = "access-token";
+    @Autowired
+    private volatile GitHubClient gitHubClient;
 
-    private static final Agreement AGREEMENT = new Agreement(Long.MIN_VALUE, "test-agreement");
+    @Autowired
+    private volatile AgreementRepository agreementRepository;
 
-    private static final LinkedRepository LINKED_REPOSITORY = new LinkedRepository(Long.MIN_VALUE + 1, AGREEMENT, "admin", ACCESS_TOKEN);
-
-    private final GitHubClient gitHubClient = mock(GitHubClient.class);
-
-    private final AgreementRepository agreementRepository = mock(AgreementRepository.class);
-
-    private final LinkedRepositoryRepository linkedRepositoryRepository = mock(LinkedRepositoryRepository.class);
-
-    private final RepositoriesController controller = new RepositoriesController(this.gitHubClient, this.agreementRepository,
-        this.linkedRepositoryRepository);
+    @Autowired
+    private volatile LinkedRepositoryRepository linkedRepositoryRepository;
 
     @Test
-    public void listRepositories() {
-        when(this.linkedRepositoryRepository.find()).thenReturn(
-            Sets.asSortedSet(LINKED_REPOSITORY, new LinkedRepository(Long.MIN_VALUE + 11, AGREEMENT, "alpha/bravo", ACCESS_TOKEN)));
-        when(this.agreementRepository.find()).thenReturn(Sets.asSortedSet(AGREEMENT));
+    public void listRepositories() throws Exception {
+        Agreement bravoAgreement = this.agreementRepository.save(new Agreement("bravo"));
+        Agreement alphaAgreement = this.agreementRepository.save(new Agreement("alpha"));
+        this.linkedRepositoryRepository.save(new LinkedRepository(bravoAgreement, "foxtrot", "test-access-token"));
+        LinkedRepository bravoLinkedRepository = this.linkedRepositoryRepository.save(new LinkedRepository(bravoAgreement, "bravo",
+            "test-access-token"));
+        LinkedRepository alphaLinkedRepository = this.linkedRepositoryRepository.save(new LinkedRepository(alphaAgreement, "alpha",
+            "test-access-token"));
 
-        getAdminRepositories();
+        Repository echoRepository = new Repository("echo", null, new Permissions(true, false, false));
+        Repository deltaRepository = new Repository("delta", null, new Permissions(false, false, false));
+        Repository charlieRepository = new Repository("charlie", null, new Permissions(true, false, false));
+        Repository bravoRepository = new Repository("bravo", null, new Permissions(true, false, false));
+        Repository alphaRepository = new Repository("alpha", null, new Permissions(true, false, false));
 
-        ModelMap model = new ModelMap();
-        String result = this.controller.listRepositories(model);
+        this.organization.getRepositories().add(deltaRepository);
+        this.organization.getRepositories().add(charlieRepository);
+        this.organization.getRepositories().add(alphaRepository);
 
-        assertEquals("repositories", result);
-        assertEquals(Sets.asSortedSet(LINKED_REPOSITORY), model.get("linkedRepositories"));
-        assertEquals(Sets.asSortedSet(AGREEMENT), model.get("candidateAgreements"));
-        assertEquals(Sets.asSortedSet(new StubRepository("admin-2", null), new StubRepository("admin-3", null)), model.get("candidateRepositories"));
-    }
+        this.user.getRepositories().add(echoRepository);
+        this.user.getRepositories().add(bravoRepository);
 
-    @Test
-    public void createRepository() {
-        when(this.gitHubClient.getAccessToken()).thenReturn(ACCESS_TOKEN);
-        when(this.linkedRepositoryRepository.create("test-linked-repository", Long.MIN_VALUE, ACCESS_TOKEN)).thenReturn(LINKED_REPOSITORY);
-
-        String result = this.controller.createLinkedRepository("test-linked-repository", AGREEMENT.getId());
-
-        assertEquals("redirect:/repositories", result);
+        this.mockMvc.perform(get("/repositories")) //
+        .andExpect(status().isOk()) //
+        .andExpect(view().name("repositories")) //
+        .andExpect(model().attribute("linkedRepositories", Arrays.asList(alphaLinkedRepository, bravoLinkedRepository))) //
+        .andExpect(model().attribute("candidateAgreements", Arrays.asList(alphaAgreement, bravoAgreement))).andExpect(
+            model().attribute("candidateRepositories", Sets.asSortedSet(charlieRepository, echoRepository)));
     }
 
     @Test
-    public void hrefPrefixNull() {
-        String result = this.controller.hrefPrefix(null);
-        assertEquals("", result);
-    }
+    public void createLinkedRepository() throws Exception {
+        when(this.gitHubClient.getAccessToken()).thenReturn("test-access-token");
+        Agreement agreement = this.agreementRepository.save(new Agreement("test-name"));
 
-    @Test
-    public void hrefPrefixDefaultScheme() {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setSecure(false);
-        request.addHeader("HOST", "test.host");
+        this.mockMvc.perform(post("/repositories") //
+        .param("repository", "org/repo") //
+        .param("agreement", String.valueOf(agreement.getId()))) //
+        .andExpect(status().isFound()) //
+        .andExpect(view().name("redirect:/repositories"));
 
-        String result = this.controller.hrefPrefix(request);
-        assertEquals("http://test.host", result);
-    }
-
-    @Test
-    public void hreafPrefixSecureScheme() {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setSecure(true);
-        request.addHeader("HOST", "test.host");
-
-        String result = this.controller.hrefPrefix(request);
-        assertEquals("https://test.host", result);
-    }
-
-    private void getAdminRepositories() {
-        User user = mock(User.class);
-        when(this.gitHubClient.getUser()).thenReturn(user);
-
-        Organizations organizations = new StubOrganizations();
-        when(user.getOrganizations()).thenReturn(organizations);
-
-        Organization organization = mock(Organization.class);
-        organizations.add(organization);
-
-        Repositories organizationRepositories = new StubRepositories();
-        when(organization.getRepositories()).thenReturn(organizationRepositories);
-
-        organizationRepositories.add(new StubRepository("non-admin", new StubPermissions(false, false, false)));
-        organizationRepositories.add(new StubRepository("admin", new StubPermissions(true, false, false)));
-        organizationRepositories.add(new StubRepository("admin-2", new StubPermissions(true, false, false)));
-
-        Repositories userRepositories = new StubRepositories();
-        when(user.getRepositories()).thenReturn(userRepositories);
-
-        userRepositories.add(new StubRepository("admin-3", new StubPermissions(true, false, false)));
-    }
-
-    private static final class StubOrganizations extends HashSet<Organization> implements Organizations {
-
-        private static final long serialVersionUID = -3881602907254273474L;
-
-    }
-
-    private static final class StubRepositories extends HashSet<Repository> implements Repositories {
-
-        private static final long serialVersionUID = 4300270506619743421L;
-
-    }
-
-    private static final class StubRepository implements Repository {
-
-        private final String fullName;
-
-        private final Permissions permissions;
-
-        private StubRepository(String fullName, Permissions permissions) {
-            this.fullName = fullName;
-            this.permissions = permissions;
-        }
-
-        @Override
-        public int compareTo(Repository o) {
-            return this.fullName.compareToIgnoreCase(o.getFullName());
-        }
-
-        @Override
-        public String getFullName() {
-            return this.fullName;
-        }
-
-        @Override
-        public String getName() {
-            return null;
-        }
-
-        @Override
-        public Permissions getPermissions() {
-            return this.permissions;
-        }
-
-    }
-
-    private static final class StubPermissions implements Permissions {
-
-        private final Boolean admin;
-
-        private final Boolean push;
-
-        private final Boolean pull;
-
-        private StubPermissions(Boolean admin, Boolean push, Boolean pull) {
-            this.admin = admin;
-            this.push = push;
-            this.pull = pull;
-        }
-
-        @Override
-        public int compareTo(Permissions o) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Boolean isAdmin() {
-            return this.admin;
-        }
-
-        @Override
-        public Boolean isPush() {
-            return this.push;
-        }
-
-        @Override
-        public Boolean isPull() {
-            return this.pull;
-        }
-
+        assertEquals(1, countRowsInTable("repositories"));
+        Map<String, Object> row = this.jdbcTemplate.queryForMap("SELECT * FROM repositories");
+        assertEquals("org/repo", row.get("name"));
+        assertEquals(agreement.getId(), row.get("agreementId"));
+        assertEquals("test-access-token", decrypt(row.get("accessToken")));
     }
 }

@@ -27,7 +27,7 @@ import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatche
 import com.gopivotal.cla.EnvironmentVariableConfiguration;
 import com.gopivotal.cla.github.GitHubConfiguration;
 import com.gopivotal.cla.repository.RepositoryConfiguration;
-import com.gopivotal.cla.web.security.SecurityConfiguration;
+import com.gopivotal.cla.security.SecurityConfiguration;
 
 /**
  * Initialization of web configuration

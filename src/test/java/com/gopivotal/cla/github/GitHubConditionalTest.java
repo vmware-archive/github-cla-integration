@@ -33,7 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestOperations;
 
-import com.gopivotal.cla.util.Sets;
+import com.gopivotal.cla.testutil.Sets;
 
 @SuppressWarnings("rawtypes")
 public final class GitHubConditionalTest {

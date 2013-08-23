@@ -46,8 +46,8 @@ public final class StandardGitHubClient extends AbstractGitHubType<Map> implemen
 
     @Override
     void initialize(Map raw) {
-        this.emails = new StandardEmails(getString("emails_url", raw));
-        this.user = new StandardUser(getString("current_user_url", raw));
+        this.emails = new Emails(getString("emails_url", raw));
+        this.user = new User(getString("current_user_url", raw));
     }
 
     @Override

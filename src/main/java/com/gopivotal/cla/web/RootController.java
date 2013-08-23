@@ -17,7 +17,9 @@
 package com.gopivotal.cla.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,9 +37,10 @@ final class RootController {
         this.linkedRepositoryRepository = linkedRepositoryRepository;
     }
 
+    @Transactional(readOnly = true)
     @RequestMapping(method = RequestMethod.GET, value = "")
     String index(ModelMap model) {
-        model.put("linkedRepositories", this.linkedRepositoryRepository.find());
+        model.put("linkedRepositories", this.linkedRepositoryRepository.findAll(new Sort("name")));
 
         return "index";
     }

@@ -16,11 +16,27 @@
 
 package com.gopivotal.cla.github;
 
-import java.util.Set;
+import java.util.Map;
 
 /**
  * A collection of GitHub repositories
  */
-public interface Repositories extends Set<Repository> {
+public final class Repositories extends AbstractCollection<Repository> {
 
+    /**
+     * Creates a new pre-initialized instance
+     */
+    public Repositories() {
+        super();
+    }
+
+    Repositories(String url) {
+        super(url);
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    Repository initialize(Map raw) {
+        return new Repository(raw);
+    }
 }
