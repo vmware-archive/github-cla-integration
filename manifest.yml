@@ -1,20 +1,20 @@
 ---
 applications:
-- name: gopivotal-cla
-  memory: 1G
+- name: github-cla-integration
+  memory: 512M
   instances: 1
-  host: gopivotal-cla
-  domain: cfapps.io
-  path: target/github-cla-integration-1-SNAPSHOT.war
+  env:
+    SPRING_PROFILES_ACTIVE: cloud
+  path: target/github-cla-integration.jar
+  buildpack: https://github.com/cloudfoundry/java-buildpack
   services:
-    gopivotal-cla-elephantsql:
+    github-cla-integration-db:
       label: elephantsql
       provider: elephantsql
       version: n/a
       plan: turtle
-    gopivotal-cla-newrelic:
+    new-relic:
       label: newrelic
       provider: newrelic
       version: n/a
       plan: standard
-  buildpack: https://github.com/cloudfoundry/java-buildpack

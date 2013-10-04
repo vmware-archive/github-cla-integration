@@ -1,0 +1,29 @@
+<component name="ProjectDictionaryState">
+  <dictionary name="bhale">
+    <words>
+      <w>autoconfigure</w>
+      <w>buildmonitor</w>
+      <w>closeables</w>
+      <w>configurer</w>
+      <w>csrf</w>
+      <w>encryptor</w>
+      <w>github</w>
+      <w>googlecode</w>
+      <w>gopivotal</w>
+      <w>jdbc</w>
+      <w>lodash</w>
+      <w>logback</w>
+      <w>mozilla</w>
+      <w>nebhale</w>
+      <w>newrelic</w>
+      <w>pageable</w>
+      <w>postgresql</w>
+      <w>sockjs</w>
+      <w>springframework</w>
+      <w>stdout</w>
+      <w>thymeleaf</w>
+      <w>webhook</w>
+      <w>websocket</w>
+    </words>
+  </dictionary>
+</component>

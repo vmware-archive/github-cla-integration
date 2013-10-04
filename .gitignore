@@ -1,5 +1,4 @@
+git.properties
 target
-.classpath
-.project
-.settings
-.springBeans
+tasks.xml
+workspace.xml

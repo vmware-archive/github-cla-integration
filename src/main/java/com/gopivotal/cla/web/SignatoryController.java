@@ -16,39 +16,52 @@
 
 package com.gopivotal.cla.web;
 
+import com.gopivotal.cla.domain.LinkedRepository;
+import com.gopivotal.cla.domain.LinkedRepositoryRepository;
+import com.gopivotal.cla.domain.Signatory;
+import com.gopivotal.cla.domain.SignatoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.gopivotal.cla.github.GitHubClient;
-import com.gopivotal.cla.repository.LinkedRepositoryRepository;
-import com.gopivotal.cla.repository.VersionRepository;
+import java.util.List;
 
 @Controller
-final class SignatoryController extends AbstractSignatoryController {
+final class SignatoryController {
 
     private final LinkedRepositoryRepository linkedRepositoryRepository;
 
+    private final SignatoryRepository signatoryRepository;
+
     @Autowired
-    SignatoryController(GitHubClient gitHubClient, LinkedRepositoryRepository linkedRepositoryRepository, VersionRepository versionRepository) {
-        super(gitHubClient, linkedRepositoryRepository, versionRepository);
+    SignatoryController(LinkedRepositoryRepository linkedRepositoryRepository, SignatoryRepository signatoryRepository) {
         this.linkedRepositoryRepository = linkedRepositoryRepository;
+        this.signatoryRepository = signatoryRepository;
     }
 
-    @Transactional(readOnly = true)
-    @RequestMapping(method = RequestMethod.GET, value = "/{organization}/{repository}")
-    String readRepository(@PathVariable String organization, @PathVariable String repository, Model model) {
-        model.addAttribute("repository", this.linkedRepositoryRepository.findByOrganizationAndRepository(organization, repository));
+    @RequestMapping(method = RequestMethod.GET, value = "/signatory")
+    String signatory(Model model, @AuthenticationPrincipal User user) {
+        Signatory signatory = getSignatory(user);
+        List<LinkedRepository> linkedRepositories = this.linkedRepositoryRepository.findAll(new Sort("name"));
 
-        return "repository";
+        model.addAttribute("unsignedRepositories", linkedRepositories);
+
+        return "signatory";
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/confirmation")
-    String confirmation() {
-        return "confirmation";
+    private Signatory getSignatory(User user) {
+        Signatory signatory = this.signatoryRepository.findByUsername(user.getUsername());
+
+        if (signatory == null) {
+            signatory = this.signatoryRepository.saveAndFlush(new Signatory(user.getUsername()));
+        }
+
+        return signatory;
     }
+
 }

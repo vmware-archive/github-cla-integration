@@ -16,31 +16,37 @@
 
 package com.gopivotal.cla.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.gopivotal.cla.repository.LinkedRepositoryRepository;
+import java.util.Collection;
 
 @Controller
 final class RootController {
 
-    private final LinkedRepositoryRepository linkedRepositoryRepository;
-
-    @Autowired
-    RootController(LinkedRepositoryRepository linkedRepositoryRepository) {
-        this.linkedRepositoryRepository = linkedRepositoryRepository;
-    }
-
-    @Transactional(readOnly = true)
     @RequestMapping(method = RequestMethod.GET, value = "")
-    String index(Model model) {
-        model.addAttribute("linkedRepositories", this.linkedRepositoryRepository.findAll(new Sort("name")));
-
+    String index() {
         return "index";
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/route")
+    String route(@AuthenticationPrincipal User user) {
+        String destination = hasRole("ADMIN", user.getAuthorities()) ? "admin" : "signatory";
+        return String.format("redirect:/%s", destination);
+    }
+
+    private Boolean hasRole(String role, Collection<GrantedAuthority> authorities) {
+        for (GrantedAuthority authority : authorities) {
+            if (String.format("ROLE_%s", role).equals(authority.getAuthority())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }
