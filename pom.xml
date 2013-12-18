@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>0.5.0.M6</version>
+        <version>0.5.0.BUILD-SNAPSHOT</version>
     </parent>
 
     <groupId>com.gopivotal.github-cla-integration</groupId>
@@ -40,11 +40,7 @@
         <flyway.version>2.3</flyway.version>
         <jasypt.version>1.9.1</jasypt.version>
         <postgres.version>9.3-1100-jdbc4</postgres.version>
-        <spring.version>4.0.0.RELEASE</spring.version>
         <spring-cloud.version>0.9.2-BUILD-SNAPSHOT</spring-cloud.version>
-        <spring-security.version>3.2.0.RELEASE</spring-security.version>
-        <thymeleaf.version>2.1.2.RELEASE</thymeleaf.version>
-        <thymeleaf-extras-springsecurity3.version>2.1.0.RELEASE</thymeleaf-extras-springsecurity3.version>
 
         <font-awesome.version>4.0.3</font-awesome.version>
     </properties>
@@ -110,12 +106,10 @@
         <dependency>
             <groupId>org.thymeleaf</groupId>
             <artifactId>thymeleaf-spring3</artifactId>
-            <version>${thymeleaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.thymeleaf</groupId>
             <artifactId>thymeleaf</artifactId>
-            <version>${thymeleaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.thymeleaf.extras</groupId>

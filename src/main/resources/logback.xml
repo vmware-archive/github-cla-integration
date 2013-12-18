@@ -26,8 +26,7 @@
     <logger name="com.googlecode.flyway" level="INFO"/>
     <logger name="com.gopivotal.cla.github" level="${LOGGING_LEVEL:-INFO}"/>
     <logger name="org.apache" level="ERROR"/>
-    <logger name="org.springframework.boot.actuate.autoconfigure.SecurityAutoConfiguration$AuthenticationManagerConfiguration"
-            level="INFO"/>
+    <logger name="org.springframework.boot.autoconfigure.security.AuthenticationManagerConfiguration" level="INFO"/>
     <logger name="org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping" level="INFO"/>
     <logger name="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping" level="INFO"/>
     <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" level="INFO"/>

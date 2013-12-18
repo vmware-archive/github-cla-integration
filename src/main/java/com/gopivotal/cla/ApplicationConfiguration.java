@@ -111,6 +111,7 @@ public class ApplicationConfiguration {
                 .logout()
                     .logoutSuccessUrl("/")
                     .and()
+                .csrf().disable() // TODO: Investigate how to integrate this with newer version of Thymeleaf
                 .authorizeRequests()
                     .antMatchers("/").permitAll()
                     .antMatchers("/route").authenticated()

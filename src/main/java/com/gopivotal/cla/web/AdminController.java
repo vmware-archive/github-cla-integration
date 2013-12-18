@@ -20,11 +20,13 @@ import com.gopivotal.cla.domain.Agreement;
 import com.gopivotal.cla.domain.AgreementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-@RequestMapping(method = RequestMethod.GET, value = "/admin")
+@RequestMapping(value = "/admin")
 final class AdminController {
 
     private final AgreementRepository agreementRepository;
