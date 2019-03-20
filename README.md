@@ -66,7 +66,7 @@ git push heroku master
 The project is set up as a Maven WAR project and doesn't have any special requirements beyond that.  An IDE such as the [SpringSource Tool Suite][] and a servlet container such as [Apache Tomcat][] are the recommended development environments.
 
 ### Localtunnel
-The one gotcha for running the application locally (i.e. while developing) is that the interesting bits of the application all require the OAuth dance.  To complete this dance, the GitHub infrastructure must be able to make a `POST` request to the originating server.  Generally when developing locally, your servlet container is not exposed to the internet so this dance will fail.  To expose your server to the internet (and enable the OAuth dance to complete), you should use <http://www.localtunnel.me>.  Remember to update your [application's configuration](#github-application-registration) to point at exposed `localtunnel` URL.
+The one gotcha for running the application locally (i.e. while developing) is that the interesting bits of the application all require the OAuth dance.  To complete this dance, the GitHub infrastructure must be able to make a `POST` request to the originating server.  Generally when developing locally, your servlet container is not exposed to the internet so this dance will fail.  To expose your server to the internet (and enable the OAuth dance to complete), you should use <https://www.localtunnel.me>.  Remember to update your [application's configuration](#github-application-registration) to point at exposed `localtunnel` URL.
 
 
 ## License
@@ -76,15 +76,15 @@ The project is released under version 2.0 of the [Apache License][].
 [1Password]: https://agilebits.com/onepassword
 [Apache License]: http://www.apache.org/licenses/LICENSE-2.0
 [applications]: https://github.com/settings/applications
-[Cloud Foundry]: http://run.pivotal.io
-[cloud-foundry-account]: http://docs.cloudfoundry.com/docs/dotcom/getting-started.html#signup
-[installed the `cf` command line tool]: http://docs.cloudfoundry.com/docs/dotcom/getting-started.html#install-cf
+[Cloud Foundry]: https://run.pivotal.io
+[cloud-foundry-account]: https://docs.cloudfoundry.com/docs/dotcom/getting-started.html#signup
+[installed the `cf` command line tool]: https://docs.cloudfoundry.com/docs/dotcom/getting-started.html#install-cf
 [installed the `heroku` command line tool]: https://devcenter.heroku.com/articles/quickstart#step-2-install-the-heroku-toolbelt
 [Heroku]: https://www.heroku.com
 [heroku-account]: https://id.heroku.com/signup
 [manifest]: manifest.yml
-[Maven]: http://maven.apache.org
+[Maven]: https://maven.apache.org
 [new-application]: https://github.com/settings/applications/new
-[PostgreSQL]: http://www.postgresql.org
-[SpringSource Tool Suite]: http://www.springsource.org/sts
-[Apache Tomcat]: http://tomcat.apache.org
+[PostgreSQL]: https://www.postgresql.org
+[SpringSource Tool Suite]: https://www.springsource.org/sts
+[Apache Tomcat]: https://tomcat.apache.org
