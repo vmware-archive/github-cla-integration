@@ -16,7 +16,7 @@
 	<p>Thank you for signing the Go Pivotal, Inc. Contributor License Agreement and becoming a contributor to our projects.  We appreciate your dedication to our community and look forward to your contributions.</p>
 
 	<#if organization??>
-	<p>Return to <a href="http://github.com/${organization}/${repository}">http://github.com/${organization}/${repository}</a>.</p>
+	<p>Return to <a href="https://github.com/${organization}/${repository}">https://github.com/${organization}/${repository}</a>.</p>
 	</#if>
 </div>
 
