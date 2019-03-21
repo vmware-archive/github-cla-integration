@@ -74,7 +74,7 @@ The project is released under version 2.0 of the [Apache License][].
 
 
 [1Password]: https://agilebits.com/onepassword
-[Apache License]: http://www.apache.org/licenses/LICENSE-2.0
+[Apache License]: https://www.apache.org/licenses/LICENSE-2.0
 [applications]: https://github.com/settings/applications
 [Cloud Foundry]: http://run.pivotal.io
 [cloud-foundry-account]: http://docs.cloudfoundry.com/docs/dotcom/getting-started.html#signup
